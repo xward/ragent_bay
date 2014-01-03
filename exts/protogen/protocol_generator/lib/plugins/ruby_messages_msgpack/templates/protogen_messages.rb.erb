@@ -1,0 +1,66 @@
+module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
+
+  # This module namespaces all classes and modules used by protogen.
+  # @api private
+  module Protogen
+
+    # @protogen_version <%= protocol_set.config.get(:global, :pg_version) %>
+    # @api private
+    module ProtogenMessages
+
+      # Hardcoded protogen version
+      # @api private
+      PG_VERSION = "<%= protocol_set.config.get(:global, :pg_version) %>"
+
+      ID_SERVER_ERROR = -2
+
+      # @api public
+      class ServerError
+
+        # @api private
+        # [Hash] Protogen meta data, not to be used by the developer
+        attr_accessor :protogen_meta_data
+
+        attr_accessor :info
+
+        def initialize
+          @protogen_meta_data = {
+            "protogen_message_id" => ID_SERVER_ERROR
+          }
+        end
+
+        # @api private
+        def to_hash
+          out_hash = {}
+          out_hash['info'] = @info
+          out_hash['_s'] = @protogen_meta_data['protogen_sequence_id']
+          out_hash['_h'] = @protogen_meta_data['protogen_shot_id']
+          out_hash
+        end
+
+        # @api private
+        def set_shot_id(shot_id)
+          @protogen_meta_data['protogen_shot_id'] = shot_id
+        end
+
+        # @api private
+        def set_sequence_id(sequence_id)
+          @protogen_meta_data['protogen_sequence_id'] = sequence_id
+        end
+
+        # @api private
+        def self.from_hash in_hash
+          msg = ProtogenMessages::ServerError.new
+          msg.protogen_meta_data = {}
+          msg.protogen_meta_data['protogen_sequence_id'] = in_hash['_s']
+          msg.protogen_meta_data['protogen_shot_id'] = in_hash['_h']
+          msg
+        end
+
+      end
+
+    end
+
+  end
+
+end

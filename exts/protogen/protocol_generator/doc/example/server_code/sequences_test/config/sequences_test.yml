@@ -1,0 +1,8 @@
+default: &DEFAULT
+  dynamic_channel_str: com.mdi.services.sequences_test
+  subscribe_presence: false
+  subscribe_message: true
+  subscribe_track: false
+
+development: *DEFAULT
+production: *DEFAULT
