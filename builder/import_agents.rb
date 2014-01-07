@@ -222,9 +222,9 @@ Bundler.with_clean_env do
       # see protocol_generator/error.rb for the signification of error codes
       puts "Protogen returned non-zero status code (non-zero status code means an error occured)."
       if exit_code == 4  # protocol file not found
-        puts "Protocol file not found for #{agent_name} at 'config/protogen.json', Protogen will not be available for this agent."
+        puts "No protocol file not found for #{agent_name} in folder 'config', Protogen will not be available for this agent."
       elsif exit_code == 5 # protocol file empty
-        puts "Protocol file empty for #{agent_name} at 'config/protogen.json', Protogen will not be available for this agent."
+        puts "Protocol file empty for #{agent_name} in folder 'config', Protogen will not be available for this agent."
       else
         puts "Protogen fatal error, see Protogen output for details."
         #PUNK.end('a','ko','',"SERVER Protogen generation for agent #{agent} failed")
