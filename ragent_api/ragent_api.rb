@@ -73,8 +73,8 @@ module RagentApi
     @running_env_name
   end
 
-  def self.id_code
-    @id_code ||= SecureRandom.hex(2)
+  def self.runtime_id_code
+    @runtime_id_code ||= SecureRandom.hex(3)
   end
 
   def self.what_is_internal_config
@@ -135,7 +135,7 @@ module RagentApi
     # verbose splash
     verboz_str = "\n\n"
     verboz_str += "+====================================================\n"
-    verboz_str += "| RAGENT '#{RAGENT.id_code}' on env '#{RAGENT.running_env_name}' mounts #{RAGENT.user_class_subscriber.get_subscribers.size} agents :\n"
+    verboz_str += "| RAGENT '#{RAGENT.runtime_id_code}' on env '#{RAGENT.running_env_name}' mounts #{RAGENT.user_class_subscriber.get_subscribers.size} agents :\n"
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       verboz_str += "|  . #{user_agent_class.agent_name}\n"
     end
@@ -253,6 +253,7 @@ module RagentApi
       end
       map = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/ragent_gen_info.json"))
       map['additional_info'] = additional_info
+      map['runtime_id_code'] = RAGENT.runtime_id_code
       map
     end
   end
