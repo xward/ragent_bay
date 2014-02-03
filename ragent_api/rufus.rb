@@ -5,7 +5,7 @@
 
 require 'rubygems'
 require 'rufus/scheduler'
-require json
+require 'json'
 
 module Rufus
 
