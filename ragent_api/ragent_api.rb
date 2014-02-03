@@ -46,6 +46,15 @@ module RagentApi
     @user_class_track_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
+  def self.user_class_collection_subscriber
+    @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
+  end
+
+  def self.user_class_cloud_event_subscriber
+    @user_class_cloud_event_subscriber ||= self.api.mdi.tools.create_new_subscriber
+  end
+
+
   def self.agents_project_src_path
     @agents_project_src_path ||= begin
       path = File.expand_path("..", __FILE__)
@@ -74,11 +83,12 @@ module RagentApi
         'dynamic_channel_str',
         'subscribe_presence',
         'subscribe_message',
-        'subscribe_track'
+        'subscribe_track',
+        'subscribe_collection',
+        'subscribe_cloud_event'
       ]
     end
   end
-
 
   def self.get_dirs(path)
     Dir.entries(path).select {|entry| File.directory? File.join(path,entry) and !(entry =='.' || entry == '..') }
@@ -109,6 +119,14 @@ module RagentApi
         if user_agent_class.internal_config['subscribe_track']
           RAGENT.user_class_track_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks")
+        end
+        if user_agent_class.internal_config['subscribe_collection']
+          RAGENT.user_class_collection_subscriber.subscribe(user_agent_class)
+          RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to collections")
+        end
+        if user_agent_class.internal_config['subscribe_cloud_event']
+          RAGENT.user_class_cloud_event_subscriber.subscribe(user_agent_class)
+          RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to cloud events")
         end
 
       end
