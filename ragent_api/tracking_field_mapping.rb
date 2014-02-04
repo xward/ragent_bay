@@ -17,6 +17,13 @@ module RagentApi
       end
     end
 
+    def self.alter_field(account, id, val)
+      field = RagentApi::TrackFieldMapping.get_by_id(id, account, true)
+      @mapping_track_field_number[account].delete_at(a.index(field))
+      if val != nil
+        @mapping_track_field_number[account] << val
+      end
+    end
 
     def self.fetch_map(account)
       #Because we only have a static file, we will always use default account
