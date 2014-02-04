@@ -50,10 +50,6 @@ module RagentApi
     @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
-  def self.user_class_cloud_event_subscriber
-    @user_class_cloud_event_subscriber ||= self.api.mdi.tools.create_new_subscriber
-  end
-
 
   def self.agents_project_src_path
     @agents_project_src_path ||= begin
