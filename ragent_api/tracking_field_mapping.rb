@@ -27,12 +27,15 @@ module RagentApi
         {'default' =>  self.fetch_default_map}
       end
 
-      if @mapping_track_field_number.has_key?(account)
-        @mapping_track_field_number[account]
-      else
-        # todo fetch from cloud api, but for now, we raise
-        raise "Account '#{account}' not available."
+      if !(@mapping_track_field_number.has_key?(account))
+        ret = CC.request_http_cloud_api(account, '/fields.json')
+        if ret != nil
+          @mapping_track_field_number[account] = ret
+        else
+          raise "Account '#{account}' not available."
+        end
       end
+      @mapping_track_field_number[account]
     end
 
     # fields look like :
