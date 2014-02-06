@@ -7,6 +7,7 @@ require_relative 'incoming_messages_handler'
 require_relative 'tracking_field_mapping'
 require_relative 'user_agent_class'
 require_relative 'sdk_stats'
+require_relative 'rufus'
 
 # cloud connect
 
