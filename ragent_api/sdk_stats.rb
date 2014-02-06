@@ -93,7 +93,7 @@ module SDK_STATS
     count
   end
 
-    def self.count_agents_reply
+  def self.count_agents_reply
     count = 0
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       count += @daemon_stat['agents'][user_agent_class.agent_name]['reply_sent_to_device']
