@@ -7,6 +7,7 @@ require_relative 'presence'
 require_relative 'message'
 require_relative 'track'
 require_relative 'order'
+require_relative 'collection'
 require_relative 'cloud_gate'
 require_relative 'device_gate'
 
