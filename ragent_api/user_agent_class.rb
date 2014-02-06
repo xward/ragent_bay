@@ -121,26 +121,37 @@ class UserAgentClass
 
   def handle_presence(presence)
 
+    delta_t = 0
+    start_t = Time.now
     PUNK.start('presenceAgent')
     begin
       SDK_STATS.stats['agents'][agent_name]['received'][0] += 1
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_presence_from_device(presence)
-      PUNK.end('presenceAgent','ok','process',"AGENT:#{agent_name}TNEGA callback PRESENCE '#{presence.type}'")
+      delta_t = Time.now - start_t
+      PUNK.end('presenceAgent','ok','process',"AGENT:#{agent_name}TNEGA callback PRESENCE '#{presence.type}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
+      delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][0] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE fail")
+      PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE fail in #{(delta_t * 1000).round}ms")
     end
+
+    if delta_t > 3.0
+      PUNK.start('presenceAgent')
+      PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE take too much time")
+    end
+    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][0][SDK_STATS.get_time_specter_index(delta_t)] += 1
 
   end # handle_presence
 
 
   def handle_message(msg)
-    begin
-      time_start_message = Time.now
 
+    delta_t = 0
+    start_t = Time.now
+    begin
       # Filter channel
       return if !(managed_message_channels.include? msg.channel)
 
@@ -195,20 +206,28 @@ class UserAgentClass
         user_api.mdi.tools.protogen.protogen_apis.process(self, msg)
       else
 
-       RAGENT.api.mdi.tools.log.debug("Server: new standard message  of imei='#{msg.asset}' to agent '#{agent_name}' ---------------------")
+        RAGENT.api.mdi.tools.log.debug("Server: new standard message  of imei='#{msg.asset}' to agent '#{agent_name}' ---------------------")
         new_msg_from_device(msg)
       end
 
 
-      SDK_STATS.stats['agents'][agent_name]['process_time'][1] += (Time.now - time_start_message)
-      PUNK.end('handle','ok','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}]")
+      delta_t = Time.now - start_t
+      PUNK.end('handle','ok','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] in #{(delta_t * 1000).round}ms")
     rescue => e
+      delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.log.error('Server: /msg error on agent #{agent_name} while handle_msg')
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][1] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] fail")
+      PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] fail in #{(delta_t * 1000).round}ms")
     end
+
+
+    if delta_t > 3.0
+      PUNK.start('handle')
+      PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG take too much time")
+    end
+    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][1][SDK_STATS.get_time_specter_index(delta_t)] += 1
 
   end # handle_message
 
@@ -216,18 +235,29 @@ class UserAgentClass
 
   def handle_track(track)
 
+    delta_t = 0
+    start_t = Time.now
     PUNK.start('trackAgent')
     begin
       SDK_STATS.stats['agents'][agent_name]['received'][2] += 1
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_track_from_device(track)
-      PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK with #{track.fields_data.length} new fields")
+      delta_t = Time.now - start_t
+      PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK with #{track.fields_data.length} new fields in #{(delta_t * 1000).round}ms")
     rescue Exception => e
+      delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][2] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK fail")
+      PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK fail in #{(delta_t * 1000).round}ms")
     end
+
+
+    if delta_t > 3.0
+      PUNK.start('trackAgent')
+      PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
+    end
+    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][2][SDK_STATS.get_time_specter_index(delta_t)] += 1
 
   end # handle_track
 
@@ -235,18 +265,28 @@ class UserAgentClass
 
   def handle_order(order)
 
+    delta_t = 0
+    start_t = Time.now
     PUNK.start('orderAgent')
     begin
       SDK_STATS.stats['agents'][agent_name]['received'][3] += 1
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_order(order)
-      PUNK.end('orderAgent','ok','process',"AGENT:#{agent_name}TNEGA callback ORDER with order '#{order.code}'")
+      delta_t = Time.now - start_t
+      PUNK.end('orderAgent','ok','process',"AGENT:#{agent_name}TNEGA callback ORDER with order '#{order.code}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
+      delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][3] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback ORDER fail")
+      PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback ORDER fail in #{(delta_t * 1000).round}ms")
     end
+
+    if delta_t > 10.0
+      PUNK.start('orderAgent')
+      PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
+    end
+    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][3][SDK_STATS.get_time_specter_index(delta_t)] += 1
 
   end # handle_order
 
