@@ -78,7 +78,7 @@ module SDK_STATS
   end
 
   def self.count_agents_received
-    result = [0,0,0,0]
+    result = [0,0,0,0,0]
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       result =  result.zip(@daemon_stat['agents'][user_agent_class.agent_name]['received']).map{ |x,y| x + y }
     end
