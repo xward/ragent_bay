@@ -105,8 +105,9 @@ module SDK_STATS
     count = [0,0,0,0,0,0,0,0,0,0]
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       arr = @daemon_stat['agents'][user_agent_class.agent_name]['process_time_specter']
+
       (0..3).each do |idxx|
-        (0..(count.size)).each do |idx|
+        (0..(count.size - 1)).each do |idx|
           count[idx] += arr[idxx][idx]
         end
       end
