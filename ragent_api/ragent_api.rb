@@ -263,7 +263,8 @@ module RagentApi
     if err == nil
       RAGENT.errors_info[name] = {
         'count' => 1,
-        'values' => [value]
+        'values' => [value],
+        'date' => "#{Time.now}"
       }
     else
       RAGENT.errors_info[name]['count'] += 1
@@ -271,6 +272,7 @@ module RagentApi
       if RAGENT.errors_info[name]['values'].size > 100
         RAGENT.errors_info[name]['values'].delete_at(0)
       end
+      RAGENT.errors_info[name]['date'] = "#{Time.now}"
     end
   end
 
