@@ -57,7 +57,7 @@ module SDK_STATS
  #  | 10 ms | 100 ms | 1sec | 5sec | 30sec | 1 min | 3 min | 10 min | 30 min |
   def self.get_time_specter_index(time)
     arr = SDK_STATS.stats['server']['process_time_specter_info']
-    (0..(arr.size -1)).each do |idx|
+    (0..((arr.size) -1)).each do |idx|
       return idx if time < arr[idx]
     end
     return arr.size
