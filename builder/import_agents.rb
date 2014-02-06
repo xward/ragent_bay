@@ -150,7 +150,7 @@ puts "cron tasks:\n #{File.read("#{agents_generated_path}/whenever_cron")}"
 
 # write generation info add:agent list with version, ragent version
 ragent_gen_info = {
-  'ragent_id' => SecureRandom.hex(2)
+  'ragent_id' => SecureRandom.hex(3)
   }.to_json
 File.open("#{agents_generated_path}/ragent_gen_info.json", 'w') { |file| file.write(ragent_gen_info) }
 

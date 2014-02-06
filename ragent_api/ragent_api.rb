@@ -46,6 +46,11 @@ module RagentApi
     @user_class_track_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
+  def self.user_class_collection_subscriber
+    @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
+  end
+
+
   def self.agents_project_src_path
     @agents_project_src_path ||= begin
       path = File.expand_path("..", __FILE__)
@@ -64,8 +69,8 @@ module RagentApi
     @running_env_name
   end
 
-  def self.id_code
-    @id_code ||= SecureRandom.hex(2)
+  def self.runtime_id_code
+    @runtime_id_code ||= SecureRandom.hex(3)
   end
 
   def self.what_is_internal_config
@@ -74,11 +79,11 @@ module RagentApi
         'dynamic_channel_str',
         'subscribe_presence',
         'subscribe_message',
-        'subscribe_track'
+        'subscribe_track',
+        'subscribe_collection'
       ]
     end
   end
-
 
   def self.get_dirs(path)
     Dir.entries(path).select {|entry| File.directory? File.join(path,entry) and !(entry =='.' || entry == '..') }
@@ -110,6 +115,10 @@ module RagentApi
           RAGENT.user_class_track_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks")
         end
+        if user_agent_class.internal_config['subscribe_collection']
+          RAGENT.user_class_collection_subscriber.subscribe(user_agent_class)
+          RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to collections")
+        end
 
       end
     end
@@ -117,7 +126,7 @@ module RagentApi
     # verbose splash
     verboz_str = "\n\n"
     verboz_str += "+====================================================\n"
-    verboz_str += "| RAGENT '#{RAGENT.id_code}' on env '#{RAGENT.running_env_name}' mounts #{RAGENT.user_class_subscriber.get_subscribers.size} agents :\n"
+    verboz_str += "| RAGENT '#{RAGENT.runtime_id_code}' on env '#{RAGENT.running_env_name}' mounts #{RAGENT.user_class_subscriber.get_subscribers.size} agents :\n"
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       verboz_str += "|  . #{user_agent_class.agent_name}\n"
     end
@@ -225,7 +234,7 @@ module RagentApi
   end
 
   def self.static_info
-    @info ||= begin
+    @static_info ||= begin
       if File.readable? "#{RAGENT.agents_generated_src_path}/gen_additional_info.json"
         begin
           additional_info = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/gen_additional_info.json"))
@@ -235,8 +244,39 @@ module RagentApi
       end
       map = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/ragent_gen_info.json"))
       map['additional_info'] = additional_info
+      map['runtime_id_code'] = RAGENT.runtime_id_code
       map
     end
+  end
+
+  def self.important_info
+    @important_info ||= begin
+      infos = []
+      RAGENT.static_info['additional_info']['agents_mounted'].each do |agent|
+        infos << "#{agent['clone_dir']} v#{agent['tag']}"
+      end
+    end
+  end
+
+  def self.add_error(name, value)
+    err = RAGENT.errors_info[name]
+    if err == nil
+      RAGENT.errors_info[name] = {
+        'count' => 1,
+        'values' => [value]
+      }
+    else
+      RAGENT.errors_info[name]['count'] += 1
+      RAGENT.errors_info[name]['values'] << value
+      if RAGENT.errors_info[name]['values'].size > 100
+        RAGENT.errors_info[name]['values'].delete_at(0)
+      end
+    end
+  end
+
+
+  def self.errors_info
+    @errors_info ||= {}
   end
 
 

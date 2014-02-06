@@ -44,6 +44,11 @@ module UserApis
         Dialog::OrderClass.new(user_api, struct)
       end
 
+      # @private
+      def create_new_collection(struct = nil)
+        Dialog::CollectionClass.new(user_api, struct)
+      end
+
       def device_gate
         Dialog::DeviceGateClass.new(user_api, user_api.user_class.managed_message_channels[0])
       end
