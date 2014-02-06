@@ -65,71 +65,68 @@ module UserApis
         end
 
 
+        # @return [Hash] a hash representation of this event. See constructor documentation for the format.
+        # @api private
+        def to_hash(without_fields = false)
+          r_hash = {}
+          r_hash['meta'] = self.meta
+          r_hash['payload'] = {
+            'id' => self.id,
+            'asset' => self.asset,
+            'recorded_at' => self.recorded_at,
+            'received_at' => self.received_at,
+            'latitude' => self.latitude,
+            'longitude' => self.longitude
+          }
+          if !without_fields
+            #add field of new data (and convert it as magic string)
+            self.fields_data.each do |field|
+              CC.logger.debug("to_hash: Adding field '#{field['field']}' with val= #{field['value']}")
+              r_hash['payload'][field['field']] = "#{field['value']}"
+            end
+          end
 
-
-
-    # @return [Hash] a hash representation of this event. See constructor documentation for the format.
-    # @api private
-    def to_hash(without_fields = false)
-      r_hash = {}
-      r_hash['meta'] = self.meta
-      r_hash['payload'] = {
-        'id' => self.id,
-        'asset' => self.asset,
-        'recorded_at' => self.recorded_at,
-        'received_at' => self.received_at,
-        'latitude' => self.latitude,
-        'longitude' => self.longitude
-      }
-      if !without_fields
-        #add field of new data (and convert it as magic string)
-        self.fields_data.each do |field|
-          CC.logger.debug("to_hash: Adding field '#{field['field']}' with val= #{field['value']}")
-          r_hash['payload'][field['field']] = "#{field['value']}"
+          r_hash['meta'].delete_if { |k, v| v.nil? }
+          r_hash['payload'].delete_if { |k, v| v.nil? }
+          r_hash
         end
-      end
 
-      r_hash['meta'].delete_if { |k, v| v.nil? }
-      r_hash['payload'].delete_if { |k, v| v.nil? }
-      r_hash
-    end
+        # @return [Hash] a hash representation of this event in the format to be sent to the cloud (data injection)
+        # @api private
+        def to_hash_to_send_to_cloud
+          r_hash = {}
+          r_hash['meta'] = {
+            'account' => self.account
+          }
+          r_hash['payload'] = {
+            'id' => CC.indigen_next_id(self.asset),
+            'sender' => 'ragent', # todo: add in model of db viewer (todo)
+            'asset' => self.asset,
+            'recorded_at' => Time.now.to_i,
+            'received_at' => Time.now.to_i,
+            'latitude' => self.latitude,
+            'longitude' => self.longitude
+          }
+          #add  fresh field of new data (and convert it as magic string)
+          self.fields_data.each do |field|
+            if field['fresh']
+               CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
+              r_hash['payload']["#{field['field']}"] = "#{field['value']}"
+            end
+          end
 
-    # @return [Hash] a hash representation of this event in the format to be sent to the cloud (data injection)
-    # @api private
-    def to_hash_to_send_to_cloud
-      r_hash = {}
-      r_hash['meta'] = {
-        'account' => self.account
-      }
-      r_hash['payload'] = {
-        'id' => CC.indigen_next_id(self.asset),
-        'sender' => 'ragent', # todo: add in model of db viewer (todo)
-        'asset' => self.asset,
-        'recorded_at' => Time.now.to_i,
-        'received_at' => Time.now.to_i,
-        'latitude' => self.latitude,
-        'longitude' => self.longitude
-      }
-      #add  fresh field of new data (and convert it as magic string)
-      self.fields_data.each do |field|
-        if field['fresh']
-           CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
-          r_hash['payload']["#{field['field']}"] = "#{field['value']}"
+          r_hash['meta'].delete_if { |k, v| v.nil? }
+          r_hash['payload'].delete_if { |k, v| v.nil? }
+          r_hash
         end
-      end
 
-      r_hash['meta'].delete_if { |k, v| v.nil? }
-      r_hash['payload'].delete_if { |k, v| v.nil? }
-      r_hash
-    end
-
-    def set_field(name, value)
-      field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
-      field['raw_value'] = value
-      field['value'] = value
-      field['fresh'] = true
-      self.fields_data << field
-    end
+        def set_field(name, value)
+          field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
+          field['raw_value'] = value
+          field['value'] = value
+          field['fresh'] = true
+          self.fields_data << field
+        end
 
 
       end #Track
