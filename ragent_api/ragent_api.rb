@@ -234,7 +234,7 @@ module RagentApi
   end
 
   def self.static_info
-    @info ||= begin
+    @static_info ||= begin
       if File.readable? "#{RAGENT.agents_generated_src_path}/gen_additional_info.json"
         begin
           additional_info = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/gen_additional_info.json"))
@@ -247,6 +247,36 @@ module RagentApi
       map['runtime_id_code'] = RAGENT.runtime_id_code
       map
     end
+  end
+
+  def self.important_info
+    @important_info ||= begin
+      infos = []
+      RAGENT.static_info['additional_info']['agents_mounted'].each do |agent|
+        infos << "#{agent['clone_dir']} v#{agent['tag']}"
+      end
+    end
+  end
+
+  def self.add_error(name, value)
+    err = RAGENT.errors_info[name]
+    if err == nil
+      RAGENT.errors_info[name] = {
+        'count' => 1,
+        'values' => [value]
+      }
+    else
+      RAGENT.errors_info[name]['count'] += 1
+      RAGENT.errors_info[name]['values'] << value
+      if RAGENT.errors_info[name]['values'].size > 100
+        RAGENT.errors_info[name]['values'].delete_at(0)
+      end
+    end
+  end
+
+
+  def self.errors_info
+    @errors_info ||= {}
   end
 
 
