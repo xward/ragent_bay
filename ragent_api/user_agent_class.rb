@@ -143,7 +143,7 @@ class UserAgentClass
       PUNK.start('presenceAgent')
       PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE take too much time")
     end
-    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][0][SDK_STATS.get_time_specter_index(delta_t)] += 1
+    SDK_STATS.stats['agents'][agent_name]['process_time_spectrum'][0][SDK_STATS.get_time_spectrum_index(delta_t)] += 1
 
   end # handle_presence
 
@@ -232,7 +232,7 @@ class UserAgentClass
       PUNK.start('handle')
       PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG take too much time")
     end
-    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][1][SDK_STATS.get_time_specter_index(delta_t)] += 1
+    SDK_STATS.stats['agents'][agent_name]['process_time_spectrum'][1][SDK_STATS.get_time_spectrum_index(delta_t)] += 1
 
   end # handle_message
 
@@ -263,7 +263,7 @@ class UserAgentClass
       PUNK.start('trackAgent')
       PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
     end
-    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][2][SDK_STATS.get_time_specter_index(delta_t)] += 1
+    SDK_STATS.stats['agents'][agent_name]['process_time_spectrum'][2][SDK_STATS.get_time_spectrum_index(delta_t)] += 1
 
   end # handle_track
 
@@ -293,7 +293,7 @@ class UserAgentClass
       PUNK.start('orderAgent')
       PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
     end
-    SDK_STATS.stats['agents'][agent_name]['process_time_specter'][3][SDK_STATS.get_time_specter_index(delta_t)] += 1
+    SDK_STATS.stats['agents'][agent_name]['process_time_spectrum'][3][SDK_STATS.get_time_spectrum_index(delta_t)] += 1
 
   end # handle_order
 

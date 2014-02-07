@@ -24,7 +24,7 @@ module SDK_STATS
         'total_ack_queued' => 0,
         'total_queued' => 0,
         'remote_call_unused' => 0,
-        'process_time_specter_info' => [0.01, 0.1, 1, 5, 30, 60, 180, 600, 1800]
+        'process_time_spectrum_info' => [0.01, 0.1, 1, 5, 30, 60, 180, 600, 1800]
         },
         'agents' => {}
       }
@@ -44,7 +44,7 @@ module SDK_STATS
         'err_on_inject' => 0,
         'upstream_data' => [0,0,0,0,0],
         'downstream_data' => [0,0,0,0,0],
-        'process_time_specter' => [
+        'process_time_spectrum' => [
           [0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0],
@@ -55,8 +55,8 @@ module SDK_STATS
   end
 
  #  | 10 ms | 100 ms | 1sec | 5sec | 30sec | 1 min | 3 min | 10 min | 30 min |
-  def self.get_time_specter_index(time)
-    arr = SDK_STATS.stats['server']['process_time_specter_info']
+  def self.get_time_spectrum_index(time)
+    arr = SDK_STATS.stats['server']['process_time_spectrum_info']
     (0..((arr.size) -1)).each do |idx|
       return idx if time < arr[idx]
     end
@@ -104,7 +104,7 @@ module SDK_STATS
   def self.average_agents_process_time
     count = [0,0,0,0,0,0,0,0,0,0]
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
-      arr = @daemon_stat['agents'][user_agent_class.agent_name]['process_time_specter']
+      arr = @daemon_stat['agents'][user_agent_class.agent_name]['process_time_spectrum']
 
       (0..3).each do |idxx|
         (0..(count.size - 1)).each do |idx|
