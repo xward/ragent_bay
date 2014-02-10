@@ -251,12 +251,7 @@ module RagentApi
   end
 
   def self.important_info
-    @important_info ||= begin
-      infos = []
-      RAGENT.static_info['additional_info']['agents_mounted'].each do |agent|
-        infos << "#{agent['clone_dir']} v#{agent['tag']}"
-      end
-    end
+    {}
   end
 
   def self.add_error(name, value)
