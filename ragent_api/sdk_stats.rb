@@ -14,12 +14,12 @@ module SDK_STATS
         'total_error' => 0,
         'internal_error' => 0,
         'total_sent' => 0,
-        'received' => [0,0,0,0],
-        'pulled_from_queue' => [0,0,0,0,0],
-        'ack_sent_to_device' => [0,0,0,0,0],
-        'err_parse' => [0,0,0,0,0],
-        'err_dyn_channel' => [0,0,0,0,0],
-        'err_while_send_ack' => [0,0,0,0,0],
+        'received' => [0] * 5,
+        'pulled_from_queue' => [0] * 5,
+        'ack_sent_to_device' => [0] * 5,
+        'err_parse' => [0] * 5,
+        'err_dyn_channel' => [0] * 5,
+        'err_while_send_ack' => [0] * 5,
         'in_queue' => 0,
         'total_ack_queued' => 0,
         'total_queued' => 0,
@@ -34,16 +34,16 @@ module SDK_STATS
         'total_received' => 0,
         'total_error' => 0,
         'total_sent' => 0,
-        'received' => [0,0,0,0,0],
-        'err_while_process' => [0,0,0,0,0],
+        'received' => [0] * 5,
+        'err_while_process' => [0] * 5,
         'reply_sent_to_device' => 0,
         'err_on_reply' => 0,
         'push_sent_to_device' => 0,
         'err_on_push' => 0,
         'inject_to_cloud' => 0,
         'err_on_inject' => 0,
-        'upstream_data' => [0,0,0,0,0],
-        'downstream_data' => [0,0,0,0,0],
+        'upstream_data' => [0] * 5,
+        'downstream_data' => [0] * 5
         'process_time_spectrum' => [
           [0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0],
@@ -78,7 +78,7 @@ module SDK_STATS
   end
 
   def self.count_agents_received
-    result = [0,0,0,0,0]
+    result = [0] * 5
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       result =  result.zip(@daemon_stat['agents'][user_agent_class.agent_name]['received']).map{ |x,y| x + y }
     end
