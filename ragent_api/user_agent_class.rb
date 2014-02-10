@@ -144,8 +144,7 @@ class UserAgentClass
       PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE take too much time")
     end
 
-    SDK_STATS.repport_new_response_time('presence', delta_t)
-    SDK_STATS.repport_new_response_time(agent_name, delta_t)
+    SDK_STATS.repport_new_response_time("presence|#{agent_name}", delta_t)
 
   end # handle_presence
 
@@ -235,8 +234,7 @@ class UserAgentClass
       PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG take too much time")
     end
 
-    SDK_STATS.repport_new_response_time('message', delta_t)
-    SDK_STATS.repport_new_response_time(agent_name, delta_t)
+    SDK_STATS.repport_new_response_time("message|#{agent_name}", delta_t)
 
   end # handle_message
 
@@ -268,8 +266,7 @@ class UserAgentClass
       PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
     end
 
-    SDK_STATS.repport_new_response_time('track', delta_t)
-    SDK_STATS.repport_new_response_time(agent_name, delta_t)
+    SDK_STATS.repport_new_response_time("track|#{agent_name}", delta_t)
 
   end # handle_track
 
@@ -300,8 +297,7 @@ class UserAgentClass
       PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
     end
 
-    SDK_STATS.repport_new_response_time('order', delta_t)
-    SDK_STATS.repport_new_response_time(agent_name, delta_t)
+    SDK_STATS.repport_new_response_time("order|#{agent_name}", delta_t)
 
   end # handle_order
 

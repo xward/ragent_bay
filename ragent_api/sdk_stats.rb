@@ -171,7 +171,6 @@ module SDK_STATS
       @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
     end
 
-
   end
 
 
