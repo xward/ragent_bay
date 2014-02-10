@@ -61,53 +61,105 @@ module SDK_STATS
     return @get_time_spectrum_index_arr.size
   end
 
+  def self.base_response_time_obj
+    {
+      'val' => 0.0,
+      'min' => nil,
+      'max' => nil,
+      'stack' => 0
+    }
+  end
+
+  def self.create_new_last_hour_stat(ref_hour)
+    {
+      'ref_hour' => ref_hour,
+      'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
+      'value' => Array.new(60){ |i|
+        SDK_STATS.base_response_time_obj
+      }
+    }
+  end
+
 
   def self.repport_new_response_time(name, t)
-    @response_tim_current_hour ||= Time.now.hour
+    ref_hour = Time.now.hour
 
+    # Create stats of last hou if not exists
+    SDK_STATS.stats['response_time']['last_hour_stats'][name] ||= begin
+      SDK_STATS.create_new_last_hour_stat(ref_hour)
+    end
 
     # migrate last hour to history
-    if @response_tim_current_hour != Time.now.hour
+    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['ref_hour'] != ref_hour
       SDK_STATS.stats['response_time']['last_day_stats'][name] ||= begin # create if not exist
         {
           'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
-          'value' => [{
-            'val' => 0.0,
-            'stack' => 0
-            }] * 60
-        }
-      end
-      # pack spectrum
-      base = SDK_STATS.stats['response_time']['last_day_stats'][name]['spectrum']
-      base = base.zip(SDK_STATS.stats['response_time']['last_hour_stats'][name]['spectrum']).map{ |x,y| x + y }
-      SDK_STATS.stats['response_time']['last_day_stats'][name]['spectrum'] = base
-      # pack values
-      base = SDK_STATS.stats['response_time']['last_day_stats'][name]['value']
-      to_merge = SDK_STATS.stats['response_time']['last_hour_stats'][name]['value']
-
-      to_merge.each_with_index do |val, idx|
-        base[idx]['val'] += val['val']
-        base[idx]['stack'] += val['stack']
-      end
-      SDK_STATS.stats['response_time']['last_day_stats'][name]['value'] = base
-
-    end
-
-    SDK_STATS.stats['response_time']['last_hour_stats'][name] ||= begin # create if not exist
-      {
-        'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
-        'value' => Array.new(60){ |i|
-          {
-            'val' => 0.0,
-            'stack' => 0
+          'value' => Array.new(23){ |i|
+            SDK_STATS.base_response_time_obj
           }
         }
-      }
+      end
+
+      # pack spectrum
+      SDK_STATS.stats['response_time']['last_day_stats'][name]['spectrum'] = SDK_STATS.stats['response_time']['last_hour_stats'][name]['spectrum']
+
+      # pack value
+      base = SDK_STATS.base_response_time_obj
+      min_val = nil
+      max_val = nil
+      SDK_STATS.stats['response_time']['last_day_stats'][name]['value'].each do |value|
+        base['val'] += value['val']
+        base['stack'] += value['stack']
+
+        cur_min = value['min']
+        if min_val == nil
+          min_val = cur_min
+        else
+          if cur_min < min_val
+            min_val = cur_min
+          end
+        end
+        cur_max = value['max']
+        if max_val == nil
+          max_val = cur_max
+        else
+          if cur_max < max_val
+            max_val = cur_max
+          end
+        end
+      end
+      base['min'] = min_val
+      base['max'] = max_val
+      SDK_STATS.stats['response_time']['last_day_stats'][name]['value'][ref_hour] = base
+
+
+      # finally reset last hour stats
+      SDK_STATS.stats['response_time']['last_hour_stats'][name] = SDK_STATS.create_new_last_hour_stat(ref_hour)
     end
 
+    #proccess add
     SDK_STATS.stats['response_time']['last_hour_stats'][name]['spectrum'][get_time_spectrum_index(t)] += 1
     SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['val'] += t
     SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['stack'] += 1
+
+
+    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] == nil
+      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
+    end
+
+    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] == nil
+      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
+    end
+
+
+    if t > SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max']
+      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
+    end
+
+    if t < SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min']
+      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
+    end
+
   end
 
 
