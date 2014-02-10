@@ -5,6 +5,7 @@
 
 module SDK_STATS
 
+
   def self.reset_stats
     @daemon_stat = {
       'response_time' => {
@@ -54,7 +55,7 @@ module SDK_STATS
 
   #  | 10 ms | 100 ms | 1sec | 5sec | 30sec | 1 min | 3 min | 10 min | 30 min |
   def self.get_time_spectrum_index(time)
-    @get_time_spectrum_index_arr ||= SDK_STATS.stats['response_time']['process_time_spectrum_info']
+    @get_time_spectrum_index_arr ||= @daemon_stat['response_time']['process_time_spectrum_info']
     (0..((@get_time_spectrum_index_arr.size) -1)).each do |idx|
       return idx if time < @get_time_spectrum_index_arr[idx]
     end
@@ -73,10 +74,18 @@ module SDK_STATS
   def self.create_new_last_hour_stat(ref_hour)
     {
       'ref_hour' => ref_hour,
-      'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
+      'spectrum' => [0] * @daemon_stat['response_time']['process_time_spectrum_info'].size,
       'value' => Array.new(60){ |i|
         SDK_STATS.base_response_time_obj
       }
+    }
+  end
+
+  def self.create_new_last_hour_in_day_stat(ref_hour)
+    {
+      'ref_hour' => ref_hour,
+      'spectrum' => [0] * @daemon_stat['response_time']['process_time_spectrum_info'].size,
+      'value' => SDK_STATS.base_response_time_obj
     }
   end
 
@@ -84,30 +93,29 @@ module SDK_STATS
   def self.repport_new_response_time(name, t)
     ref_hour = Time.now.hour
 
-    # Create stats of last hou if not exists
-    SDK_STATS.stats['response_time']['last_hour_stats'][name] ||= begin
+    # Create stats of last hour if not exists
+    @daemon_stat['response_time']['last_hour_stats'][name] ||= begin
       SDK_STATS.create_new_last_hour_stat(ref_hour)
     end
 
+    # Create stats of last day if not exists
+    @daemon_stat['response_time']['last_day_stats'][name] ||= []
+
+
+
     # migrate last hour to history
-    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['ref_hour'] != ref_hour
-      SDK_STATS.stats['response_time']['last_day_stats'][name] ||= begin # create if not exist
-        {
-          'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
-          'value' => Array.new(23){ |i|
-            SDK_STATS.base_response_time_obj
-          }
-        }
-      end
+    if @daemon_stat['response_time']['last_hour_stats'][name]['ref_hour'] != ref_hour
+      ref_hour_for_day = SDK_STATS.create_new_last_hour_in_day_stat(@daemon_stat['response_time']['last_hour_stats'][name]['ref_hour'])
 
       # pack spectrum
-      SDK_STATS.stats['response_time']['last_day_stats'][name]['spectrum'] = SDK_STATS.stats['response_time']['last_hour_stats'][name]['spectrum']
+      ref_hour_for_day['spectrum'] = @daemon_stat['response_time']['last_hour_stats'][name]['spectrum'].clone
+
 
       # pack value
       base = SDK_STATS.base_response_time_obj
       min_val = nil
       max_val = nil
-      SDK_STATS.stats['response_time']['last_day_stats'][name]['value'].each do |value|
+      @daemon_stat['response_time']['last_hour_stats'][name]['value'].each do |value|
         base['val'] += value['val']
         base['stack'] += value['stack']
 
@@ -130,35 +138,39 @@ module SDK_STATS
       end
       base['min'] = min_val
       base['max'] = max_val
-      SDK_STATS.stats['response_time']['last_day_stats'][name]['value'][ref_hour] = base
+      ref_hour_for_day['value'] = base
 
+      @daemon_stat['response_time']['last_day_stats'][name] << ref_hour_for_day
+      if @daemon_stat['response_time']['last_day_stats'][name].size > 23
+        @daemon_stat['response_time']['last_day_stats'][name].shift
+      end
 
-      # finally reset last hour stats
-      SDK_STATS.stats['response_time']['last_hour_stats'][name] = SDK_STATS.create_new_last_hour_stat(ref_hour)
+      @daemon_stat['response_time']['last_hour_stats'][name] = SDK_STATS.create_new_last_hour_stat(ref_hour)
     end
 
     #proccess add
-    SDK_STATS.stats['response_time']['last_hour_stats'][name]['spectrum'][get_time_spectrum_index(t)] += 1
-    SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['val'] += t
-    SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['stack'] += 1
+    @daemon_stat['response_time']['last_hour_stats'][name]['spectrum'][get_time_spectrum_index(t)] += 1
+    @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['val'] += t
+    @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['stack'] += 1
 
 
-    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] == nil
-      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
+    if @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] == nil
+      @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
     end
 
-    if SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] == nil
-      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
+    if @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] == nil
+      @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
     end
 
 
-    if t > SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max']
-      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
+    if t > @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max']
+      @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['max'] = t
     end
 
-    if t < SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min']
-      SDK_STATS.stats['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
+    if t < @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min']
+      @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
     end
+
 
   end
 
@@ -200,11 +212,13 @@ module SDK_STATS
   end
 
   def self.stats
-    @daemon_stat ||= begin
-      reset_stats
-      @daemon_stat
+    @stats_mutex ||= Mutex.new
+    @stats_mutex.synchronize do
+      reset_stats if @daemon_stat == nil
     end
+    @daemon_stat
   end
+
 
 
 #todo: add all + helpers
