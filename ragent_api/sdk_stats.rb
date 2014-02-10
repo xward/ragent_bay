@@ -55,10 +55,10 @@ module SDK_STATS
   #  | 10 ms | 100 ms | 1sec | 5sec | 30sec | 1 min | 3 min | 10 min | 30 min |
   def self.get_time_spectrum_index(time)
     @get_time_spectrum_index_arr ||= SDK_STATS.stats['response_time']['process_time_spectrum_info']
-    (0..((arr.size) -1)).each do |idx|
-      return idx if time < arr[idx]
+    (0..((@get_time_spectrum_index_arr.size) -1)).each do |idx|
+      return idx if time < @get_time_spectrum_index_arr[idx]
     end
-    return arr.size
+    return @get_time_spectrum_index_arr.size
   end
 
 
