@@ -96,10 +96,12 @@ module SDK_STATS
     SDK_STATS.stats['response_time']['last_hour_stats'][name] ||= begin # create if not exist
       {
         'spectrum' => [0] * SDK_STATS.stats['response_time']['process_time_spectrum_info'].size,
-        'value' => [{
-          'val' => 0.0,
-          'stack' => 0
-          }] * 60
+        'value' => Array.new(60){ |i|
+          {
+            'val' => 0.0,
+            'stack' => 0
+          }
+        }
       }
     end
 
