@@ -16,7 +16,9 @@ module SDK_STATS
       'server' => {
         'uptime' => '-1',
         'start_time' => 'never',
+        'sig_up_received' => 0,
         'total_received' => 0,
+        'reset_count' =>0,
         'total_error' => 0,
         'internal_error' => 0,
         'total_sent' => 0,
