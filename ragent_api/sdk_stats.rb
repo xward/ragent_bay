@@ -8,11 +8,6 @@ module SDK_STATS
 
   def self.reset_stats
     @daemon_stat = {
-      'response_time' => {
-        'process_time_spectrum_info' => [0.01, 0.1, 1, 5, 30, 60, 180, 600, 1800],
-        'last_hour_stats' => {},
-        'last_day_stats' => {}
-      },
       'server' => {
         'uptime' => '-1',
         'start_time' => 'never',
@@ -32,8 +27,13 @@ module SDK_STATS
         'total_ack_queued' => 0,
         'total_queued' => 0,
         'remote_call_unused' => 0
-        },
-        'agents' => {}
+      },
+      'response_time' => {
+        'process_time_spectrum_info' => [0.01, 0.1, 1, 5, 30, 60, 180, 600, 1800],
+        'last_hour_stats' => {},
+        'last_day_stats' => {}
+       },
+       'agents' => {}
       }
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
       agent_name = user_agent_class.agent_name
