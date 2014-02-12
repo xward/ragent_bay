@@ -122,19 +122,23 @@ module SDK_STATS
         base['stack'] += value['stack']
 
         cur_min = value['min']
-        if min_val == nil
-          min_val = cur_min
-        else
-          if cur_min < min_val
+        if cur_min != nil
+          if min_val == nil
             min_val = cur_min
+          else
+            if cur_min < min_val
+              min_val = cur_min
+            end
           end
         end
         cur_max = value['max']
-        if max_val == nil
-          max_val = cur_max
-        else
-          if cur_max < max_val
+        if cur_max != nil
+          if max_val == nil
             max_val = cur_max
+          else
+            if cur_max < max_val
+              max_val = cur_max
+            end
           end
         end
       end
