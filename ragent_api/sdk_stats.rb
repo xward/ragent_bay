@@ -141,7 +141,7 @@ module SDK_STATS
       ref_hour_for_day['value'] = base
 
       @daemon_stat['response_time']['last_day_stats'][name] << ref_hour_for_day
-      if @daemon_stat['response_time']['last_day_stats'][name].size > 23
+      if @daemon_stat['response_time']['last_day_stats'][name].size > 24
         @daemon_stat['response_time']['last_day_stats'][name].shift
       end
 
