@@ -129,13 +129,14 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_presence_from_device(presence)
       delta_t = Time.now - start_t
+      SDK_STATS.repport_a_last_activity("presence_#{agent_name}", presence.asset)
       PUNK.end('presenceAgent','ok','process',"AGENT:#{agent_name}TNEGA callback PRESENCE '#{presence.type}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][0] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      RAGENT.add_error("presence_#{agent_name}", e.inspect)
+      SDK_STATS.repport_an_error("presence_#{agent_name}", e.inspect)
       PUNK.end('presenceAgent','ko','process',"AGENT:#{agent_name}TNEGA callback PRESENCE fail in #{(delta_t * 1000).round}ms")
     end
 
@@ -198,7 +199,7 @@ class UserAgentClass
         RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' receive MESSAGE:\n#{msg.inspect}")
         SDK_STATS.stats['server']['internal_error'] += 1
         SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-        RAGENT.add_error("message_internal_#{agent_name}", e.inspect)
+        SDK_STATS.repport_an_error("message_internal_#{agent_name}", e.inspect)
         PUNK.end('msgAgent','ko','in',"AGENT:#{agent_name}TNEGA <- MSG[#{crop_ref(msg.id,4)}] #{msg_type}")
         return
       end
@@ -217,6 +218,7 @@ class UserAgentClass
 
 
       delta_t = Time.now - start_t
+      SDK_STATS.repport_a_last_activity("message_#{agent_name}_#{msg.channel}", msg.asset)
       PUNK.end('handle','ok','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] in #{(delta_t * 1000).round}ms")
     rescue => e
       delta_t = Time.now - start_t
@@ -224,7 +226,7 @@ class UserAgentClass
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][1] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      RAGENT.add_error("message_#{agent_name}", e.inspect)
+      SDK_STATS.repport_an_error("message_#{agent_name}", e.inspect)
       PUNK.end('handle','ko','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] fail in #{(delta_t * 1000).round}ms")
     end
 
@@ -250,13 +252,14 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_track_from_device(track)
       delta_t = Time.now - start_t
+      SDK_STATS.repport_a_last_activity("track_#{agent_name}", track.asset)
       PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK with #{track.fields_data.length} new fields in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][2] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      RAGENT.add_error("track_#{agent_name}", e.inspect)
+      SDK_STATS.repport_an_error("track_#{agent_name}", e.inspect)
       PUNK.end('trackAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK fail in #{(delta_t * 1000).round}ms")
     end
 
@@ -273,7 +276,6 @@ class UserAgentClass
 
 
   def handle_order(order)
-
     delta_t = 0
     start_t = Time.now
     PUNK.start('orderAgent')
@@ -282,13 +284,14 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_order(order)
       delta_t = Time.now - start_t
+      SDK_STATS.repport_a_last_activity("order_#{agent_name}_#{code}", order.params)
       PUNK.end('orderAgent','ok','process',"AGENT:#{agent_name}TNEGA callback ORDER with order '#{order.code}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][3] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
-      RAGENT.add_error("order_#{agent_name}", e.inspect)
+      SDK_STATS.repport_an_error("order_#{agent_name}", e.inspect)
       PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback ORDER fail in #{(delta_t * 1000).round}ms")
     end
 

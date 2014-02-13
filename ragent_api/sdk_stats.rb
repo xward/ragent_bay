@@ -33,6 +33,8 @@ module SDK_STATS
         'last_hour_stats' => {},
         'last_day_stats' => {}
        },
+      'last_activity' => {},
+      'errors' => {},
        'agents' => {}
       }
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
@@ -93,6 +95,8 @@ module SDK_STATS
 
 
   def self.repport_new_response_time(name, t)
+    begin
+
     ref_hour = Time.now.hour
 
     # Create stats of last hour if not exists
@@ -177,6 +181,35 @@ module SDK_STATS
       @daemon_stat['response_time']['last_hour_stats'][name]['value'][Time.now.min]['min'] = t
     end
 
+    rescue Exception => e
+      SDK_STATS.repport_an_error('repport_new_response_time','haaaaa !')
+      SDK_STATS.stats['server']['internal_error'] += 1
+    end
+  end
+
+  def self.repport_a_last_activity(name, description)
+    @daemon_stat['last_activity'][name] = {
+      'desc' => description,
+      'date' => "#{Time.now.to_i}"
+    }
+  end
+
+  def self.repport_an_error(name, value)
+    err = @daemon_stat['errors'][name]
+    if err == nil
+      RAGENT.errors_info[name] = {
+        'count' => 1,
+        'values' => [value],
+        'date' => "#{Time.now}"
+      }
+    else
+      @daemon_stat['errors'][name]['count'] += 1
+      @daemon_stat['errors'][name]['values'] << value
+      if @daemon_stat['errors'][name]['values'].size > 100
+        @daemon_stat['errors']['values'].shift
+      end
+      @daemon_stat['errors'][name]['date'] = "#{Time.now.to_i}"
+    end
   end
 
 

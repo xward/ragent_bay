@@ -254,29 +254,6 @@ module RagentApi
     {}
   end
 
-  def self.add_error(name, value)
-    err = RAGENT.errors_info[name]
-    if err == nil
-      RAGENT.errors_info[name] = {
-        'count' => 1,
-        'values' => [value],
-        'date' => "#{Time.now}"
-      }
-    else
-      RAGENT.errors_info[name]['count'] += 1
-      RAGENT.errors_info[name]['values'] << value
-      if RAGENT.errors_info[name]['values'].size > 100
-        RAGENT.errors_info[name]['values'].delete_at(0)
-      end
-      RAGENT.errors_info[name]['date'] = "#{Time.now}"
-    end
-  end
-
-
-  def self.errors_info
-    @errors_info ||= {}
-  end
-
 
 end
 
