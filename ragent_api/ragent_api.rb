@@ -201,7 +201,6 @@ module RagentApi
           assigned_agent = ""
           RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
             agent_name = user_agent_class.agent_name
-            p agent_name
             if line.include?(agent_name)
               assigned_agent = agent_name
             end
@@ -226,6 +225,9 @@ module RagentApi
       puts "get_agents_cron_tasks gives:\n#{final_map}"
       p 'get_agents_cron_tasks done'
       #RAGENT.api.mdi.tools.log.info(final_map)
+
+      final_map.delete_if { |k, v| v.empty? }
+      puts "get_agents_cron_tasks (clean) gives:\n#{final_map.to_json}"
       final_map
     end
   end
