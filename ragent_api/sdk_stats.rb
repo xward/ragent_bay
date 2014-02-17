@@ -35,6 +35,7 @@ module SDK_STATS
        },
       'last_activity' => {},
       'errors' => {},
+      'rq_pull_speed' => [],
        'agents' => {}
       }
     RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
@@ -193,6 +194,14 @@ module SDK_STATS
       'date' => "#{Time.now.to_i}"
     }
   end
+
+    def self.repport_a_rq_pulling_speed(speed)
+    @daemon_stat['rq_pull_speed'] << speed
+    if @daemon_stat['rq_pull_speed'].size > 2880
+      @daemon_stat['rq_pull_speed'].shift
+    end
+  end
+
 
   def self.repport_an_error(name, value)
     err = @daemon_stat['errors'][name]
