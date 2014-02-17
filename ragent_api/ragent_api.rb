@@ -139,6 +139,9 @@ module RagentApi
     verboz_str += "+====================================================\n"
     RAGENT.api.mdi.tools.log.info(verboz_str)
 
+    # init stats
+    SDK_STATS.reset_stats
+
   end
 
   # return array of string
@@ -247,13 +250,8 @@ module RagentApi
       end
       map = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/ragent_gen_info.json"))
       map['additional_info'] = additional_info
-      map['runtime_id_code'] = RAGENT.runtime_id_code
       map
     end
-  end
-
-  def self.important_info
-    {}
   end
 
 

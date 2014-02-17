@@ -14,6 +14,7 @@ require_relative 'user_api/user_api_factory'
 require_relative 'ragent_api/ragent_api'
 
 require_relative 'ragent_api/sdk_stats'
+require_relative 'ragent_api/ruby_agent_stats'
 require_relative 'ragent_api/punkabe'
 
 require_relative 'agents_generated_source/protogen_generated'
