@@ -129,7 +129,7 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_presence_from_device(presence)
       delta_t = Time.now - start_t
-      RUBY_AGENT_STATS.repport_a_last_activity("presence_#{agent_name}", presence.asset)
+      RUBY_AGENT_STATS.repport_a_last_activity("presence_#{agent_name}", "asset: #{presence.asset}")
       PUNK.end('presenceAgent','ok','process',"AGENT:#{agent_name}TNEGA callback PRESENCE '#{presence.type}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
@@ -218,7 +218,7 @@ class UserAgentClass
 
 
       delta_t = Time.now - start_t
-      RUBY_AGENT_STATS.repport_a_last_activity("message_#{agent_name}_#{msg.channel}", msg.asset)
+      RUBY_AGENT_STATS.repport_a_last_activity("message_#{agent_name}_#{msg.channel}", "asset: #{msg.asset}")
       PUNK.end('handle','ok','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] in #{(delta_t * 1000).round}ms")
     rescue => e
       delta_t = Time.now - start_t
@@ -252,7 +252,7 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_track_from_device(track)
       delta_t = Time.now - start_t
-      RUBY_AGENT_STATS.repport_a_last_activity("track_#{agent_name}", track.asset)
+      RUBY_AGENT_STATS.repport_a_last_activity("track_#{agent_name}", "asset: #{track.asset}")
       PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK with #{track.fields_data.length} new fields in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
@@ -284,7 +284,7 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_order(order)
       delta_t = Time.now - start_t
-      RUBY_AGENT_STATS.repport_a_last_activity("order_#{agent_name}_#{code}", order.params)
+      RUBY_AGENT_STATS.repport_a_last_activity("order_#{agent_name}_#{code}", "order params: #{order.params}")
       PUNK.end('orderAgent','ok','process',"AGENT:#{agent_name}TNEGA callback ORDER with order '#{order.code}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
