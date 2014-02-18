@@ -27,7 +27,7 @@ module RUBY_AGENT_STATS
 
       name = @ruby_agent_stats['name']
       id = @ruby_agent_stats['run_id']
-      File.open("/tmp/#{name}_info_#{name}_#{id}", 'w') { |file| file.write(@ruby_agent_stats) }
+      File.open("/tmp/#{name}_info_#{name}_#{id}", 'w') { |file| file.write(@ruby_agent_stats.to_json) }
     end
   end
 
