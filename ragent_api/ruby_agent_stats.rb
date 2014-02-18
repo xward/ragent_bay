@@ -11,7 +11,8 @@ module RUBY_AGENT_STATS
     RUBY_AGENT_STATS.reset_stats
     @ruby_agent_stats['name'] = agent_name
     @ruby_agent_stats['type'] = type
-    @ruby_agent_stats['start_time'] = Time.now
+    @ruby_agent_stats['start_time'] = Time.now.to_i
+    @ruby_agent_stats['start_time_date'] = Time.now
     @ruby_agent_stats['run_id'] = run_id
     @ruby_agent_stats['version'] = version
     @ruby_agent_stats['static_infos'] = static_infos
@@ -21,8 +22,7 @@ module RUBY_AGENT_STATS
 
     @stats_mutex.synchronize do
 
-      @ruby_agent_stats['additional_specific_infos'] = additional_specific_infos
-      @ruby_agent_stats['uptime'] = (Time.now - @ruby_agent_stats['start_time']).to_i
+      @ruby_agent_stats['uptime'] = (Time.now - @ruby_agent_stats['start_time_date']).to_i
       @ruby_agent_stats['dynamic_infos'] = additional_specific_infos
 
       name = @ruby_agent_stats['name']
