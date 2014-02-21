@@ -3,6 +3,8 @@
 # Mobile Devices 2014
 #########################################################
 
+require 'json'
+
 module RUBY_AGENT_STATS
 
 
@@ -82,7 +84,7 @@ module RUBY_AGENT_STATS
   end
 
 
-  def self.repport_new_response_time(name, t)
+  def self.report_new_response_time(name, t)
     begin
 
     ref_hour = Time.now.hour
@@ -170,36 +172,36 @@ module RUBY_AGENT_STATS
     end
 
     rescue Exception => e
-      RUBY_AGENT_STATS.repport_an_error('repport_new_response_time','haaaaa !')
+      RUBY_AGENT_STATS.report_an_error('report_new_response_time','haaaaa !')
     end
   end
 
-  def self.repport_a_last_activity(name, description)
+  def self.report_a_last_activity(name, description)
     @ruby_agent_stats['last_activity'][name] = {
       'desc' => description,
       'date' => "#{Time.now.to_i}"
     }
   end
 
-  def self.repport_a_rq_pulling_speed(speed)
+  def self.report_a_rq_pulling_speed(speed)
     @ruby_agent_stats['rq_pull_speed'] << speed
     if @ruby_agent_stats['rq_pull_speed'].size > 2880
       @ruby_agent_stats['rq_pull_speed'].shift
     end
   end
 
-  def self.repport_a_rq_process_speed(speed)
+  def self.report_a_rq_process_speed(speed)
     @ruby_agent_stats['rq_process_speed'] << speed
     if @ruby_agent_stats['rq_process_speed'].size > 2880
       @ruby_agent_stats['rq_process_speed'].shift
     end
   end
 
-  def self.repport_a_rq_process_count(count)
+  def self.report_a_rq_process_count(count)
     @ruby_agent_stats['rqueue_msg_pulled_count'] = count
   end
 
-  def self.repport_an_error(name, value)
+  def self.report_an_error(name, value)
     err = @ruby_agent_stats['errors'][name]
     if err == nil
       RAGENT.errors_info[name] = {
