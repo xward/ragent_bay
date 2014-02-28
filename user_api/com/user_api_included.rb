@@ -4,6 +4,8 @@
 #########################################################
 
 #todo: could be generated
+#note(faucon_b): could also use a method_missing proxy and dynamic loading, to avoid code generation
+#                while still providing lazy loading
 
 require_relative 'mdi/dialog/dialog'
 require_relative 'mdi/geo/geo'
@@ -52,6 +54,10 @@ module UserApis
     # @return [Mdi::ToolsClass]
     def tools
       @tools ||= Mdi::ToolsClass.new(user_api)
+    end
+
+    def file
+      @file ||= Mdi::File.new(user_api)
     end
 
   end
