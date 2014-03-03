@@ -48,6 +48,12 @@ module UserApis
 
       attr_reader :name, :namespace, :description, :md5, :content_type 
 
+      # @param [Hash] opts a parameters hash 
+      # @options opts [String] :name name of the file
+      # @options opts [String] :namespace namespace for the file
+      # @options opts [String] :md5 a hexadecimal representation of the MD5 checksum of the file
+      # @options opts [Hash] :metadata optional metadata for the file. The possible keys are :description and :version.
+      # @options opts [String] :contentType MIME type of the file. Note that the MIME type is not always known and default to `binary/octet-stream`
       def initialize(opts)
         @name = opts[:name]
         @namespace = opts[:namespace]
@@ -69,6 +75,8 @@ module UserApis
 
       attr_accessor :contents
 
+      # @param [Hash] opts a parameter hash. Supports the same parameters as {FileInfo#new} plus a mandatory :contents key with the Base64-encoded contents of the file.
+      #               If the optional parameter :check_md5 is set to true, the constructor will check the MD5 of the contents 
       def initialize(opts)
         @file_info = FileInfo.new(opts)
         @contents = Base64.decode64(opts[:contents])
