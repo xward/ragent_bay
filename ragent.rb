@@ -16,7 +16,9 @@ require_relative 'ragent_api/ragent_api'
 require_relative 'ragent_api/sdk_stats'
 require_relative 'ragent_api/punkabe'
 
-require_relative 'agents_generated_source/protogen_generated'
+if File.exist?(File.join(File.dirname(__FILE__), "agents_generated_source", "protogen_generated"))
+  require_relative 'agents_generated_source/protogen_generated'
+end
 
 
 # nowere apis
