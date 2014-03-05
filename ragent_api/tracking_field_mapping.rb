@@ -13,6 +13,7 @@ module RagentApi
     def self.fetch_default_map
       @default_track_field_info ||= begin
         path = File.expand_path("..", __FILE__)
+        CC.logger.info("fetch_default_map fetched")
         YAML::load(File.read("#{path}/default_tracks_field_info.json"))
       end
     end
@@ -26,8 +27,6 @@ module RagentApi
     end
 
     def self.fetch_map(account)
-      #Because we only have a static file, we will always use default account
-      account = 'default'
 
       @mapping_track_field_number ||= begin
         # set default map
@@ -35,8 +34,10 @@ module RagentApi
       end
 
       if !(@mapping_track_field_number.has_key?(account))
-        ret = CC.request_http_cloud_api(account, '/fields.json')
+        CC.logger.info("fetch_map #{account}")
+        ret = CC::RagentHttpApiV3.request_http_cloud_api(account, '/fields.json')
         if ret != nil
+          CC.logger.info("fetch_map succes = #{ret}")
           @mapping_track_field_number[account] = ret
         else
           raise "Account '#{account}' not available."
