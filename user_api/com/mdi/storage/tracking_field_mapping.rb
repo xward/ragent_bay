@@ -19,12 +19,12 @@ module UserApis
         end
 
         # return a field struct
-        def get_by_id(int_id, no_error)
+        def get_by_id(int_id, no_error = 'false')
           RagentApi::TrackFieldMapping.get_by_id(int_id, user_api.account, no_error)
         end
 
         # return a field struct
-        def get_by_name(str_name, no_error)
+        def get_by_name(str_name, no_error = 'false')
           RagentApi::TrackFieldMapping.get_by_name(str_name, user_api.account, no_error)
         end
 
