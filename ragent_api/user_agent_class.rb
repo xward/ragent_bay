@@ -284,7 +284,7 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
       new_order(order)
       delta_t = Time.now - start_t
-      RUBY_AGENT_STATS.report_a_last_activity("order_#{agent_name}_#{code}", "order params: #{order.params}")
+      RUBY_AGENT_STATS.report_a_last_activity("order_#{agent_name}_#{order.code}", "order params: #{order.params}")
       PUNK.end('orderAgent','ok','process',"AGENT:#{agent_name}TNEGA callback ORDER with order '#{order.code}' in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
