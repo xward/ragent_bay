@@ -168,7 +168,7 @@ module RagentIncomingMessage
         PUNK.drop('damned')
 
         # Say it
-        RAGENT.api.mdi.tools.log.info("Server: new message (id=#{msg.id}) of asset '#{msg.asset}' on channel '#{msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
+        RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
         # process it
         user_agent_class.handle_message(ragent_msg)
