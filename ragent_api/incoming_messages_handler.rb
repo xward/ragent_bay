@@ -158,13 +158,11 @@ module RagentIncomingMessage
           apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
           set_current_user_api(apis)
 
-          # create Message object
-          msg = apis.mdi.dialog.create_new_message(params)
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
           SDK_STATS.stats['server']['err_parse'][1] += 1
           SDK_STATS.stats['server']['internal_error'] += 1
-          PUNK.end('damned','ko','in',"SERVER <- MESSAGE : parse params fail")
+          PUNK.end('damned','ko','in',"SERVER <- MESSAGE : bad init apis set_current_user_api")
           return
         end
         PUNK.drop('damned')
@@ -173,7 +171,7 @@ module RagentIncomingMessage
         RAGENT.api.mdi.tools.log.info("Server: new message (id=#{msg.id}) of asset '#{msg.asset}' on channel '#{msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
         # process it
-        user_agent_class.handle_message(msg)
+        user_agent_class.handle_message(ragent_msg)
 
         set_current_user_api(nil)
       end
