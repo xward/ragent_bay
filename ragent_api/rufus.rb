@@ -14,7 +14,7 @@ module Rufus
 
     p "Rufus start"
 
-    scheduler = Rufus::Scheduler.start_new
+    scheduler = Rufus::Scheduler.new
 
     crons = RAGENT.cron_tasks_to_map
 
