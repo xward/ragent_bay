@@ -10,7 +10,7 @@ module SDK_STATS
     @daemon_stat = {
       'server' => {
         'uptime' => '-1',
-        'start_time' => 'never',
+        'start_time' => Time.now.to_i,
         'sig_up_received' => 0,
         'total_received' => 0,
         'reset_count' =>0,
