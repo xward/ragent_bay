@@ -5,7 +5,7 @@
 
 module SDK_STATS
 
-
+  # stats only used for verbosity, can be deleted or worse at any moment! don't use them for features
   def self.reset_stats
     @daemon_stat = {
       'server' => {
