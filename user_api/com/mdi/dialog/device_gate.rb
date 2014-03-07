@@ -46,6 +46,9 @@ module UserApis
                 'asset' => asset
               }
             })
+            if RAGENT.running_env_name == 'sdk-vm'
+              TestsHelper.message_sent(msg)
+            end
             user_api.mdi.tools.protogen.protogen_encode(msg).each {|message| message.push}
             # success !
             PUNK.end('push','ok','out',"SERVER -> MSG[#{crop_ref(msg.id,4)}]")

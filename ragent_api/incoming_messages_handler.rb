@@ -129,6 +129,11 @@ module RagentIncomingMessage
         RAGENT.api.mdi.tools.log.info("Server: push_ack_to_device: adding Ack message with tmpId=#{ack_map['tmpId']} and msgId=#{ack_map['msgId']}")
 
         push_something_to_device(msgAck.to_hash)
+
+        if RAGENT.running_env_name == 'sdk-vm'
+          TestsHelper.id_generated(parent_id, tmp_id_from_device)
+        end
+
         SDK_STATS.stats['server']['total_ack_queued'] += 1
         PUNK.end('ackmsgvm','ok','in',"SERVER -> ACK[#{parent_id}] of MSG[#{tmp_id_from_device}]")
       rescue Exception => e
