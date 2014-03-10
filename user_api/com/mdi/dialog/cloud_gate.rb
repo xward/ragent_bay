@@ -49,7 +49,6 @@ module UserApis
                   "sender" =>      send_channel,               # Sender identifier (can be the same as the asset)
                   "recipient" =>   "@@server@@",               # Recipient identifier (can be the same as the asset)
                   "type" =>        "message",
-                  "recorded_at" => Time.now.to_i,               # timestamp integer in seconds
                   "received_at" => Time.now.to_i,               # timestamp integer in seconds
                   "channel" =>     channel,
                   "payload" =>     message.content,

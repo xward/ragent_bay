@@ -102,7 +102,6 @@ module UserApis
             'id' => CC.indigen_next_id(self.asset),
             'sender' => 'ragent', # todo: add in model of db viewer (todo)
             'asset' => self.asset,
-            'recorded_at' => Time.now.to_i,
             'received_at' => Time.now.to_i,
             'latitude' => self.latitude,
             'longitude' => self.longitude
