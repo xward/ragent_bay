@@ -15,6 +15,7 @@ require_relative 'device_gate'
 module UserApis
   module Mdi
 
+    # @api public
     class DialogClass
 
       def initialize(apis)
@@ -50,6 +51,8 @@ module UserApis
         Dialog::CollectionClass.new(user_api, struct)
       end
 
+      # @api public
+      # @see Dialog::DeviceGateClass
       def device_gate
         Dialog::DeviceGateClass.new(user_api, user_api.user_class.managed_message_channels[0])
       end

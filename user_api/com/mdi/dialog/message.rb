@@ -7,8 +7,71 @@
 module UserApis
   module Mdi
     module Dialog
-      # A class that represents a standard message. Used in the DeviceGate and CloudGate APIs for instance.
+      # A message is a generic purpose data structure used for two-way communication with the device. The object you will received in your callbacks is an instance of this class.
+      # @note The only attribute you should really care about is the `content`.
+      # @api public
       class MessageClass < Struct.new(:id, :parent_id, :thread_id, :asset, :sender, :recipient, :type, :recorded_at, :received_at, :channel, :account, :meta, :content, :cookies)
+
+        # @!attribute [rw] id
+        #   @api public
+        #   @return [String] a unique message ID set by the server.
+
+        # @!attribute [rw] parent_id
+        #   @api public
+        #   A message can be an answer to another. In this case, this attribute will be set to the previous message ID.
+        #   @return [String] the ID of the message this message is an answer to. Automaticallly set by the DeviceGate if 
+
+        # @!attribute [rw] thread_id
+        #   @api public
+        #   A thread is a sequence of messages between the device and the server, each message being a response to the previous one.
+        #   Such messages in a sequence will have the same thread id.
+        #   @return [String] a thread ID
+
+        # @!attribute [rw] asset
+        #   @api public
+        #   @return [String] the IMEI or a similar unique identifier of the asset who sent this message (if the essage if coming from a device).
+
+        # @!attribute [rw] sender
+        #   @api public
+        #   @return [String] an identifier for the sender.
+
+        # @!attribute [rw] recipient
+        #   @api public
+        #   @return [String] an identifier for the recipient (for instance, `@@server@@`). If your agent receive the message, then he is the intended recipient (you do not need to check this field)
+
+        # @!attribute [rw] type
+        #   @api public
+        #   @return [String] type of the message ("message", "ack" or "error"). Your agent will actually only receive (and send) "messages"
+        #                    so you can ignore this attribute
+
+        # @!attribute [rw] recorded_at
+        #   @api public
+        #   @return [String] a timestamp indicating when the message was recorded on the device
+
+        # @!attribute [rw] received_at
+        #   @api public
+        #   @return [String] a timestamp indicating when the message was received on the server.
+
+        # @!attribute [rw] channel
+        #   @api public
+        #   @return [String] the name of the communication channel. Your agent will only received messages for a channel he is listening to.
+        #                    When sending a message, the channek will be set to the first channel the agent is listening to.
+
+        # @!attribute [rw] account
+        #   @api public
+        #   @return [String] name of the account for this message ("unstable", "municio", ...)
+
+        # @!attribute [rw] meta
+        #   @api public
+        #   @return [Hash] some metadata for the message, can be nil.
+
+        # @!attribute [rw] content
+        #   @api public
+        #   @return [String] the payload of the message. That is the part your agent will deal with.
+
+        # @!attribute [rw] cookies
+        #   @api public
+        #   @return [Array] Protogen cookies. See the Protogen guide for a reference.
 
         def initialize(apis, struct = nil)
 
@@ -52,6 +115,7 @@ module UserApis
 
         end
 
+        # @api private
         def user_api
           @user_apis
         end

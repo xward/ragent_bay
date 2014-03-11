@@ -11,6 +11,7 @@ require_relative 'protogen'
 module UserApis
   module Mdi
 
+    # @api public
     class ToolsClass
 
       def initialize(apis)
@@ -33,6 +34,9 @@ module UserApis
         log.error("  RUBY EXCEPTION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n >> #{e.inspect}\n\n#{stack}\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
       end
 
+      # @api public
+      # A logger correctly configured for your environment.
+      # @see Tools::LogClass
       def log
         @log ||= Tools::LogClass.new(user_api)
       end
