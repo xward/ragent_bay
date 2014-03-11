@@ -10,8 +10,11 @@ require_relative 'mdi/storage/storage'
 require_relative 'mdi/tools/tools'
 
 
-
 module UserApis
+
+  # @api public
+  # A standard set of API developed by MDI.
+  # @note Do not use your custom solution if a suitable APi is already available.
   class MdiClass
 
     def initialize(apis)
@@ -22,6 +25,9 @@ module UserApis
       @user_apis
     end
 
+    # @api public
+    # A set of API for communication with the device or the cloud.
+    # @see Mdi::DialogClass
     def dialog
       @dialog ||= Mdi::DialogClass.new(user_api)
     end
@@ -30,6 +36,9 @@ module UserApis
       @storage ||= Mdi::StorageClass.new(user_api)
     end
 
+    # @api public
+    # Various tools, such as a logger, to help accomplish common tasks.
+    # @see Mdi::ToolsClass
     def tools
       @tools ||= Mdi::ToolsClass.new(user_api)
     end

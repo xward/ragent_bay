@@ -8,6 +8,7 @@ module UserApis
   module Mdi
     module Dialog
       # Track data sent by a device or injected by cloud.
+      # @api public
       class TrackClass < Struct.new(:id, :asset, :latitude, :longitude, :recorded_at, :received_at, :fields_data, :account, :meta)
 
         def initialize(apis, struct = nil)
