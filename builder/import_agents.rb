@@ -127,10 +127,12 @@ reset_folder(agents_generated_path)
 
 ### copy new ###
 agents_root_path.each do |path|
-  # remove ".git folder"
   p "removing #{path}/.git"
-  FileUtils.rm_r("#{path}/.git", :secure => true)
   FileUtils.cp_r(path, agents_src_path)
+  # remove ".git folder"
+  if File.directory?("#{agents_src_path}/.git")
+    FileUtils.rm_r("#{agents_src_path}/.git", :secure => true)
+  end
 
   p "copied '#{path}'"
 
