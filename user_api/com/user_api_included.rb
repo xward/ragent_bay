@@ -27,7 +27,7 @@ module UserApis
 
     # @api public
     # A set of API for communication with the device or the cloud.
-    # @see Mdi::DialogClass
+    # @return [Mdi::DialogClass]
     def dialog
       @dialog ||= Mdi::DialogClass.new(user_api)
     end
@@ -38,7 +38,7 @@ module UserApis
 
     # @api public
     # Various tools, such as a logger, to help accomplish common tasks.
-    # @see Mdi::ToolsClass
+    # @return [Mdi::ToolsClass]
     def tools
       @tools ||= Mdi::ToolsClass.new(user_api)
     end

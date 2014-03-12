@@ -7,9 +7,59 @@
 module UserApis
   module Mdi
     module Dialog
-      # Track data sent by a device or injected by cloud.
+      # Track data sent by a device or injected by cloud. Tracks are geolocalised data that can be sent with a optimized format over the wire.
       # @api public
       class TrackClass < Struct.new(:id, :asset, :latitude, :longitude, :recorded_at, :received_at, :fields_data, :account, :meta)
+
+        # @!attribute [rw] id
+        #   @api public
+        #   @return [String] a unique message ID set by the server.
+
+
+        # @!attribute [rw] asset
+        #   @api public
+        #   @return [String] the IMEI or a similar unique identifier of sender of the track data
+
+
+        # @!attribute [rw] latitude
+        #   @api public
+        #   @return [Integer] latitude of the asset position when the track was recorded, in degree * 10^-5
+
+        # @!attribute [rw] latitude
+        #   @api public
+        #   @return [Integer] longitude of the asset position when the track was recorded, in degree * 10^-5
+
+        # @!attribute [rw] recorded_at
+        #   @api public
+        #   @return [String] when the track was recorded by the device or the provider
+
+        # @!attribute [rw] received_at
+        #   @api public
+        #   @return [String] when the track was received by the server
+
+        # @!attribute [rw] fields_data
+        #   @api public
+        #   @return [Array<Hash{String => Object}>] the array of fields collected for this track.
+        #                                           A field look like this: `
+        #                                           {
+        #                                               "name": "GPRMC_VALID",
+        #                                               "field": 3,
+        #                                               "field_type": "int",
+        #                                               "size": 1,
+        #                                               "ack": 1,
+        #                                               "raw_value": 42,
+        #                                               "value":42
+        #                                           } `
+        #                                           
+        # @note You should not use the `raw_value` of the field as it differs between the SDK VM and the real cloud.
+
+        # @!attribute [rw] account
+        #   @api public
+        #   @return [String] name of the account for this message ("unstable", "municio", ...)
+
+        # @!attribute [rw] meta
+        #   @api public
+        #   @return [Hash] some metadata for the message, can be nil.
 
         def initialize(apis, struct = nil)
           @user_apis = apis
@@ -39,7 +89,8 @@ module UserApis
               field['value'] = v
               field['fresh'] = false
 
-              # decode if ragent
+              # decode if Ragent. In VM mode, raw_value = value, nothing else to do
+              # Note that the raw_value is thus different between VM mode and Ragent.
               if RAGENT.running_env_name == 'ragent'
                 # basic decode
                 case field['field_type']
@@ -61,10 +112,10 @@ module UserApis
 
         end
 
+        # @api private
         def user_api
           @user_apis
         end
-
 
         # @return [Hash] a hash representation of this event. See constructor documentation for the format.
         # @api private
