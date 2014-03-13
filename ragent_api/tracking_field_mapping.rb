@@ -56,7 +56,7 @@ module RagentApi
     # }
 
     # return a field struct
-    def self.get_by_id(int_id, account, no_error = 'false')
+    def self.get_by_id(int_id, account, no_error = false)
       if RAGENT.running_env_name == 'sdk-vm'
         account = 'default'
       end
@@ -70,7 +70,7 @@ module RagentApi
       end
     end
 
-    def self.get_by_name(str_name, account, no_error = 'false')
+    def self.get_by_name(str_name, account, no_error = false)
       if RAGENT.running_env_name == 'sdk-vm'
         account = 'default'
       end

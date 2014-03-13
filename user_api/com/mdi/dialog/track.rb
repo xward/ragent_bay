@@ -173,6 +173,7 @@ module UserApis
 
         def set_field(name, value)
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
+          return self.fields_data if field == nil
           field['raw_value'] = value
           field['value'] = value
           field['fresh'] = true
