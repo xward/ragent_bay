@@ -12,10 +12,10 @@ module UserApis
         # @api private
         def initialize(apis)
           @user_apis = apis
-          begin
+          if Object.const_defined?("Protogen_#{apis.user_class.agent_name}")
             @protogen_apis = Object.const_get("Protogen_#{apis.user_class.agent_name}")::ProtogenAPIs
             @protogen_domain = Object.const_get("Protogen_#{apis.user_class.agent_name}")
-          rescue
+          else
             @protogen_apis = nil
             @protogen_domain = nil
           end
