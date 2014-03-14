@@ -112,7 +112,7 @@ end
 
 agents_root_path.each do |a_path|
   if !(File.directory?(a_path))
-    raise "path #{a} not found"
+    raise "path #{a_path} not found"
   end
 end
 
