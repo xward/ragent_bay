@@ -11,6 +11,7 @@ require_relative 'mdi/dialog/dialog'
 require_relative 'mdi/geo/geo'
 require_relative 'mdi/storage/storage'
 require_relative 'mdi/tools/tools'
+require_relative 'mdi/file/file'
 
 
 module UserApis
@@ -56,8 +57,11 @@ module UserApis
       @tools ||= Mdi::ToolsClass.new(user_api)
     end
 
+    # @api public
+    # Read file information or retrieve files from the cloud storage.
+    # @return [Mdi::FileManager]
     def file
-      @file ||= Mdi::File.new(user_api)
+      @file ||= Mdi::FileManager.new(user_api)
     end
 
   end
