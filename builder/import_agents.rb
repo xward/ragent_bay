@@ -50,6 +50,7 @@ end
 
 
 def reset_folder(folder_path)
+  p "reset_folder #{folder_path}"
   if File.directory?(folder_path)
     FileUtils.rm_r(folder_path, :secure => true)
   end
@@ -78,6 +79,18 @@ def protogen_bin_path
   @PROTOGEN_BIN_PATH ||= "#{here_path}/../exts/protogen/protocol_generator/"
 end
 
+def exec_cmd(cmd,raise_error = true)
+  p Time.now
+  p cmd
+  ret = `#{cmd}`
+  exit_code = $?.exitstatus
+  p ret
+  if exit_code != 0
+    raise "Somethin went wrong while running command #{cmd}" if raise_error
+    return exit_code
+  end
+  ret
+end
 
 # in any case, we flush last gen done
 # delete_file_if_exist("#{agents_generated_path}/gen_agents_imported")
@@ -127,17 +140,18 @@ reset_folder(agents_generated_path)
 
 ### copy new ###
 agents_root_path.each do |path|
-  p "removing #{path}/.git"
+  p "copy #{path} to #{agents_src_path} ..."
   FileUtils.cp_r(path, agents_src_path)
-  # remove ".git folder"
-  if File.directory?("#{agents_src_path}/.git")
-    p "delete git folder #{agents_src_path}/.git"
-    FileUtils.rm_r("#{agents_src_path}/.git", :secure => true)
-  end
-
   p "copied '#{path}'"
-
 end
+
+# removing all .git folder
+raise "fail on folder name" if !(agents_src_path.include?('agents_project_source'))
+raise "folder not found" if !(File.directory?(agents_src_path))
+
+cmd = "cd #{agents_src_path}; rm -rf `find . | grep  .git`"
+exec_cmd(cmd,false)
+
 
 
 ### generate whenever to cron ###
