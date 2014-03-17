@@ -51,7 +51,7 @@ module UserApis
         #                                               "value":42
         #                                           } `
         #                                           
-        # @note You should not use the `raw_value` of the field as it differs between the SDK VM and the real cloud.
+        #   @note You should not use the `raw_value` of the field as it differs between the SDK VM and the real cloud.
 
         # @!attribute [rw] account
         #   @api public
