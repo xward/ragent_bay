@@ -240,7 +240,7 @@ module RUBY_AGENT_STATS
         @ruby_agent_stats['errors'][name]['count'] += 1
         @ruby_agent_stats['errors'][name]['values'] << value
         if @ruby_agent_stats['errors'][name]['values'].size > 100
-          @ruby_agent_stats['errors']['values'].shift
+          @ruby_agent_stats['errors'][name]['values'].shift
         end
         @ruby_agent_stats['errors'][name]['date'] = "#{Time.now.to_i}"
       end
