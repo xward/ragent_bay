@@ -32,6 +32,16 @@ module UserApis
       @dialog ||= Mdi::DialogClass.new(user_api)
     end
 
+    # @api public
+    # A set of API for geolocalisation tools
+    # @return [Mdi::GeoClass]
+    def geo
+      @dialog ||= Mdi::GeoClass.new(user_api)
+    end
+
+    # @api public
+    # A set of API for storage tools
+    # @return [Mdi::StorageClass]
     def storage
       @storage ||= Mdi::StorageClass.new(user_api)
     end
