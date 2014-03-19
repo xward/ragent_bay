@@ -6,6 +6,7 @@
 #todo: could be generated
 
 require_relative 'mdi/dialog/dialog'
+require_relative 'mdi/geo/geo'
 require_relative 'mdi/storage/storage'
 require_relative 'mdi/tools/tools'
 
@@ -36,7 +37,7 @@ module UserApis
     # A set of API for geolocalisation tools
     # @return [Mdi::GeoClass]
     def geo
-      @dialog ||= Mdi::GeoClass.new(user_api)
+      @geo ||= Mdi::GeoClass.new(user_api)
     end
 
     # @api public

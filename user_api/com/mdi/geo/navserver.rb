@@ -17,8 +17,8 @@ module UserApis
           @user_apis
         end
 
-        def query(service_url_suffix)
-          CC::NavServer.query(service_url_suffix)
+        def get_query(service_url_suffix)
+          CC::NavServer.get_query(service_url_suffix)
         end
 
       end
