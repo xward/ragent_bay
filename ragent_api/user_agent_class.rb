@@ -134,6 +134,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error presence :\n#{presence.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][0] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("presence_#{agent_name}", "#{e}")
@@ -191,12 +192,12 @@ class UserAgentClass
           raise "No Protogen defined" unless $allow_non_protogen
         end
 
-        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' receive MESSAGE:\n#{msg.inspect}")
         PUNK.end('msgAgent','ok','in',"AGENT:#{agent_name}TNEGA <- MSG[#{crop_ref(msg.id,4)}] #{msg_type}")
 
       rescue Exception => e
+
         RAGENT.api.mdi.tools.print_ruby_exception(e)
-        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' receive MESSAGE:\n#{msg.inspect}")
+        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
         SDK_STATS.stats['server']['internal_error'] += 1
         SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
         RUBY_AGENT_STATS.report_an_error("message_internal_#{agent_name}", "#{e}")
@@ -224,6 +225,7 @@ class UserAgentClass
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.log.error('Server: /msg error on agent #{agent_name} while handle_msg')
       RAGENT.api.mdi.tools.print_ruby_exception(e)
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][1] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("message_#{agent_name}", "#{e}")
@@ -257,6 +259,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error track :\n#{track.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][2] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("track_#{agent_name}", "#{e}")
@@ -289,6 +292,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error order :\n#{order.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][3] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("order_#{agent_name}", "#{e}")
