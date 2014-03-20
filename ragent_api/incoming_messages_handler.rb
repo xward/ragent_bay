@@ -13,6 +13,8 @@ module RagentIncomingMessage
       rescue Exception => e
         PUNK.start('valid')
         RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse params :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent params parse fail", "#{e}")
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('valid','ko','in',"SERVER <- ?? : missing params fail")
         return false
@@ -54,6 +56,8 @@ module RagentIncomingMessage
         presence = apis.mdi.dialog.create_new_presence(params)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse presence :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent presence parse fail", "#{e}")
         SDK_STATS.stats['server']['err_parse'][0] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- PRESENCE : parse params fail")
@@ -148,6 +152,8 @@ module RagentIncomingMessage
         ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse message :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent track parse fail", "#{e}")
         RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
         SDK_STATS.stats['server']['err_parse'][1] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
@@ -178,6 +184,8 @@ module RagentIncomingMessage
 
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
+          RAGENT.api.mdi.tools.log.info("Ragent error init api env :\n#{env}")
+          RUBY_AGENT_STATS.report_an_error("ragent message init env", "#{e}")
           SDK_STATS.stats['server']['err_parse'][1] += 1
           SDK_STATS.stats['server']['internal_error'] += 1
           PUNK.end('damned','ko','in',"SERVER <- MESSAGE : bad init apis set_current_user_api")
@@ -236,6 +244,8 @@ module RagentIncomingMessage
         track = apis.mdi.dialog.create_new_track(params)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse track :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent track parse fail", "#{e}")
         SDK_STATS.stats['server']['err_parse'][2] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- TRACK : parse params fail")
@@ -292,6 +302,8 @@ module RagentIncomingMessage
       return
     rescue Exception => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
+      RAGENT.api.mdi.tools.log.info("Ragent error parse order :\n#{params}")
+      RUBY_AGENT_STATS.report_an_error("ragent order parse fail", "#{e}")
       SDK_STATS.stats['server']['err_parse'][3] += 1
       SDK_STATS.stats['server']['internal_error'] += 1
       PUNK.end('damned','ko','in',"SERVER <- ORDER : parse params fail")
