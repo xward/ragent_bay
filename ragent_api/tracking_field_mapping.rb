@@ -37,7 +37,7 @@ module RagentApi
         CC.logger.info("fetch_map #{account}")
         ret = CC::RagentHttpApiV3.request_http_cloud_api(account, '/fields.json')
         if ret != nil
-          CC.logger.info("fetch_map succes = #{ret}")
+          CC.logger.info("fetch_map success for account #{account} = #{ret}")
           @mapping_track_field_number[account] = ret
         else
           raise "Account '#{account}' not available."
