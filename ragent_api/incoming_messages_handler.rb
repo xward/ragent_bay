@@ -142,7 +142,20 @@ module RagentIncomingMessage
         PUNK.end('ackmsgvm','ko','in',"SERVER -> ACK : ack to device fail")
         return
       end
-    end # end ack message
+    else
+      # create Message object
+      begin
+        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
+      rescue Exception => e
+        RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
+        SDK_STATS.stats['server']['err_parse'][1] += 1
+        SDK_STATS.stats['server']['internal_error'] += 1
+        return
+      end
+    end # end vm mode
+
+
 
     PUNK.end('new','ok','in',"SERVER <- MSG : receive new message")
 
