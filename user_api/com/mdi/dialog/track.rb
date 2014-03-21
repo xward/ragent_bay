@@ -178,6 +178,7 @@ module UserApis
           field['value'] = value
           field['fresh'] = true
           self.fields_data << field
+          self.recorded_at = Time.now.to_i
         end
 
 
@@ -185,3 +186,5 @@ module UserApis
     end #Dialog
   end #Mdi
 end #UserApis
+
+
