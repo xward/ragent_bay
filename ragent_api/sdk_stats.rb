@@ -87,6 +87,14 @@ module SDK_STATS
     count
   end
 
+  def self.count_agents_push_to_cloud
+    count = 0
+    RAGENT.user_class_subscriber.get_subscribers.each do |user_agent_class|
+      count += @daemon_stat['agents'][user_agent_class.agent_name]['inject_to_cloud']
+    end
+    count
+  end
+
   def self.stats
     @stats_mutex ||= Mutex.new
     @stats_mutex.synchronize do
