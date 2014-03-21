@@ -155,9 +155,12 @@ module UserApis
             'sender' => 'ragent', # todo: add in model of db viewer (todo)
             'asset' => self.asset,
             'received_at' => Time.now.to_i,
+            'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at,
             'latitude' => self.latitude,
             'longitude' => self.longitude
           }
+
+
           #add  fresh field of new data (and convert it as magic string)
           self.fields_data.each do |field|
             if field['fresh']
