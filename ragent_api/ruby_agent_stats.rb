@@ -157,7 +157,7 @@ module RUBY_AGENT_STATS
       end
 
     rescue Exception => e
-      RUBY_AGENT_STATS.report_an_error('check_response_time_rotation', e.inspect)
+      RUBY_AGENT_STATS.report_an_error('check_response_time_rotation', "#{e}")
     end
 
   end
