@@ -95,6 +95,7 @@ module UserApis
                 # basic decode
                 case field['field_type']
                 when 'integer'
+                  # reverse: b64_value =  Base64.strict_encode64([demo].pack("N").unpack("cccc").pack('c*'))
                   field['value'] = v.to_s.unpack('B*').first.to_i(2)
                 when 'string'
                   field['value'] = v.to_s
@@ -176,7 +177,27 @@ module UserApis
         def set_field(name, value)
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
           return self.fields_data if field == nil
-          field['raw_value'] = value
+
+
+          raw_value = value
+          # decode if Ragent. In VM mode, raw_value = value, nothing else to do
+          # let's reproduce the device encoding
+          if RAGENT.running_env_name == 'ragent'
+            case field['field_type']
+            when 'integer'
+              # field['value'] = v.to_s.unpack('B*').first.to_i(2)
+              # reverse: b64_value =  Base64.strict_encode64([demo].pack("N").unpack("cccc").pack('c*'))
+              raw_value = [value].pack("N").unpack("cccc").pack('c*')
+            when 'string'
+              # field['value'] = v.to_s
+              raw_value = value
+            when 'boolean'
+              # field['value'] = v.to_s == "\x01" ? true : false
+              raw_value = value ? "\x01" : "\x00"
+            end
+          end
+
+          field['raw_value'] = raw_value
           field['value'] = value
           field['fresh'] = true
           self.fields_data << field
