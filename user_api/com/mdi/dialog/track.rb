@@ -164,7 +164,7 @@ module UserApis
           self.fields_data.each do |field|
             if field['fresh']
                CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
-              r_hash['payload']["#{field['field']}"] = "#{field['value']}"
+              r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
             end
           end
 
