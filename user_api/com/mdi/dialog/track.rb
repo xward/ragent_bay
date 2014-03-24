@@ -187,7 +187,7 @@ module UserApis
             when 'integer'
               # field['value'] = v.to_s.unpack('B*').first.to_i(2)
               # reverse: b64_value =  Base64.strict_encode64([demo].pack("N").unpack("cccc").pack('c*'))
-              raw_value = [value].pack("N").unpack("cccc").pack('c*')
+              raw_value = [value.to_i].pack("N").unpack("cccc").pack('c*')
             when 'string'
               # field['value'] = v.to_s
               raw_value = value
