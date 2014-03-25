@@ -200,8 +200,8 @@ module UserApis
           field['raw_value'] = raw_value
           field['value'] = value
           field['fresh'] = true
-          self.fields_data << field
           self.recorded_at = Time.now.to_i
+          self.fields_data << field
         end
 
 
