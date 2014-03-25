@@ -18,7 +18,8 @@ module RagentApi
       end
     end
 
-    def self.alter_field(account, id, val)
+    def self.alter_field(id, account, val)
+      return if @mapping_track_field_number[account] == nil # no need to update absent account
       field = RagentApi::TrackFieldMapping.get_by_id(id, account, true)
       @mapping_track_field_number[account].delete_at(a.index(field))
       if val != nil
