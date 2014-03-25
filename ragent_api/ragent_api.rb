@@ -250,6 +250,13 @@ module RagentApi
       end
       map = JSON.parse(File.read("#{RAGENT.agents_generated_src_path}/ragent_gen_info.json"))
       map['additional_info'] = additional_info
+
+      # put agents's config
+      map['agents_config'] = {}
+      RAGENT.user_class_subscriber.get_subscribers.each do |user_class|
+        map['agents_config'][user_class.agent_name] = user_class.file_config
+      end
+
       map
     end
   end
