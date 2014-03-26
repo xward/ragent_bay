@@ -26,7 +26,7 @@ module UserApis
         p user_api.user_environment
       end
       # @api public
-      # use it when you had raised an exepection and you want to print a beautiful stack trace of it
+      # use it when you had raised an exception and you want to print a beautiful stack trace of it
       # @example
       #    begin
       #      Math.sqrt(-1)

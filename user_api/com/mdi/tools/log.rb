@@ -60,7 +60,7 @@ module UserApis
         # Log critical events that will prevent your agent from performing its normal processing.
         # @params [String] you string to print as error
         # @example
-        #   user_api.mdi.tools.log.warn("The message #{msg} is a zombie terrorist !")
+        #   user_api.mdi.tools.log.error("The message #{msg} is a zombie terrorist !")
         def error(str_msg)
           CC.logger.error("#{@head}#{str_msg}")
         end
