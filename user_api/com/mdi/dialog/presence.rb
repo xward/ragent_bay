@@ -69,6 +69,7 @@ module UserApis
         #   }
         #   ```
         #
+        # @api private
         def initialize(apis, struct = nil)
           @user_apis = apis
 
@@ -94,6 +95,7 @@ module UserApis
 
         end
 
+        # @api private
         def user_api
           @user_apis
         end

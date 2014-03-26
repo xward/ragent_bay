@@ -7,8 +7,24 @@
 module UserApis
   module Mdi
     module Dialog
+      # An order is a object you received if you schedule some tasks into your config/schedule.rb
+      # @api public
       class OrderClass < Struct.new(:agent, :code, :params)
 
+        # @!attribute [rw] agent
+        #   @api public
+        #   @return [String] agent name that the order is for
+
+        # @!attribute [rw] code
+        #   @api public
+        #   @return [String] the code of the order
+
+        # @!attribute [rw] params
+        #   @api public
+        #   @return [String] params that can be necessary for you to execute the order
+
+
+        # @api private
         def initialize(apis, struct = nil)
           @user_apis = apis
 
@@ -26,6 +42,7 @@ module UserApis
           end
         end
 
+        # @api private
         def user_api
           @user_apis
         end
@@ -39,10 +56,6 @@ module UserApis
           r_hash['params'] = self.params
           r_hash.delete_if { |k, v| v.nil? }
         end
-
-
-
-
 
       end #OrderClass
     end #Dialog

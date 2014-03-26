@@ -6,6 +6,8 @@
 module UserApis
   module Mdi
     module Geo
+
+      # @api private
       # A generic subscriber class tool
       class NavServerClass
 
@@ -17,6 +19,8 @@ module UserApis
           @user_apis
         end
 
+        # query the navserver
+        # @params [String] service_url_suffix service to use with parameters
         def get_query(service_url_suffix)
           CC::NavServer.get_query(service_url_suffix)
         end

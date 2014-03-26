@@ -6,7 +6,7 @@
 module UserApis
   module Mdi
     module Tools
-      # A generic subscriber class tool
+      # @api private
       class SubscriberClass < Struct.new(:classes)
 
         def initialize(apis = nil)

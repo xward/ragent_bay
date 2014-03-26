@@ -8,6 +8,7 @@ module UserApis
   module Mdi
     module Storage
 
+      # @api private
       class TrackFieldMappingClass
 
         def initialize(apis)

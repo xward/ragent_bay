@@ -17,36 +17,51 @@ module UserApis
 
     # @api public
     class DialogClass
-
+      # @api private
       def initialize(apis)
         @user_apis = apis
       end
-
+      # @api private
       def user_api
         @user_apis
       end
 
-      # @private
+      # @api public
+      # Create a new presence object
+      # @example
+      #   new_presence = user_api.mdi.dialog.create_new_presence
       def create_new_presence(struct = nil)
         Dialog::PresenceClass.new(user_api, struct)
       end
 
-      # @private
+      # @api public
+      # Create a new message object
+      # @example
+      #   new_presence = user_api.mdi.dialog.create_new_message
       def create_new_message(struct = nil)
         Dialog::MessageClass.new(user_api, struct)
       end
 
-      # @private
+      # @api public
+      # Create a new track object
+      # @example
+      #   new_presence = user_api.mdi.dialog.create_new_track
       def create_new_track(struct = nil)
         Dialog::TrackClass.new(user_api, struct)
       end
 
-      # @private
+      # @api public
+      # Create a new order object
+      # @example
+      #   new_presence = user_api.mdi.dialog.create_new_order
       def create_new_order(struct = nil)
         Dialog::OrderClass.new(user_api, struct)
       end
 
-      # @private
+      # @api private
+      # Create a new collection object
+      # @example
+      #   new_presence = user_api.mdi.dialog.create_new_collection
       def create_new_collection(struct = nil)
         Dialog::CollectionClass.new(user_api, struct)
       end
@@ -57,6 +72,8 @@ module UserApis
         Dialog::DeviceGateClass.new(user_api, user_api.user_class.managed_message_channels[0])
       end
 
+      # @api public
+      # @see Dialog::CloudGateClass
       def cloud_gate
         Dialog::CloudGateClass.new(user_api, user_api.user_class.managed_message_channels[0])
       end

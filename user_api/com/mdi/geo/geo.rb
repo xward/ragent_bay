@@ -8,7 +8,7 @@ require_relative 'navserver'
 module UserApis
   module Mdi
 
-    # @api public
+    # @api private
     class GeoClass
 
       def initialize(apis)

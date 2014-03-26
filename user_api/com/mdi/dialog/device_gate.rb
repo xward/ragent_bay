@@ -19,6 +19,7 @@ module UserApis
           @default_send_channel = default_send_channel
         end
 
+        # @api private
         def user_api
           @user_apis
         end
@@ -27,6 +28,8 @@ module UserApis
         # @param asset [Fixnum] the asset the message will be sent to
         # @param account [String] account name to use
         # @param content [String] content of the message.
+        # @example
+        #    user_api.mdi.dialog.device_gate.push('fake_asset','fake_acount','my fake message')
         def push(asset, account, content, channel = @default_send_channel)
           begin
             PUNK.start('push','pushing msg ...')
@@ -68,6 +71,8 @@ module UserApis
         # @param msg [CloudConnectServices::Message] message to reply to
         # @param content [Object] content of the message
         # @param cookies [String] optional cookies, reseverd for Protogen (see the Protogen guide). You should not need to use this parameter in your agent code.
+        # @example
+        #     user_api.mdi.dialog.device_gate.reply(msg, msg.content)
         def reply(of_msg, content, cookies = nil)
           begin
             PUNK.start('reply','replying msg ...')

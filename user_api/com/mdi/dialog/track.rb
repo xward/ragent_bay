@@ -61,6 +61,7 @@ module UserApis
         #   @api public
         #   @return [Hash] some metadata for the message, can be nil.
 
+        #   @api private
         def initialize(apis, struct = nil)
           @user_apis = apis
 
@@ -174,6 +175,10 @@ module UserApis
           r_hash
         end
 
+        # set_field alter the value of a field
+        # @api public
+        # @example change the value of track MDI_CC_LEGAL_SPEED to "50"
+        #   new_track.set_field("MDI_CC_LEGAL_SPEED", "50")
         def set_field(name, value)
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
           return self.fields_data if field == nil

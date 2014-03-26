@@ -73,6 +73,7 @@ module UserApis
         #   @api public
         #   @return [Array] Protogen cookies. See the Protogen guide for a reference.
 
+        # @api private
         def initialize(apis, struct = nil)
 
           @user_apis = apis

@@ -9,9 +9,9 @@ module UserApis
     module Dialog
 
       # @api public
-      # This class handles all cloud to itself communication
+      # This class handles all mdi cloud to mdi cloud communication.
       # @note You don't have to instantiate this class yourself.
-      #    Use the {Sdk_api_XX_DOWNCASED_CLEAN_PROJECT_NAME::SDK::API.cloudGate SDK.API.cloudGate} object which is already configured for your agent.
+      #    Use the user_api.mdi.dialog.cloud_gate object which is already configured for your agent.
       class CloudGateClass
 
         # @api private
@@ -21,15 +21,22 @@ module UserApis
           @default_origin_channel = default_origin_channel
         end
 
+        # @api private
         def user_api
           @user_apis
         end
-
 
         # Inject a message in the server queue on a specific channel (ie push a message to the server)
         # @param [CloudConnectServices::Message] msg the message to inject
         # @param [String] channel channel the message will be posted to
         # @note Be wary of "infinite message loops" with this method.
+        # @example Injecte a new message to the cloud
+        #   new_msg = user_api.mdi.dialog.create_new_message
+        #   new_msg.recorded_at = Time.now.to_i
+        #   new_msg.asset = "3735843415387632"
+        #   new_msg.content = "hello from ruby agent !"
+        #   new_msg.account = "my_account"
+        #   user_api.mdi.dialog.cloud_gate.inject_message(new_msg, "com.me.services.test_messages")
         def inject_message(msg, channel, origin_channel = default_origin_channel)
           begin
             PUNK.start('injectmsg','inject message in cloud ...')
@@ -79,8 +86,17 @@ module UserApis
           end
         end
 
-        # Inject a track in the server queue (ie push a message to the server)
+        # Inject a track in the server queue (ie push a track to the server)
         # @param [CloudConnectServices::Track] track the track to send
+        # @example Injecte a new track to the cloud
+        #   new_track = user_api.mdi.dialog.create_new_track
+        #   new_track.recorded_at = Time.now.to_i
+        #   new_track.latitude = 4878384 # in degree * 10^-5
+        #   new_track.longitude =  236682 # in degree * 10^-5
+        #   new_track.asset = "3735843415387632"
+        #   new_track.account = "my_account"
+        #   new_track.set_field("MDI_CC_LEGAL_SPEED", "50")
+        #   user_api.mdi.dialog.cloud_gate.inject_track(new_track)
         def inject_track(track)
           begin
 

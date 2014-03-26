@@ -9,7 +9,7 @@ module UserApis
     module Tools
 
       class ProtogenClass
-
+        # @api private
         def initialize(apis)
           @user_apis = apis
           begin
@@ -20,7 +20,7 @@ module UserApis
             @protogen_domain = nil
           end
         end
-
+        # @api private
         def user_api
           @user_apis
         end
