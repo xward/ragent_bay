@@ -164,10 +164,10 @@ module UserApis
 
           #add  fresh field of new data (and convert it as magic string)
           self.fields_data.each do |field|
-            if field['fresh'] and field['field'] > 250 # can't inject field from 0 to 250, device protected
+            #if field['fresh'] and field['field'] > 250 # can't inject field from 0 to 250, device protected
                CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
               r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
-            end
+            #end
           end
 
           r_hash['meta'].delete_if { |k, v| v.nil? }
