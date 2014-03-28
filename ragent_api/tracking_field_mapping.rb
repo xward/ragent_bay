@@ -22,7 +22,7 @@ module RagentApi
       return if @mapping_track_field_number == nil
       return if @mapping_track_field_number[account] == nil # no need to update absent account
       field = RagentApi::TrackFieldMapping.get_by_id(id, account, true)
-      @mapping_track_field_number[account].delete_at(a.index(field))
+      @mapping_track_field_number[account].delete_at(@mapping_track_field_number[account].index(field))
       if val != nil
         @mapping_track_field_number[account] << val
       end
