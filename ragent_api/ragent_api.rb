@@ -159,6 +159,7 @@ module RagentApi
     end
   end
 
+  # used in vm mode
   # return an map of <channel_str>:<channel_id>
   def self.map_supported_message_channels
     channels = RAGENT.supported_message_channels
