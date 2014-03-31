@@ -322,9 +322,52 @@ module RagentIncomingMessage
   def self.handle_collection(params)
     RAGENT.api.mdi.tools.log.info("new collection #{params}")
 
+    # valid input
+    if valid_params(params)
+      account = params['meta']['account']
+    else
+      return
+    end
+
+    PUNK.start('new')
+    RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incomming collection:\n#{params}")
+    PUNK.end('new','ok','in',"SERVER <- COLLECTION : receive new collection")
+    SDK_STATS.stats['server']['received'][4] += 1
 
 
+    # forward to each agent
+    RAGENT.user_class_collection_subscriber.get_subscribers.each do |user_agent_class|
 
+      next if user_agent_class.internal_config['subscribe_collection'] == false
+
+      PUNK.start('damned')
+      begin
+        env = {
+          'account' => account,
+          'agent_name' => user_agent_class.agent_name
+        }
+
+        # set associated api as current sdk_api
+        apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
+        set_current_user_api(apis)
+
+        # create Track object
+        track = apis.mdi.dialog.create_new_collection(params)
+      rescue Exception => e
+        RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse collection :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent collection parse fail", "#{e}")
+        SDK_STATS.stats['server']['err_parse'][4] += 1
+        SDK_STATS.stats['server']['internal_error'] += 1
+        PUNK.end('damned','ko','in',"SERVER <- COLLECTION : parse params fail")
+        return
+      end
+      PUNK.drop('damned')
+
+      # process it
+      user_agent_class.handle_collection(track)
+
+      set_current_user_api(nil)
 
   end # handle_collection
 
