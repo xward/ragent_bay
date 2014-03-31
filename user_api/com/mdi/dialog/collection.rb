@@ -8,7 +8,7 @@ module UserApis
   module Mdi
     module Dialog
       # A class that represents a standard collection
-      class CollectionClass < Struct.new(:name, :meta, :account, :id, :asset, :start_at; :stop_at, :presences, :tracks, :messages)
+      class CollectionClass < Struct.new(:name, :meta, :account, :id, :asset, :start_at, :stop_at, :presences, :tracks, :messages)
 
         def initialize(apis, struct = nil)
 
