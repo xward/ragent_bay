@@ -76,8 +76,8 @@ module UserApis
             self.asset = payload['asset']
             self.account = self.meta['account']
 
-            self.latitude = payload['latitude'].to_i
-            self.longitude = payload['longitude'].to_i
+            self.latitude = payload['latitude'].to_f
+            self.longitude = payload['longitude'].to_f
             self.recorded_at = payload['recorded_at']
             self.received_at = payload['received_at']
 
@@ -129,8 +129,8 @@ module UserApis
             'asset' => self.asset,
             'recorded_at' => self.recorded_at,
             'received_at' => self.received_at,
-            'latitude' => self.latitude,
-            'longitude' => self.longitude
+            'latitude' => self.latitude.to_f,
+            'longitude' => self.longitude.to_f
           }
           if !without_fields
             #add field of new data (and convert it as magic string)
@@ -158,8 +158,8 @@ module UserApis
             'asset' => self.asset,
             'received_at' => Time.now.to_i,
             'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at,
-            'latitude' => self.latitude,
-            'longitude' => self.longitude
+            'latitude' => self.latitude.to_f,
+            'longitude' => self.longitude.to_f
           }
 
           #add  fresh field of new data (and convert it as magic string)
