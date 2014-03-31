@@ -368,6 +368,7 @@ module RagentIncomingMessage
       user_agent_class.handle_collection(track)
 
       set_current_user_api(nil)
+    end # each user_agent_class
 
   end # handle_collection
 
