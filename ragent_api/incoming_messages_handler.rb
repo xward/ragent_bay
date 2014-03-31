@@ -320,8 +320,11 @@ module RagentIncomingMessage
 
   # futur !
   def self.handle_collection(params)
+    RAGENT.api.mdi.tools.log.info("new collection #{params}")
 
-    RAGENT.api.mdi.tools.log.debug("new collection")
+
+
+
 
   end # handle_collection
 
@@ -329,7 +332,7 @@ module RagentIncomingMessage
   # futur !
   def self.handle_alert(params)
 
-    RAGENT.api.mdi.tools.log.debug("new alert")
+    RAGENT.api.mdi.tools.log.info("new alert")
 
   end # handle_alert
 
