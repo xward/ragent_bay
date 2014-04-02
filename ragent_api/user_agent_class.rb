@@ -31,23 +31,6 @@ class UserAgentClass
     @is_agent_has_protogen ||= File.exist?("#{RAGENT.agents_generated_src_path}/protogen_#{agent_name}/protogen_apis.rb")
   end
 
-  def user_api
-    CC.logger.info("API: calling user class user_api. current_api=#{get_current_user_api}")
-    if get_current_user_api == nil
-      CC.logger.info("API: get_current_user_api nill from user class")
-      @user_api_env ||= begin
-        env = {
-          'root' => 'yes',
-          'owner' => 'ragent_class',
-          'agent_name' => 'ragent'
-        }
-        USER_API_FACTORY.gen_user_api(self, env)
-      end
-    else
-      get_current_user_api
-    end
-  end
-
   # =========
 
 

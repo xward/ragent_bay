@@ -51,23 +51,26 @@ end
 
 $SDK_API = nil # = UserApiClass.new(nil,nil, nil)
 
+$user_api_mutex = Mutex.new
+$user_api_mutex.unlock
+
 # constant api chaned on each message
 def set_current_user_api(api)
-  #const_set('SDK_API', api)
+  $user_api_mutex.lock
+
   CC.logger.warn("API: set current api to #{api.user_environment}") if api != nil
   CC.logger.warn("API: set current api to nil") if api == nil
   $SDK_API = api
 end
 
+def release_current_api
+  CC.logger.warn("API: release_current_api")
+  $SDK_API = nil
+  $user_api_mutex.unlock
+end
+
 # used in case of no user_api is found
 def user_api
   CC.logger.warn("API: using fallback user_api #{$SDK_API.user_environment}")
-  $SDK_API
-end
-
-# used by well done stuff
-def get_current_user_api
-  CC.logger.warn("API: using get_current_user_api #{$SDK_API.user_environment}")  if $SDK_API != nil
-  CC.logger.warn("API: using get_current_user_api nil")  if $SDK_API == nil
   $SDK_API
 end
