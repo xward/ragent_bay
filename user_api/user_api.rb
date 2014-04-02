@@ -52,7 +52,7 @@ end
 $SDK_API = nil # = UserApiClass.new(nil,nil, nil)
 
 $user_api_mutex = Mutex.new
-$user_api_mutex.unlock
+$user_api_mutex.unlock if $user_api_mutex.locked?
 
 # constant api chaned on each message
 def set_current_user_api(api)
