@@ -32,6 +32,7 @@ class UserAgentClass
   end
 
   def user_api
+    CC.logger.info("API: calling user class user_api. current_api=#{get_current_user_api}")
     if get_current_user_api == nil
       @user_api_env ||= begin
         env = {

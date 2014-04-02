@@ -59,6 +59,7 @@ end
 
 # used in case of no user_api is found
 def user_api
+  CC.logger.warn("API: using fallback user_api.")
   $SDK_API
 end
 
