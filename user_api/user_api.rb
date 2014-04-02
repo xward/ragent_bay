@@ -59,11 +59,12 @@ end
 
 # used in case of no user_api is found
 def user_api
-  CC.logger.warn("API: using fallback user_api.")
+  CC.logger.warn("API: using fallback user_api #{$SDK_API.user_environment}")
   $SDK_API
 end
 
 # used by well done stuff
 def get_current_user_api
+  CC.logger.warn("API: using get_current_user_api #{$SDK_API.user_environment}")
   $SDK_API
 end
