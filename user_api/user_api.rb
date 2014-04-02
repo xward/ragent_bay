@@ -55,7 +55,7 @@ def set_current_user_api(api)
   $SDK_API = api
 end
 
-def release_current_api
+def release_current_user_api
   CC.logger.info("API: release_current_api #{user_api}")
   $user_api_mutex.unlock # we want a raise error if not locked
 end
