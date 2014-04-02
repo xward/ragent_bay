@@ -65,7 +65,7 @@ end
 
 def release_current_api
   CC.logger.warn("API: release_current_api")
-  $user_api_mutex.unlock
+  $user_api_mutex.unlock # we want a raise error if not locked
 end
 
 # used in case of no user_api is found
