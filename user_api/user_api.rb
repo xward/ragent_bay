@@ -67,6 +67,7 @@ end
 
 # used by well done stuff
 def get_current_user_api
-  CC.logger.warn("API: using get_current_user_api #{$SDK_API.user_environment}")
+  CC.logger.warn("API: using get_current_user_api #{$SDK_API.user_environment}")  if $SDK_API != nil
+  CC.logger.warn("API: using get_current_user_api nil")  if $SDK_API == nil
   $SDK_API
 end
