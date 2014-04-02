@@ -54,6 +54,7 @@ $SDK_API = nil # = UserApiClass.new(nil,nil, nil)
 # constant api chaned on each message
 def set_current_user_api(api)
   #const_set('SDK_API', api)
+  CC.logger.warn("API: set current api to #{api.user_environment}")
   $SDK_API = api
 end
 
