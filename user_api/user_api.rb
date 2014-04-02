@@ -65,7 +65,6 @@ end
 
 def release_current_api
   CC.logger.warn("API: release_current_api")
-  $SDK_API = nil
   $user_api_mutex.unlock
 end
 
