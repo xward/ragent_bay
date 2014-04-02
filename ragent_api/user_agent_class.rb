@@ -38,7 +38,7 @@ class UserAgentClass
       @user_api_env ||= begin
         env = {
           'root' => 'yes',
-          'owner' => 'ragent',
+          'owner' => 'ragent_class',
           'agent_name' => 'ragent'
         }
         USER_API_FACTORY.gen_user_api(self, env)
