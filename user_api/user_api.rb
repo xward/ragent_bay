@@ -43,13 +43,6 @@ class UserApiClass
 
 end
 
-# env = {
-#   'root' => 'yes',
-#   'owner' => 'ragent',
-#   'agent_name' => 'ragent'
-# }
-
-$SDK_API = nil # = UserApiClass.new(nil,nil, nil)
 
 $user_api_mutex = Mutex.new
 $user_api_mutex.unlock if $user_api_mutex.locked?
@@ -64,12 +57,21 @@ def set_current_user_api(api)
 end
 
 def release_current_api
-  CC.logger.warn("API: release_current_api")
+  CC.logger.warn("API: release_current_api #{user_api}")
   $user_api_mutex.unlock # we want a raise error if not locked
 end
 
 # used in case of no user_api is found
 def user_api
-  CC.logger.warn("API: using fallback user_api #{$SDK_API.user_environment}")
-  $SDK_API
+  if $SDK_API == nil
+    CC.logger.warn("API: using fallback user_api nil")
+    env = {
+      'account' => 'none',
+      'agent_name' => 'nil'
+    }
+    $NIL_API ||= UserApiClass.new(nil, env, '007')
+  else
+    CC.logger.warn("API: using user_api #{$SDK_API.user_environment}")
+    $SDK_API
+  end
 end
