@@ -50,7 +50,6 @@ $user_api_mutex.unlock if $user_api_mutex.locked?
 # constant api chaned on each message
 def set_current_user_api(api)
   $user_api_mutex.lock
-
   CC.logger.debug("API: set current api to #{api == nil ? 'nil' : api.user_environment}")
   $SDK_API = api
 end
