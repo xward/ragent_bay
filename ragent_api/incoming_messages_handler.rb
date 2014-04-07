@@ -61,6 +61,7 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][0] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- PRESENCE : parse params fail")
+        release_current_user_api
         return
       end
       PUNK.drop('damned')
@@ -189,6 +190,7 @@ module RagentIncomingMessage
           SDK_STATS.stats['server']['err_parse'][1] += 1
           SDK_STATS.stats['server']['internal_error'] += 1
           PUNK.end('damned','ko','in',"SERVER <- MESSAGE : bad init apis set_current_user_api")
+          release_current_user_api
           return
         end
         PUNK.drop('damned')
@@ -249,6 +251,7 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][2] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- TRACK : parse params fail")
+        release_current_user_api
         return
       end
       PUNK.drop('damned')
@@ -299,6 +302,7 @@ module RagentIncomingMessage
       SDK_STATS.stats['server']['remote_call_unused'] += 1
       SDK_STATS.stats['server']['total_error'] += 1
       PUNK.end('damned','ko','in',"SERVER <- ORDER : agent not found")
+      release_current_user_api
       return
     rescue Exception => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -307,6 +311,7 @@ module RagentIncomingMessage
       SDK_STATS.stats['server']['err_parse'][3] += 1
       SDK_STATS.stats['server']['internal_error'] += 1
       PUNK.end('damned','ko','in',"SERVER <- ORDER : parse params fail")
+      release_current_user_api
       return
     end
     PUNK.drop('damned')
@@ -360,6 +365,7 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][4] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- COLLECTION : parse params fail")
+        release_current_user_api
         return
       end
       PUNK.drop('damned')
