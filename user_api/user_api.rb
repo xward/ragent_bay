@@ -51,12 +51,12 @@ $user_api_mutex.unlock if $user_api_mutex.locked?
 def set_current_user_api(api)
   $user_api_mutex.lock
 
-  CC.logger.info("API: set current api to #{api == nil ? 'nil' : api.user_environment}")
+  CC.logger.debug("API: set current api to #{api == nil ? 'nil' : api.user_environment}")
   $SDK_API = api
 end
 
 def release_current_user_api
-  CC.logger.info("API: release_current_api #{user_api}")
+  CC.logger.debug("API: release_current_api #{user_api}")
   $user_api_mutex.unlock # we want a raise error if not locked
 end
 
@@ -70,7 +70,7 @@ def user_api
     }
     $NIL_API ||= UserApiClass.new(nil, env, '007')
   else
-    CC.logger.info("API: using user_api #{$SDK_API.user_environment}")
+    CC.logger.debug("API: using user_api #{$SDK_API.user_environment}")
     $SDK_API
   end
 end
