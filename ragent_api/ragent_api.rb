@@ -102,6 +102,8 @@ module RagentApi
         # create agent
         user_agent_class = UserAgentClass.new(dir)
         RAGENT.api.mdi.tools.log.info("Creating agent '#{user_agent_class.agent_name}' with:\n . protogen=#{user_agent_class.is_agent_has_protogen}\n . root_path=\"#{user_agent_class.root_path}\"\n . dyn_channels=#{user_agent_class.managed_message_channels}")
+        RAGENT.api.mdi.tools.log.info("internal config = #{user_agent_class.internal_config}")
+
         RAGENT.user_class_subscriber.subscribe(user_agent_class)
 
         if user_agent_class.internal_config['subscribe_presence']
