@@ -31,7 +31,7 @@ module UserApis
             self.meta = struct['meta']
             payload = struct['payload']
 
-            self.name = 'unknown'
+            self.name = payload['name']
             self.account = self.meta['account']
             self.id = payload['id']
             self.asset = payload['asset']
