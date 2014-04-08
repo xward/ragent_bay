@@ -7,9 +7,56 @@
 module UserApis
   module Mdi
     module Dialog
-      # A class that represents a standard collection
+      # A class that represents a standard collection. Besically it is a list of presence/message/track record with a start and an end time for a specific asset.
+      # @api public
       class CollectionClass < Struct.new(:name, :type, :meta, :account, :id, :asset, :start_at, :stop_at, :presences, :tracks, :messages)
 
+        # @!attribute [rw] name
+        #   @api public
+        #   @return [String] name of the collection
+
+        # @!attribute [rw] type
+        #   @api public
+        #   @return [String]  always equal to 'collection'
+
+        # @!attribute [rw] meta
+        #   @api public
+        #   @return [Hash] some metadata for the message, can be nil.
+
+        # @!attribute [rw] account
+        #   @api public
+        #   @return [String] name of the account for this message ("unstable", "municio", ...)
+
+        # @!attribute [rw] id
+        #   @api public
+        #   @return [Integer] a unique message ID set by the server.
+
+        # @!attribute [rw] asset
+        #   @api public
+        #   @return [String] the IMEI or a similar unique identifier of the asset who sent this message (if the essage if coming from a device).
+
+        # @!attribute [rw] start_at
+        #   @api public
+        #   @return [Integer] a timestamp indicating when the collection started
+
+        # @!attribute [rw] stop_at
+        #   @api public
+        #   @return [Integer] a timestamp indicating when the collection ended
+
+
+        # @!attribute [rw] presences
+        #   @api public
+        #   @return [Array] of presence
+
+        # @!attribute [rw] messages
+        #   @api public
+        #   @return [Array] of message
+
+        # @!attribute [rw] tracks
+        #   @api public
+        #   @return [Array] of track
+
+        # @api private
         def initialize(apis, struct = nil)
 
           @user_apis = apis
@@ -58,6 +105,7 @@ module UserApis
           end
         end
 
+        # @api private
         def user_api
           @user_apis
         end
@@ -67,6 +115,8 @@ module UserApis
  #{"meta":{"account":"unstable"},"payload":{"id":561902626124333056,"id_str":"561902626124333056","asset":"FAKE0000001635","name":"My trips","start_at":1974,"stop_at":1974,
  # "tracks":[{"id":"545648584880832729","asset":"kikoo","recorded_at":134567865,"recorded_at_ms":134567865,"received_at":5678545,"longitude":"236561.0","latitude":"4896980.0","14":"MQ=="}]}}
 
+        # @return [Hash] a hash representing this collection.
+        # @api private
         def to_hash
           r_hash = {}
 

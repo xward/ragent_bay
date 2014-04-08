@@ -13,7 +13,7 @@ module UserApis
 
         # @!attribute [rw] id
         #   @api public
-        #   @return [String] a unique message ID set by the server.
+        #   @return [Integer] a unique message ID set by the server.
 
 
         # @!attribute [rw] asset
