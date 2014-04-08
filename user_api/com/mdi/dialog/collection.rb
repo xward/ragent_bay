@@ -37,9 +37,24 @@ module UserApis
             self.asset = payload['asset']
             self.start_at = payload['start_at'].to_i
             self.stop_at = payload['stop_at'].to_i
-            self.presences = payload['presences']
-            self.messages = payload['messages']
-            self.tracks = payload['tracks']
+
+            raise "payload['presences'] not an array" unless payload['presences'].is_a? Array
+            raise "payload['messages'] not an array" unless payload['messages'].is_a? Array
+            raise "payload['tracks'] not an array" unless payload['tracks'].is_a? Array
+
+            self.presences = []
+            payload['presences'].each do |el|
+              self.presences << apis.mdi.dialog.create_new_presence(el)
+            end
+            self.messages = []
+            payload['messages'].each do |el|
+              self.messages << apis.mdi.dialog.create_new_message(el)
+            end
+            self.tracks = []
+            payload['tracks'].each do |el|
+              self.tracks << apis.mdi.dialog.create_new_track(el)
+            end
+
           end
         end
 
