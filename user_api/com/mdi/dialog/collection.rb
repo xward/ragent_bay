@@ -88,21 +88,21 @@ module UserApis
             self.presences = []
             if payload['presences'].is_a? Array
               payload['presences'].each do |el|
-                self.presences << apis.mdi.dialog.create_new_presence(el)
+                self.presences << apis.mdi.dialog.create_new_presence({'meta'=> self.meta, 'payload'=> el})
               end
             end
 
             self.messages = []
             if payload['messages'].is_a? Array
               payload['messages'].each do |el|
-                self.messages << apis.mdi.dialog.create_new_message(el)
+                self.messages << apis.mdi.dialog.create_new_message({'meta'=> self.meta, 'payload'=> el})
               end
             end
 
             self.tracks = []
             if payload['tracks'].is_a? Array
               payload['tracks'].each do |el|
-                self.tracks << apis.mdi.dialog.create_new_track(el)
+                self.tracks << apis.mdi.dialog.create_new_track({'meta'=> self.meta, 'payload'=> el})
               end
             end
 
