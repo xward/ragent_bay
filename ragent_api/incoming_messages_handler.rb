@@ -325,7 +325,7 @@ module RagentIncomingMessage
 
   # futur !
   def self.handle_collection(params)
-    RAGENT.api.mdi.tools.log.info("new collection #{params}")
+    #RAGENT.api.mdi.tools.log.info("new collection #{params}")
 
     # valid input
     if valid_params(params)
