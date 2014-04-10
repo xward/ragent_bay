@@ -81,6 +81,10 @@ module UserApis
     class FileStorageError < StandardError
     end
 
+    # @api public
+    class FileNotFoundError < FileStorageError
+    end
+
     # Metadata about a file.
     # @api public
     class FileInfo
