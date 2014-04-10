@@ -159,8 +159,8 @@ class UserAgentClass
         if is_agent_has_protogen
           begin
             # protogen decode
-            msg, cookies = user_api.mdi.tools.protogen.protogen_apis.decode(msg)
-            msg.content = msg
+            proto_object, cookies = user_api.mdi.tools.protogen.protogen_apis.decode(msg)
+            msg.content = proto_object
             msg.meta['protogen_cookies'] = cookies
             msg_type = "'#{msg.class}'" if "#{msg.class}" != ""
 
@@ -195,7 +195,7 @@ class UserAgentClass
       PUNK.start('handle', 'handling message ...')
       if is_protogen
         RAGENT.api.mdi.tools.log.info("Server: new protogen message of imei='#{msg.asset}' to agent '#{agent_name}': #{msg.content} ---------------------")
-        user_api.mdi.tools.protogen.protogen_apis.process(self, msg)
+        user_api.mdi.tools.protogen.protogen_apis.process(msg)
       else
 
         RAGENT.api.mdi.tools.log.debug("Server: new standard message  of imei='#{msg.asset}' to agent '#{agent_name}' ---------------------")
