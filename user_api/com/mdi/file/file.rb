@@ -17,13 +17,13 @@ module UserApis
     # the `file_storage` folder of your workspace under the filename "example". Additionally, a file named "example.metadata.json" will
     # hold the metadata of this file (it is simply a hash representation of a {FileInfo} object).
     #
-    # An agent does not have direct access to the filesystem in production mode (neither in read or write more). 
+    # An agent does not have direct access to the filesystem in production mode (neither in read or write more).
     # Even if this is not acutally enforced in the SDK, do not rely on accessing the filesystem.
     #
     # The {TestsHelper} module exposes some methods to create and delete files for use in your tests
-    # with less constraints than the methods provided here. For static configuration files, consider 
+    # with less constraints than the methods provided here. For static configuration files, consider
     # `user_api.mdi.storage.config`.
-    # 
+    #
     # @todo: allow the agent to store a file itself
     class FileManager
 
@@ -106,14 +106,14 @@ module UserApis
       attr_reader :description
 
       # @api public
-      # @return [String] a hex representation of the file MD5. 
+      # @return [String] a hex representation of the file MD5.
       attr_reader :md5
 
       # @api public
       # @return [String] a MIME type for this file. Note that the MIME type is not always known and default to `binary/octet-stream`
-      attr_reader :content_type 
+      attr_reader :content_type
 
-      # @param [Hash] opts a parameters hash 
+      # @param [Hash] opts a parameters hash
       # @options opts [String] :name name of the file
       # @options opts [String] :namespace namespace for the file
       # @options opts [String] :md5 a hexadecimal representation of the MD5 checksum of the file
