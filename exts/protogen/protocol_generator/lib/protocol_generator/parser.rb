@@ -27,7 +27,6 @@ module ProtocolGenerator
       protocol_set.config do
         set :java, :output_directory, hash_config['device_output_directory']
         set :ruby, :agent_name, hash_config['agent_name']
-        set :ruby, :user_callbacks_directory, hash_config['user_callbacks']
         set :ruby, :max_message_size, hash_config['message_size_limit']
         set :ruby, :message_part_size, hash_config['message_part_size']
         set :java, :output_path, hash_config['device_output_directory']
