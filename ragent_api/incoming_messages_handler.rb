@@ -42,8 +42,8 @@ module RagentIncomingMessage
     RAGENT.user_class_presence_subscriber.get_subscribers.each do |user_agent_class|
       next if user_agent_class.internal_config['subscribe_presence'] == false
 
-    PUNK.start('damned')
       begin
+        PUNK.start('damned')
         # set associated api as current sdk_api
         env = {
           'account' => account,
@@ -54,6 +54,10 @@ module RagentIncomingMessage
 
         # create Presence object
         presence = apis.mdi.dialog.create_new_presence(params)
+
+        # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+        user_agent_class.handle_presence(presence)
+
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse presence :\n#{params}")
@@ -61,15 +65,11 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][0] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- PRESENCE : parse params fail")
+      ensure
+        PUNK.drop('damned')
         release_current_user_api
-        return
       end
-      PUNK.drop('damned')
 
-      # process it
-      user_agent_class.handle_presence(presence)
-
-      release_current_user_api
     end # each user_agent_class
 
   end # handle_presence
@@ -172,8 +172,8 @@ module RagentIncomingMessage
 
       if user_agent_class.internal_config['dynamic_channel_str'].include? channel
 
-        PUNK.start('damned')
         begin
+          PUNK.start('damned')
           env = {
             'account' => account,
             'agent_name' => user_agent_class.agent_name
@@ -183,6 +183,12 @@ module RagentIncomingMessage
           apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
           set_current_user_api(apis)
 
+          # Say it
+          RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
+
+          # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+          user_agent_class.handle_message(ragent_msg)
+
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
           RAGENT.api.mdi.tools.log.info("Ragent error init api env :\n#{env}")
@@ -190,18 +196,11 @@ module RagentIncomingMessage
           SDK_STATS.stats['server']['err_parse'][1] += 1
           SDK_STATS.stats['server']['internal_error'] += 1
           PUNK.end('damned','ko','in',"SERVER <- MESSAGE : bad init apis set_current_user_api")
+        ensure
+          PUNK.drop('damned')
           release_current_user_api
-          return
         end
-        PUNK.drop('damned')
 
-        # Say it
-        RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
-
-        # process it
-        user_agent_class.handle_message(ragent_msg)
-
-        release_current_user_api
       end
     end # each user_agent_class
 
@@ -231,8 +230,8 @@ module RagentIncomingMessage
 
       next if user_agent_class.internal_config['subscribe_track'] == false
 
-      PUNK.start('damned')
       begin
+        PUNK.start('damned')
         env = {
           'account' => account,
           'agent_name' => user_agent_class.agent_name
@@ -244,6 +243,10 @@ module RagentIncomingMessage
 
         # create Track object
         track = apis.mdi.dialog.create_new_track(params)
+
+        # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+        user_agent_class.handle_track(track)
+
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse track :\n#{params}")
@@ -251,15 +254,11 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][2] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- TRACK : parse params fail")
+      ensure
+        PUNK.drop('damned')
         release_current_user_api
-        return
       end
-      PUNK.drop('damned')
 
-      # process it
-      user_agent_class.handle_track(track)
-
-      release_current_user_api
     end # each user_agent_class
 
 
@@ -284,8 +283,8 @@ module RagentIncomingMessage
     PUNK.end('new','ok','in',"SERVER <- ORDER for agent '#{assigned_agent.agent_name}'")
 
 
-    PUNK.start('damned')
     begin
+      PUNK.start('damned')
       env = {
         'env' => 'order',
         'agent_name' => assigned_agent.agent_name
@@ -296,14 +295,16 @@ module RagentIncomingMessage
 
       # create Order object
       order = apis.mdi.dialog.create_new_order(params)
+
+      # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+      assigned_agent.handle_order(order)
+
     rescue AgentNotFound => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       response.body = 'service unavailable'
       SDK_STATS.stats['server']['remote_call_unused'] += 1
       SDK_STATS.stats['server']['total_error'] += 1
       PUNK.end('damned','ko','in',"SERVER <- ORDER : agent not found")
-      release_current_user_api
-      return
     rescue Exception => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       RAGENT.api.mdi.tools.log.info("Ragent error parse order :\n#{params}")
@@ -311,15 +312,11 @@ module RagentIncomingMessage
       SDK_STATS.stats['server']['err_parse'][3] += 1
       SDK_STATS.stats['server']['internal_error'] += 1
       PUNK.end('damned','ko','in',"SERVER <- ORDER : parse params fail")
+    ensure
+      PUNK.drop('damned')
       release_current_user_api
-      return
     end
-    PUNK.drop('damned')
 
-    # process it
-    assigned_agent.handle_order(order)
-
-    release_current_user_api
   end # handle_order
 
 
@@ -345,8 +342,8 @@ module RagentIncomingMessage
 
       next if user_agent_class.internal_config['subscribe_collection'] == false
 
-      PUNK.start('damned')
       begin
+        PUNK.start('damned')
         env = {
           'account' => account,
           'agent_name' => user_agent_class.agent_name
@@ -357,7 +354,10 @@ module RagentIncomingMessage
         set_current_user_api(apis)
 
         # create Track object
-        track = apis.mdi.dialog.create_new_collection(params)
+        collection = apis.mdi.dialog.create_new_collection(params)
+
+        # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+        user_agent_class.handle_collection(collection)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse collection :\n#{params}")
@@ -365,15 +365,11 @@ module RagentIncomingMessage
         SDK_STATS.stats['server']['err_parse'][4] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         PUNK.end('damned','ko','in',"SERVER <- COLLECTION : parse params fail")
+      ensure
+        PUNK.drop('damned')
         release_current_user_api
-        return
       end
-      PUNK.drop('damned')
 
-      # process it
-      user_agent_class.handle_collection(track)
-
-      release_current_user_api
     end # each user_agent_class
 
   end # handle_collection
