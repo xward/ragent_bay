@@ -11,6 +11,9 @@ module ProtocolGenerator
     class Protocol
 
       attr_accessor :protocol_version, :protogen_version, :name
+      attr_reader :package
+
+      PROTOCOL_CALLBACKS = [:generic_error_callback, :out_of_sequence_callback]
 
       def initialize(params = {})
         @messages = params[:messages] || {}
@@ -21,9 +24,19 @@ module ProtocolGenerator
         @callbacks = {}
         @callbacks[:generic_error_callback] = params[:generic_error_callback]
         @version_string = nil
+        self.package = params[:package] if params[:package]
       end
 
-      # @params [ProtocolGenerator::Models::Message] msg a message to add to hsi protocol
+      # Allowed names are Java-style package names with only lowercase letters (numbers and underscores are also accepted)
+      def package=(new_package)
+        if new_package.match(/^([a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)*)$/)
+          @package = new_package
+        else
+          raise ArgumentError.new("Only Java-style package names that use lowercase letters are allowed (you can also use underscores and numbers but it is discouraged). Example of a valid package name: com.mycompany.example")
+        end
+      end
+
+      # @params [ProtocolGenerator::Models::Message] msg a message to add to this protocol
       # @return `true` is the message name was already declared in the protocol, `false` otherwise
       def add_message(msg)
         out = false
@@ -57,11 +70,14 @@ module ProtocolGenerator
       end
 
       # @param cb_name [Symbol]
-      # @param cb [String]
+      # @param cb [String] the method in the generated code to call
       def add_callback(cb_name, cb)
-        # todo(faucon_b): check that the callback is valid
-        @callbacks[cb_name] = cb
-        changed
+        if PROTOCOL_CALLBACKS.include?(cb_name)
+          @callbacks[cb_name] = cb
+          changed
+        else
+          raise Error::ProtocolDefinitionError.new("Callback #{cb_name} is not a valid callback for a protocol.")
+        end
       end
 
       # @param [Models::Cookie] cookie
@@ -86,7 +102,6 @@ module ProtocolGenerator
 
       # @param [String] msg_name name of the message to retrieve
       # @see ProtocolGenerator::Models::Messages#name
-      # todo(faucon_b) replace with message(:name, "name")
       def get_message(msg_name)
         @messages[msg_name]
       end
@@ -96,7 +111,7 @@ module ProtocolGenerator
       end
 
       # Return messages meeting a given criteria
-      # If no argument is give, returns all messages.
+      # If no argument is given, returns all messages.
       # @example Messages that the device can send to the server
       #     get_messages :sendable_from, :device
       # @example Messages that the server can receive (yes, that is the same thing)
@@ -158,7 +173,8 @@ module ProtocolGenerator
         @messages.keys
       end
 
-      # @return [Array<ProtocolGenerator::Models::Messages>] an array of messages that can be sent from the @a sender
+      # @param [Symbol] sender either :device or :server
+      # @return [Array<ProtocolGenerator::Models::Messages>] an array of messages that can be sent from the given sender
       def get_sendable_messages(sender)
         case sender
         when :device

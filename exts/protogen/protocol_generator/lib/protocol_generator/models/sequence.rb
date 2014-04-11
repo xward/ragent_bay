@@ -30,7 +30,7 @@ module ProtocolGenerator
         if args.size == 0
           return @shots.values
         elsif args.size == 1
-          return @shots.values.select{|shot| shot.way == args[0]}.first
+          return @shots.values.select{|shot| shot.way == args[0]}
         else
           raise ArgumentError.new("Unknown criteria: #{args}")
         end
@@ -38,6 +38,10 @@ module ProtocolGenerator
 
       def first_shot=(first_shot)
         @first_shot = first_shot
+      end
+
+      def first_shot
+        @first_shot
       end
 
       # @example

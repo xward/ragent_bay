@@ -25,7 +25,6 @@ module ProtocolGenerator
 
       protocol_set = Models::ProtocolSet.new
       protocol_set.config do
-        set :java, :package_name, hash_config['java_package']
         set :java, :output_directory, hash_config['device_output_directory']
         set :ruby, :agent_name, hash_config['agent_name']
         set :ruby, :user_callbacks_directory, hash_config['user_callbacks']
@@ -50,6 +49,8 @@ module ProtocolGenerator
         protocol_set << declare_protocol(protocol_path)
       end
 
+      protocol_set.config.set(:java, :package_name, protocol_set.first.package) # todo: update all plugins so that java_package is no longer a configuration value
+
       protocol_set.freeze
     end
 
@@ -64,6 +65,8 @@ module ProtocolGenerator
       protocol.protocol_version = input["protocol_version"]
       protocol.name = input["name"]
       protocol.add_callback(:generic_error_callback, input["generic_error_callback"]) if input['generic_error_callback']
+      protocol.add_callback(:out_of_sequence_callback, input["out_of_sequence_callback"]) if input['out_of_sequence_callback']
+      protocol.package = input["package"]
 
       # Messages
       puts "Building messages..."
@@ -111,6 +114,10 @@ module ProtocolGenerator
         declare_shot(seq_def['first_shot'], seq, seq_def['shots'], protocol)
         seq.first_shot = seq.shot(:name, seq_def['first_shot'])
         protocol.add_sequence(seq)
+        # todo: actually implement the feature
+        if seq_def['shots'][seq_def['first_shot']]['multiple']
+          raise Error::GenerationError.new('Starting a sequence with a multiple shot from the server is not supported yet.')
+        end
       end
 
       protocol.compute_ids
@@ -162,7 +169,7 @@ module ProtocolGenerator
         else
           params[:type] = protocol.get_message(type) # we know that the message has been declared earlier
         end
-        if msg_def['array'] == true
+        if field_def['array'] == true
           field = Models::ArrayField.new(params)
         else
           field = Models::Field.new(params)
@@ -228,6 +235,11 @@ module ProtocolGenerator
             end
           params[:receive_timeout] = shot_def['timeouts']['receive']
         end
+      end
+      if shot_def.has_key?('multiple') && shot_def['multiple'] == true
+        params[:multiple] = true
+      else
+        params[:multiple] = false
       end
       params[:next_shots] = next_shots
       shot = Models::Shot.new(params)

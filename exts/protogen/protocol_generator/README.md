@@ -17,17 +17,19 @@ The generated code takes care of the following problems:
 
 ## Dependencies
 
-You will need Ruby version 1.9 (Protogen has been tested on MRI Ruby 1.9.3).
+You will need Ruby version 1.9 (Protogen has been tested on MRI Ruby 1.9.3) or superior.
 
-If you want to generate and compile the device-side Java code, you will need a Java development environement. For compatibility with the Morpheus SDK and the current Java version on the device, Java 6 is recommended. You will need the `jar` and `javac` java build tools installed on your system (they come with any Java 6 JDK). It also needs the device core `.jar`. You can find a default `jar` in `config/mdi-framework-3.X.jar`. If you wish to use your own `jar`, you can define it in your configuration file.
+If you want to generate and compile the device-side Java code, you will need a Java 6 development environment. You will need the `jar` and `javac` java build tools installed on your system (they come with any Java 6 JDK). It also needs the device core `.jar`. You can find a default `jar` in `config/mdi-framework-3.X.jar`. If you wish to use your own `jar`, you can define it in your configuration file.
+
+Do not use Java 7 to compile Protogen unless you want to encounter strange errors when running your app...
 
 (deactivated) You will also need doxygen installed, if you wish to have documentation aside from generated code.
 
 ## Compatibility information
 
-Protogen generated device code has been tested with version 3.2.6 of the core (revision D3.2.6-87-gc72c37e, dpn "Deployment_MP6_light") and is probably incompatible with earlier versions.
+Protogen generated device code has been tested with version 3.4.1 of the core and is incompatible with earlier versions.
 
-Server code has been tested with the version v0.2.4-rc204 of the server SDK VM (this version can handle only one protocol file. A small update to make the server SDK accept several protocol files is needed for this version), and is probably compatible with earlier versions as well given small adaptations to the Protogen configuration file used by the server SDK.
+Server code has been tested with the version v0.2.5-rc038 of the server SDK VM.
 
 ## Usage
 
@@ -82,10 +84,9 @@ The file `doc/protogen_for_the_user.md` explains how a developer can use the Pro
 
 ## Known issues
 
-* As of core version 3.2.6, the `MessageGateHelper` defined by the core and used by Protogen can call the callback `onTimeout()` even if the `onReplyComplete()` callback is called.
-For the Protogen user, this means that the Protogen callback "timeout_callback" can be called in parallel with the callback "received_callback".
-It can occurs if the timeout expires during the processing in `onReplyComplete()` or just before the conversation is marked as terminated.
-This was considered as a bug in the `MessageGateHelper`, so Protogen has no fix around this problem.
+* [Major] The cookies system needs more work. The main issue with the current one is that it maintains a state in Redis (passwords) shared between agents that is necessary to read cookies. However, this assumes that 1) the Redis cache is reliable and permanent (untrue, by the very concept of a cache it could be flushed at any moment) 2) the Redis cache is shared between all agents (true... for now, one should not rely on it). Basically, the fact that the cookie system works is a coincidence. Consider moving any permanent, shared storage to the MongoDB database.
+
+* As of core version 3.4.0, the `Message` and `Query` classes do not guarantee any ordering of the callbacks calls. For instance, the onResponseTimeOut callback could be called just before a onReply callback. Furthermore, the callback calls could be interleaved. This is considered a limitation of the `MessageGateHelper` and will be solved in a future version of the core. For now, Protogen does not offer any workaouround for this, as 1) the probability of this actually happening is low and 2) there is a plan to solve this in the core.
 
 * When generating device code, Protogen will exit with status 0 (success) even if the compilation of the generated Java code failed. Protogen will output the result of the compilation, check that the compilation was successful. Note that if there are no bugs in Protogen, the compilation should never fail. But in the real life...
 
@@ -109,8 +110,6 @@ This was considered as a bug in the `MessageGateHelper`, so Protogen has no fix 
 ```
 
 If you know how to reproduce this exception, please report it, as for now it is not known how to reproduce the error.
-
-Also note that the cookie feature has not been thoroughly tested.
 
 ## Tests
 

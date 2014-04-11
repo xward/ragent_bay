@@ -44,14 +44,34 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
             ExternalApi.reply(current_message, error_msg)
             raise e
           end
+          if result.is_a?(Array)
+            if result.size == 0
+              raise SequenceError.new("Protogen: The callback for sequence #{@id} shot #{shot_id} returned an empty array. Aborting sequence.")
+            end
+          end
           next_shots = @shots[shot_id].next_shots
           if next_shots.size > 0 # this is not the end of the sequence
             CC.logger.info("Protogen: callback returned an object of type #{result.class.to_s}")
             next_shots.each do |next_shot_id|
               next_shot = @shots[next_shot_id]
-              if result.class == next_shot.message_type
+              if next_shot.multiple? && result.is_a?(Array)
+                if result[0].class == next_shot.message_type # ok, we found the correct next_shot
+                  result.each do |msg|
+                    if msg.class != next_shot.message_type
+                      raise SequenceError.new("Protogen: The callback for sequence #{@id} shot #{shot_id} returned an array with different message type, aborting sequence.")
+                    end
+                    msg.protogen_meta_data['protogen_sequence_id'] = @id
+                    msg.protogen_meta_data['protogen_shot_id'] = next_shot.id
+                    msg.protogen_meta_data['protogen_message_count'] = result.size
+                    ExternalApi.reply(current_message, msg)
+                  end
+                  CC.logger.info("Protogen: continuing sequence #{@id}")
+                  return
+                end
+              elsif result.class == next_shot.message_type
                 result.protogen_meta_data['protogen_sequence_id'] = @id
                 result.protogen_meta_data['protogen_shot_id'] = next_shot.id
+                result.protogen_meta_data['protogen_message_count'] = 1
                 ExternalApi.reply(current_message, result)
                 CC.logger.info("Protogen: continuing sequence #{@id}")
                 return
@@ -73,14 +93,20 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
         attr_accessor :received_callback
         attr_accessor :id
         attr_accessor :next_shots
+        attr_accessor  :multiple
 
         # next_shots is an array of shots id that can follow this shot
-        def initialize(id, message_type, way, next_shots)
+        def initialize(id, message_type, way, next_shots, multiple)
           @id = id
           @message_type = message_type
           @received_callback = nil
           @way = way
           @next_shots = next_shots
+          @multiple = multiple
+        end
+
+        def multiple?
+          @multiple
         end
 
       end
@@ -104,12 +130,12 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
             shots = []
             <%- seq.shots.each do |shot|
                 unless shot.last? -%>
-            shot = Shot.new(<%= shot.id %>, Protogen::V<%= protocol.protocol_version %>::Messages::<%= shot.message_type.name %>, '<%= shot.way %>', <%= shot.next_shots.map{ |next_shot| next_shot.id } %>)
+            shot = Shot.new(<%= shot.id %>, Protogen::V<%= protocol.protocol_version %>::Messages::<%= shot.message_type.name %>, '<%= shot.way %>', <%= shot.next_shots.map{ |next_shot| next_shot.id } %>, <%= shot.multiple? %>)
             <%- else -%>
-            shot = Shot.new(<%= shot.id %>, Protogen::V<%= protocol.protocol_version %>::Messages::<%= shot.message_type.name %>, '<%= shot.way %>', [])
+            shot = Shot.new(<%= shot.id %>, Protogen::V<%= protocol.protocol_version %>::Messages::<%= shot.message_type.name %>, '<%= shot.way %>', [], <%= shot.multiple? %>)
             <%- end
                if shot.way == :to_server -%>
-            shot.received_callback = Proc.new {|message| <%= protocol.name %>::V<%=protocol.protocol_version%>::<%= seq.name %>::<%= shot.callback(:received_callback) %>(message)}
+            shot.received_callback = Proc.new {|message| <%= Helpers::Ruby.protocol_module_name(protocol) %>::V<%=protocol.protocol_version%>::<%= seq.name %>::<%= shot.callback(:received_callback) %>(message)}
             <%- end -%>
             shots << shot
             <%- end -%>
@@ -129,8 +155,9 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
         case version
         <%- protocol_set.protocols.each do |protocol| -%>
         when <%= protocol.protocol_version %>
+          <%- if protocol.sequences(:first_shot, :to_device).size > 0 -%>
           case sequence_name
-          <%- protocol.sequences(:first_shot, :to_device).each do |seq| -%>
+            <%- protocol.sequences(:first_shot, :to_device).each do |seq| -%>
           when :<%= seq.name.to_sym %>
           if message.class != Protogen::V<%= protocol.protocol_version %>::Messages::<%= seq.shot(:first).message_type.name %>
             raise SequenceError.new("Impossible to start the sequence <%= seq.name %> version #{version} with a message of type #{message.class.to_s} (expected Protogen::V<%= protocol.protocol_version %>::Messages::<%= seq.shot(:first).message_type.name %>), check your sequence definition.")
@@ -138,10 +165,13 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
           message.protogen_meta_data['protogen_sequence_id'] = <%= seq.id %>
           message.protogen_meta_data['protogen_shot_id'] = <%= seq.shot(:first).id %>
           ExternalApi.push_to_device(asset, account, message)
-          <%- end -%>
+            <%- end -%>
           else
-            raise SequenceError.new("Sequence #{sequence_name} is not defined for version #{version} of the protocol <%= protocol.name %>.")
+            raise SequenceError.new("Sequence #{sequence_name} is not defined or can not be initiated from the server for version #{version} of the protocol <%= protocol.name %>.")
           end
+          <%- else -%>
+          raise SequenceError.new("The protocol version #{version} does not allow the server to start any sequence.")
+          <%- end -%>
         <%- end -%>
         else
           raise UnknownVersion.new("Unknown version #{version}, can not start sequence #{sequence_name}.")

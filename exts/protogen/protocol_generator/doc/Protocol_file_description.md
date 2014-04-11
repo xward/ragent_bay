@@ -6,21 +6,24 @@ The root object of this document must have these mandatory attributes:
 
 * "protocol_version": (int) must be incremented each time a change is made to the protocol file (to ensure the device and the server have the same version of the protocol).
 * "protogen_version": (int) for future use, set it to 1 for now.
+* "package": (string) Java-style package name using only lowercase letters. Used to namespace the protocol.
 * "messages": defines the messages exchanged between the server and the device. A message is merely a data format.
 * "sequences": defines the sequences. A sequence is a succession of message exchanges between device and server.
 * "cookies": defines cookies attached to messages (disclaimer: cookies functionnality has not been fully tested).
 * "name": (string) name of the protocol. Must begin with an uppercase letter.
 
-An additionnal optional attribute can be defined:
+Optional attributes can be defined:
 
-* generic_error_callback: (string) callback to be called when an error occured and there is no more specific appropriate callback
+* generic_error_callback: (string) callback to be called when an error occured and there is no more specific appropriate callback. Must be defined on the global sequence controller.
+* out_of_sequence_callback: (string) callback to be called when a Protogen message was received and decoded by the device, but is not associated with any running sequence (for instance, this could happen if the device sends a query to the server, then reboots, then receives the response). If not defined, Protogen will simply drop the message.
 
 Template of the protocol file:
 
    {
-      "name": "MyProtocolName"
+      "name": "MyProtocolName",
       "protocol_version": 1,
       "protogen_version": 1,
+      "package":"com.test.example",
       "messages": {},
       "cookies": {},
       "sequences": {}
@@ -87,6 +90,8 @@ See the `protogen.example.json` file for an example protocol file. You may also 
    |server_error_callback: string    |
    |timeouts: object                 |
    |retry_policy: object             |
+   |multiple: boolean                |
+   |all_received_callback: string    |
    +---------------------------------+
 
 ## Validation schema
@@ -213,7 +218,7 @@ A shot name must begin with an uppercase letter. The shot name is the key used t
 
 * "way": "toDevice" or "toServer".
 * "message_type" (string): a message name that will carry the data of this shot. The message "_way" must be compatible with the sequence "way".
-* "received_callback" (string): a callback trigerred on the received when it receives the message.
+* "received_callback" (string): a callback trigerred on the receiver when it receives the message.
 
 If the shot is not the end of the sequence, the field "next_shots" (array of strings) must also be defined. It is an array that defines which messages can be sent in response to this shot. Each element in this array must be a message name.
 
@@ -232,6 +237,10 @@ Additional optional attributes can be defined if the sender is the device:
 * send_success_callback
 
 If these callbacks are not explicitely defined, Protogen will default to a basic callback that just prints the event in the logs (or does nothing for the "send_success_callback").
+
+Optional attributes can be defined if the sender is the server:
+
+* "multiple" (boolean): if true, the servers can send several messages at once for this shot. The device callback "received_callback" will be trigered each time. This callback is given the current message number, and the expected total number of messages. The current message number matches the index in the array sent by the server but note that the ordering of received messages is unknown. An additional callback "all_received_callback" (string) must be defined for such a shot. It will be called when all messages have been received and the sequence is ready to be continued. If omitted, default to false. Due to a Protogen limitation, a sequence can not currently start with a multiple shot (but you can still use an array attribute in the first message)
 
 Callbacks names must be unique in the sequence.
 
@@ -253,7 +262,7 @@ A shot sent from the device can have associated timeouts. If no timeouts are def
 Timeout values are given in seconds.
 
 The "send" timeout is the maximum duration the device has to send a message to the server.
-The "receive" timeout is the maximum duration the device will wait for the reply to one of its queries. If Protogen has to split messages, this is the maximum duration for receiving *all* the message parts.
+The "receive" timeout is the maximum duration the device will wait for the reply to one of its queries. If Protogen has to split messages, this is the maximum duration for receiving *all* the message parts. If the shot has "multiple: true" set, then the receive timeout is the maximum duration for retrieveing *all* messages.
 
 One can not define timeouts for shots that are sent to the device.
 The "receive" timeout can only be defined if a server reply is expected i.e. if at least one "next_shot" is defined.
@@ -277,12 +286,12 @@ In the above example, if the device does not receive an answer to its query afte
 
 A retry policy has two attributes:
 
-* "delay" (mandatory, int): duration the device will wait before sending a new message. This duration starts *once the decided it will not receive a response*, and so it is not the duration between two successive sendings.
+* "delay" (mandatory, int): duration the device will wait before sending a new message. This duration starts *once the device decided it will not receive a response*, and so it is not the duration between two successive sendings.
 * "attempts" (optional, int): number of attempts before aborting the sequence. If missing, the device will perform an infinite amount of retries (and thus, will never call the "aborted" callback because of a timeout). Must be > 1.
 
 ##### A note on callbacks #####
 
-There are several situations in which the server will not answer to the device message. When such a situation, occurs, the corresponding callback (defined in the shot) will be called.
+There are several situations in which the server will not answer to the device message. When such a situation occurs, the corresponding callback (defined in the shot) will be called.
 Once this callback is executed, Protogen checks for the existence of a retry policy in the shot. If the policy dictates that there is no attempt left, or if there is no retry policy, then Protogen will abort the sequence and call the "aborted" callback (defined at the sequence level).
 Thus, the error callbacks such as "send_timeout_callback" will be called even if, because of the retry policy, the sequence did not abort.
 

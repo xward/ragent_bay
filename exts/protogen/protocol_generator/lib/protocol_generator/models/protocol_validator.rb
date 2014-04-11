@@ -4,6 +4,7 @@ module ProtocolGenerator
   # Should be used only for validation that can be conducted only once the protocol is built,
   # models should raise an exception as soon as they detect they are in a incoherent state.
   # If this class is to grow, consider delegating validation to the models instead.
+  # @todo better error messages (with more details about the error)
   class ProtocolValidator
 
     # Define a method to register validators
@@ -17,7 +18,7 @@ module ProtocolGenerator
     # Register validators
     # A validator is a method that takes a protocol as parameter, and returns an array of errors.
     # If the returned array is empty, this means that no error occured.
-    validators :id_uniqueness, :field_presence, :callback_name_uniqueness, :callback_way_compatibility
+    validators :id_uniqueness, :field_presence, :callback_name_uniqueness, :callback_way_compatibility, :completeness
 
     ############################
     # Validators
@@ -73,8 +74,19 @@ module ProtocolGenerator
       out = []
       protocol.sequences.each do |seq|
         seq.shots.each do |shot|
-          out << "Invalid callbacks in shot #{shot.name} sequence #{seq.name}" unless shot.validate_callbacks
+          out << "Invalid or missing callbacks in shot #{shot.name} sequence #{seq.name}" unless shot.validate_callbacks
         end
+      end
+      out
+    end
+
+    def completeness(protocol)
+      out = []
+      if protocol.package.nil?
+        out << "Protocol has no valid package name"
+      end
+      if protocol.name.nil?
+        out << "Protocol has no valid name"
       end
       out
     end

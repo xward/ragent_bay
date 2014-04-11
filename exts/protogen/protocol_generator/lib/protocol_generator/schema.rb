@@ -24,7 +24,7 @@ module ProtocolGenerator
     receive: 60
   }
 
-  AVAILABLE_CALLBACKS = [:received_callback, :ack_timeout_callback, :cancel_callback, :response_timeout_callback, :send_timeout_callback, :server_nack_callback, :send_success_callback, :server_error_callback] # make sure to update the SHOTS schema too, and the Java controller (dispatcher plugin) if relevant
+  AVAILABLE_CALLBACKS = [:all_received_callback, :received_callback, :ack_timeout_callback, :cancel_callback, :response_timeout_callback, :send_timeout_callback, :server_nack_callback, :send_success_callback, :server_error_callback] # make sure to update the SHOTS schema too, and the Java controller (dispatcher plugin) if relevant
 
   module Schema
 
@@ -46,7 +46,6 @@ module ProtocolGenerator
       'required' => true,
       "properties" => {
         "plugins" => {'type' => 'array', 'required' => true},
-        "java_package" => {'type' => 'string', 'required' => true},
         "mdi_framework_jar" => {'type' => 'string', 'required' => false},
         "keep_java_source" => {'type' => 'bool', 'required' => false},
         "keep_java_jar" => {'type' => 'bool', 'required' => false},
@@ -141,6 +140,7 @@ module ProtocolGenerator
             "server_nack_callback" => {"type" => "string", "required" => false},
             "send_success_callback" => {"type" => "string", "required" => false},
             "server_error_callback" => {"type" => "string", "required" => false},
+            "all_received_callback" => {"type" => "string", "required" => false},
             "retry_policy" => {
               "type" => "object",
               "required" => false,
@@ -178,7 +178,9 @@ module ProtocolGenerator
         "sequences" => SEQUENCES,
         "protocol_version" => {"type" => "int", "required" => true},
         "protogen_version" => {"type" => "int", "required" => true, "enum" => [1]},
-        "generic_error_callback" => {"type" => "string", "required" => false}
+        "generic_error_callback" => {"type" => "string", "required" => false},
+        "out_of_sequence_callback" => {"type" =>"string", "required" => false},
+        "package" => {"type" => "string", "required" => true}
       }
     }.freeze
 
