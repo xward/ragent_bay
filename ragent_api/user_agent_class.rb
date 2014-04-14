@@ -286,7 +286,7 @@ class UserAgentClass
 
     if delta_t > 10.0
       PUNK.start('orderAgent')
-      PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
+      PUNK.end('orderAgent','ko','process',"AGENT:#{agent_name}TNEGA callback ORDER take too much time")
     end
 
     RUBY_AGENT_STATS.report_new_response_time("order|#{agent_name}", delta_t)
@@ -314,12 +314,12 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][4] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("collection_#{agent_name}", "#{e}")
-      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback ORDER fail in #{(delta_t * 1000).round}ms")
+      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback COLLECTION fail in #{(delta_t * 1000).round}ms")
     end
 
     if delta_t > 3.0
       PUNK.start('collectionAgent')
-      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback TRACK take too much time")
+      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback COLLECTION take too much time")
     end
 
     RUBY_AGENT_STATS.report_new_response_time("collection|#{agent_name}", delta_t)
