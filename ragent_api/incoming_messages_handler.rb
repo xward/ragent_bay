@@ -135,9 +135,7 @@ module RagentIncomingMessage
 
         push_something_to_device(msgAck.to_hash)
 
-        if RAGENT.running_env_name == 'sdk-vm'
-          TestsHelper.id_generated(parent_id, tmp_id_from_device)
-        end
+        TestsHelper.id_generated(parent_id, tmp_id_from_device)
 
         SDK_STATS.stats['server']['total_ack_queued'] += 1
         PUNK.end('ackmsgvm','ok','in',"SERVER -> ACK[#{parent_id}] of MSG[#{tmp_id_from_device}]")
