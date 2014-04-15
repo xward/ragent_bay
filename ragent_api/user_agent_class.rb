@@ -336,7 +336,7 @@ class UserAgentClass
       new_message_from_queue(params, queue)
       delta_t = Time.now - start_t
       RUBY_AGENT_STATS.report_a_last_activity("queue_#{queue}_#{agent_name}", "queue #{queue}")
-      PUNK.end('collectionAgent','ok','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE with collection '#{collection.name}' in #{(delta_t * 1000).round}ms")
+      PUNK.end('otherqueueAgent','ok','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE with queue #{queue} in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -344,12 +344,12 @@ class UserAgentClass
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][4] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("queue_#{queue}_#{agent_name}", "#{e}")
-      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE fail in #{(delta_t * 1000).round}ms")
+      PUNK.end('otherqueueAgent','ko','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE failed in #{(delta_t * 1000).round}ms")
     end
 
     if delta_t > 3.0
-      PUNK.start('collectionAgent')
-      PUNK.end('collectionAgent','ko','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE take too much time")
+      PUNK.start('otherqueueAgent')
+      PUNK.end('otherqueueAgent','ko','process',"AGENT:#{agent_name}TNEGA callback OTHER_QUEUE took too much time")
     end
 
     RUBY_AGENT_STATS.report_new_response_time("queue_#{queue}_#{agent_name}", delta_t)

@@ -393,9 +393,9 @@ module RagentIncomingMessage
         }
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
         set_current_user_api(apis)
-        PUNK.drop("damned")
         user_agent_class.handle_other_queue(params, queue_name)
       ensure
+        PUNK.drop("damned")
         release_current_user_api
       end
 
