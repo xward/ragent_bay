@@ -135,9 +135,7 @@ module RagentIncomingMessage
 
         push_something_to_device(msgAck.to_hash)
 
-        if RAGENT.running_env_name == 'sdk-vm'
-          TestsHelper.id_generated(parent_id, tmp_id_from_device)
-        end
+        TestsHelper.id_generated(parent_id, tmp_id_from_device)
 
         SDK_STATS.stats['server']['total_ack_queued'] += 1
         PUNK.end('ackmsgvm','ok','in',"SERVER -> ACK[#{parent_id}] of MSG[#{tmp_id_from_device}]")
@@ -373,6 +371,35 @@ module RagentIncomingMessage
     end # each user_agent_class
 
   end # handle_collection
+
+  # Message handler for an agent which has subscribed to an arbitrary queue
+  def self.handle_other_queue(params, queue_name)
+
+    PUNK.start('new')
+    RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incoming message on queue '#{queue_name}':\n#{params}")
+    PUNK.end('new','ok','in',"SERVER <- MESSAGE : receive from queue #{queue_name}")
+
+    # TODO: add stats
+
+    # forward to agents
+    RAGENT.user_class_other_subscribers(queue_name).get_subscribers.each do |user_agent_class|
+      begin
+        PUNK.start("damned")
+        env = {
+          'account' => 'other_queue',
+          'agent_name' => user_agent_class.agent_name
+        }
+        apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
+        set_current_user_api(apis)
+        user_agent_class.handle_other_queue(params, queue_name)
+      ensure
+        PUNK.drop("damned")
+        release_current_user_api
+      end
+
+    end
+
+  end
 
 
   # futur !
