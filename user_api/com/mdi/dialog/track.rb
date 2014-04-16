@@ -183,6 +183,15 @@ module UserApis
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
           return self.fields_data if field == nil
 
+          # verify value type
+          case field['field_type']
+          when 'integer'
+            raise "#{value} is not an integer" if "#{value}" != "#{value.to_i}"
+          when 'string'
+            # NOP
+          when 'boolean'
+            raise "#{value} is not a boolean" if ("#{value}" != 'true' and "#{value}" != 'false')
+          end
 
           raw_value = value
           # decode if Ragent. In VM mode, raw_value = value, nothing else to do
