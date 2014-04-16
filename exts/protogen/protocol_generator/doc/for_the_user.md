@@ -68,8 +68,6 @@ msg = Protogen_my_agent::Protogen::V2::Messages::MyMessage.new(my_field: "initia
 msg.my_field = "hello!"
 ```
 
-The protogen configuration file defines a "user_callbacks" variable, which is a path to a folder. Protogen will look in this folder for files ending in `.rb` and require these files. It is advised to define Protogen callbacks in these files.
-
 A Protogen callback is a module method defined in a module whose name is the name of the sequence. Each sequence module belongs in a version module, and each version module belongs in top-level module.
 
 This will become clear with an example. Let's take the following protocol file stub:
