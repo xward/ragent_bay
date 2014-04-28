@@ -7,7 +7,7 @@
 module UserApis
   module Mdi
     module Dialog
-      # A class that represents a standard collection. Besically it is a list of presence/message/track record with a start and an end time for a specific asset.
+      # A class that represents a standard collection. Basically it is a list of presence/message/track record with a start and an end time for a specific asset.
       # @api public
       class CollectionClass < Struct.new(:name, :type, :meta, :account, :id, :asset, :start_at, :stop_at, :presences, :tracks, :messages)
 
