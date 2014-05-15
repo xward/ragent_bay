@@ -9,7 +9,7 @@ module UserApis
     module Dialog
       # An event received when a device change its connection status
       # @api public
-      class PresenceClass < Struct.new(:asset, :time, :bs, :type, :reason, :account, :meta)
+      class PresenceClass < Struct.new(:id, :asset, :time, :bs, :type, :reason, :account, :meta)
 
         # ---
         # Presence hash :
@@ -80,6 +80,7 @@ module UserApis
 
             self.meta = struct['meta']
             payload = struct['payload']
+            self.id = payload['id']
             self.asset = payload['asset']
             self.time = payload['time']
             self.bs = payload['bs']
@@ -110,6 +111,7 @@ module UserApis
           r_hash = {}
           r_hash['meta'] = self.meta
           r_hash['payload'] = {
+            'id' => self.id,
             'asset' => self.asset,
             'time' => self.time,
             'bs' => self.bs,
