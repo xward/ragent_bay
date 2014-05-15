@@ -28,7 +28,7 @@ module UserApis
 
         # Inject a message in the server queue on a specific channel (ie push a message to the server)
         # @return true on success
-        # @param [CloudConnectServices::Message] msg the message to inject
+        # @param [MessageClass] msg the message to inject
         # @param [String] channel channel the message will be posted to
         # @note Be wary of "infinite message loops" with this method.
         # @note: if id is not nil (ie received from the cloud or duplicated), the injection will fail.
@@ -95,7 +95,7 @@ module UserApis
 
         # Inject a track in the server queue (ie push a track to the server)
         # @return true on success
-        # @param [CloudConnectServices::Track] track the track to send
+        # @param [TrackClass] track the track to send
         # @example Injecte a new track to the cloud
         #   new_track = user_api.mdi.dialog.create_new_track
         #   new_track.recorded_at = Time.now.to_i
