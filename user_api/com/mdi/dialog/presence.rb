@@ -74,7 +74,7 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class' => 'presence'}
             self.type = 'connect'
           else
 
@@ -88,6 +88,8 @@ module UserApis
             self.account = meta['account']
 
           end
+
+          # TODO futur: raise if self.meta.class != 'presence'
 
           if type != 'connect' && type != 'reconnect' && type != 'disconnect' && type != 'failed_connect'
             raise "Wrong type of presence : #{type}"

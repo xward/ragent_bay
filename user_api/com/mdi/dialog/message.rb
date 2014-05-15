@@ -79,7 +79,7 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class'=> 'message'}
             self.type = 'message'
           else
 
@@ -147,6 +147,7 @@ module UserApis
           r_hash = {}
           r_hash['meta'] = self.meta
           r_hash['meta'] = {} if r_hash['meta'] == nil
+          r_hash['meta']['class'] = 'message'
           r_hash['meta']['account'] = self.account
           r_hash['payload'] = {
             'payload' => self.content,

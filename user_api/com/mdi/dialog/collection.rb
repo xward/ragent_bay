@@ -57,7 +57,7 @@ module UserApis
 
           if struct.blank?
             self.name = 'unknown'
-            self.meta = {}
+            self.meta = {'class' => 'collection'}
             self.account = ''
             self.id = -1
             self.asset = ''
@@ -75,31 +75,25 @@ module UserApis
             self.start_at = payload['start_at'].to_i
             self.stop_at = payload['stop_at'].to_i
 
+            # TODO futur: raise if self.meta.class != 'collection'
+
             self.data = []
             if payload['data'].is_a? Array
               payload['data'].each do |el|
 
+                klass = el['meta']['class']
 
-                # todo: arg we can't be sure what el is, so we try to cast them as object. This is rubbish, it can never work well.
-                # This is shit, slow, and will never really works.
+                raise "Undefined class #{el['meta']}" if klass == nil
 
-                obj = nil
-                hash = {'meta'=> self.meta, 'payload'=> el}
-                # presence ?
-                begin
-                  obj = user_api.mdi.dialog.create_new_presence(hash) if obj == nil
-                rescue Exception => e
-                end
-                begin
-                  obj = user_api.mdi.dialog.create_new_message(hash) if obj == nil
-                rescue Exception => e
-                end
-                begin
-                  obj = user_api.mdi.dialog.create_new_track(hash) if obj == nil
-                rescue Exception => e
+                case klass
+                when 'presence'
+                  self.data <<  user_api.mdi.dialog.create_new_presence(el)
+                when 'message'
+                  self.data <<  user_api.mdi.dialog.create_new_message(el)
+                when 'track'
+                  self.data <<  user_api.mdi.dialog.create_new_track(el)
                 end
 
-                self.data << obj
               end
             end
 

@@ -48,7 +48,8 @@ module UserApis
               inject_hash = {
                 "meta" => {
                   "account" =>     message.account,
-                  "cookies" =>     message.cookies
+                  "cookies" =>     message.cookies,
+                  "class" => 'message'
                   },
                 "payload" => {
                   "id" =>          out_id,     # Indigen integer
