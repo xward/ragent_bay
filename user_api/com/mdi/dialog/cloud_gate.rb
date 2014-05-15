@@ -130,6 +130,51 @@ module UserApis
         end
       end
 
+        # Inject a collection in the server queue (ie push a track to the server)
+        # @return true on success
+        # @param [CollectionClass] track the track to send
+      def inject_collection(collection)
+          begin
+            PUNK.start('injectcollection','inject collection to cloud ...')
+
+            raise "Collection id #{msg.id} has already been sent into the cloud. Dropping injection."  if collection.id != nil
+
+            # now push all elements of the collection
+            collection.data.each do |el|
+              if el.id != nil
+                CC.logger.info("Injection el of collection #{el.class}")
+                case el.class
+                when "PresenceClass"
+                  # NYI
+                when "MessageClass"
+                  user_api.mdi.dialog.cloud_gate.inject_message(el, el.channel) # channel is good ? no idea !
+                when "TrackClass"
+                  user_api.mdi.dialog.cloud_gate.inject_track(el)
+                end
+              end
+            end
+
+            # todo: put some limitation
+            CC.push(collection.to_hash,'collection')
+
+
+            # success !
+
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
+            return true
+          rescue Exception => e
+            user_api.mdi.tools.log.error("Error on inject collection")
+            user_api.mdi.tools.print_ruby_exception(e)
+            PUNK.end('injecttrack','ko','out',"SERVER <- SERVER COLLECTION")
+            # stats:
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
+          end
+        end
+
+      end
+
     end
   end
 end
