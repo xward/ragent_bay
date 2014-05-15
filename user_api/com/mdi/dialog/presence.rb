@@ -23,6 +23,12 @@ module UserApis
         # "account" (account name type String).
         # +++
 
+
+        # @!attribute [rw] id
+        #   @api public
+        #   @return [Integer] a unique message ID set by the server.
+        #   Don't touch this
+
         # @!attribute [rw] asset
         #   @api public
         #   @return [String] the IMEI of the device or other similar unique identifier.

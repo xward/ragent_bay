@@ -14,6 +14,7 @@ module UserApis
         # @!attribute [rw] name
         #   @api public
         #   @return [String] name of the collection
+        #   Don't touch this
 
         # @!attribute [rw] type
         #   @api public
