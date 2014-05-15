@@ -67,7 +67,7 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class' => 'track'}
 
           else
             self.meta = struct['meta']
@@ -81,6 +81,8 @@ module UserApis
             self.longitude = payload['longitude'].to_f
             self.recorded_at = payload['recorded_at'].to_i
             self.received_at = payload['received_at'].to_i
+
+            # TODO futur: raise if self.meta.class != 'track'
 
             self.fields_data = []
             payload.each do |k, v|
@@ -151,7 +153,8 @@ module UserApis
         def to_hash_to_send_to_cloud
           r_hash = {}
           r_hash['meta'] = {
-            'account' => self.account
+            'account' => self.account,
+            'class' => 'track'
           }
           r_hash['payload'] = {
             'id' => CC.indigen_next_id(self.asset),

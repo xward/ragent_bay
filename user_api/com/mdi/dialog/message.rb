@@ -108,6 +108,8 @@ module UserApis
               raise "Message: wrong type of message : '#{type}'"
             end
 
+            # TODO futur: raise if self.meta.class != 'message'
+
             if self.id.blank?
               self.id = CC.indigen_next_id(self.asset)
             end
@@ -120,7 +122,6 @@ module UserApis
         def user_api
           @user_apis
         end
-
 
         # Hash representation of a message.
         #
