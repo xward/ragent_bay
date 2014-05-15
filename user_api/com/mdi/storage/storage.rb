@@ -4,6 +4,7 @@
 #########################################################
 
 require_relative 'tracking_field_mapping'
+require_relative 'collection_definitions_mapping'
 
 module UserApis
   module Mdi
@@ -45,6 +46,11 @@ module UserApis
       # @api_private
       def tracking_fields_info
         @tracking_fields_info ||= Storage::TrackFieldMappingClass.new(user_api)
+      end
+
+      # @api_private
+      def collection_info
+        @collection_definitions ||= Storage::CollectionDefinitionsMappingClass.new(user_api)
       end
 
       # This is where your configuration is stored (setted in config/your_agent.yml)
