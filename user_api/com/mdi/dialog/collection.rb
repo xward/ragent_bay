@@ -140,6 +140,13 @@ module UserApis
           r_hash
         end
 
+        # compute and set the start_at and stop_at from data stored in collection
+        def crop_start_stop_time_from_data
+          # use recorded at (for tracks & message), time pour présence
+
+
+        end
+
       end #Collection
     end #Dialog
   end #Mdi
