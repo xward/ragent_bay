@@ -23,19 +23,19 @@ module UserApis
 
         # @!attribute [rw] latitude
         #   @api public
-        #   @return [Integer] latitude of the asset position when the track was recorded, in degree * 10^-5
+        #   @return [Float] latitude of the asset position when the track was recorded, in degree * 10^-5
 
         # @!attribute [rw] latitude
         #   @api public
-        #   @return [Integer] longitude of the asset position when the track was recorded, in degree * 10^-5
+        #   @return [Float] longitude of the asset position when the track was recorded, in degree * 10^-5
 
         # @!attribute [rw] recorded_at
         #   @api public
-        #   @return [String] when the track was recorded by the device or the provider
+        #   @return [Bignum] when the track was recorded by the device or the provider
 
         # @!attribute [rw] received_at
         #   @api public
-        #   @return [String] when the track was received by the server
+        #   @return [Bignum] when the track was received by the server
 
         # @!attribute [rw] fields_data
         #   @api public
@@ -78,8 +78,8 @@ module UserApis
 
             self.latitude = payload['latitude'].to_f
             self.longitude = payload['longitude'].to_f
-            self.recorded_at = payload['recorded_at']
-            self.received_at = payload['received_at']
+            self.recorded_at = payload['recorded_at'].to_i
+            self.received_at = payload['received_at'].to_i
 
             self.fields_data = []
             payload.each do |k, v|
@@ -127,8 +127,8 @@ module UserApis
           r_hash['payload'] = {
             'id' => self.id,
             'asset' => self.asset,
-            'recorded_at' => self.recorded_at,
-            'received_at' => self.received_at,
+            'recorded_at' => self.recorded_at.to_i,
+            'received_at' => self.received_at.to_i,
             'latitude' => self.latitude.to_f,
             'longitude' => self.longitude.to_f
           }
@@ -157,7 +157,7 @@ module UserApis
             'sender' => 'ragent', # todo: add in model of db viewer (todo)
             'asset' => self.asset,
             'received_at' => Time.now.to_i,
-            'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at,
+            'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at.to_i,
             'latitude' => self.latitude.to_f,
             'longitude' => self.longitude.to_f
           }

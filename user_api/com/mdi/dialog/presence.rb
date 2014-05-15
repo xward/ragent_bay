@@ -29,7 +29,7 @@ module UserApis
 
         # @!attribute [rw] time
         #   @api public
-        #   @return [Fixnum] a timestamp indicating when this event was received.
+        #   @return [Bignum] a timestamp indicating when this event was received.
 
         # @!attribute [rw] bs
         #   @api public

@@ -37,11 +37,11 @@ module UserApis
 
         # @!attribute [rw] start_at
         #   @api public
-        #   @return [Integer] a timestamp indicating when the collection started
+        #   @return [Bignum] a timestamp indicating when the collection started
 
         # @!attribute [rw] stop_at
         #   @api public
-        #   @return [Integer] a timestamp indicating when the collection ended
+        #   @return [Bignum] a timestamp indicating when the collection ended
 
 
         # @!attribute [rw] presences
@@ -132,8 +132,8 @@ module UserApis
             'id' => self.id,
             'asset' => self.asset,
             'name' => self.name,
-            'start_at' => self.start_at,
-            'start_at' => self.start_at,
+            'start_at' => self.start_at.to_i,
+            'stop_at' => self.stop_at.to_i,
             'presences' => self.presences,
             'messages' => self.messages,
             'tracks' => self.tracks,

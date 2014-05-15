@@ -46,11 +46,11 @@ module UserApis
 
         # @!attribute [rw] recorded_at
         #   @api public
-        #   @return [String] a timestamp indicating when the message was recorded on the device
+        #   @return [Bignum] a timestamp indicating when the message was recorded on the device
 
         # @!attribute [rw] received_at
         #   @api public
-        #   @return [String] a timestamp indicating when the message was received on the server.
+        #   @return [Bignum] a timestamp indicating when the message was received on the server.
 
         # @!attribute [rw] channel
         #   @api public
@@ -94,8 +94,8 @@ module UserApis
             self.sender = payload['sender']
             self.recipient = payload['recipient']
             self.type = payload['type']
-            self.recorded_at = payload['recorded_at']
-            self.received_at = payload['received_at']
+            self.recorded_at = payload['recorded_at'].to_i
+            self.received_at = payload['received_at'].to_i
             self.channel = payload['channel']
 
             if meta.is_a? Hash
@@ -159,8 +159,8 @@ module UserApis
             'sender' => self.sender,
             'recipient' => self.recipient,
             'type' => self.type,
-            'recorded_at' =>  self.recorded_at,
-            'received_at' =>  self.received_at,
+            'recorded_at' =>  self.recorded_at.to_i,
+            'received_at' =>  self.received_at.to_i,
             'channel' =>  self.channel
           }
           r_hash['meta'].delete_if { |k, v| v.nil? }
