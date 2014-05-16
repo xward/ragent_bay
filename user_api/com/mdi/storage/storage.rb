@@ -49,7 +49,7 @@ module UserApis
       end
 
       # @api_private
-      def collection_info
+      def collections_definitions
         @collection_definitions ||= Storage::CollectionDefinitionsMappingClass.new(user_api)
       end
 
