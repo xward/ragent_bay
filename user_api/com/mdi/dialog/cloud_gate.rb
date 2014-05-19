@@ -106,10 +106,12 @@ module UserApis
         #   new_track.set_field("MDI_CC_LEGAL_SPEED", "50")
         #   user_api.mdi.dialog.cloud_gate.inject_track(new_track)
         def inject_track(track)
+          raise "Track id #{msg.id} has already been sent into the cloud. Dropping injection."  if track.id != nil
+          raise "I don't push empty track. Dropping injection." if track.fields_data.size == 0
+
           begin
             PUNK.start('injecttrack','inject track to cloud ...')
 
-            raise "Track id #{msg.id} has already been sent into the cloud. Dropping injection."  if track.id != nil
 
             # todo: put some limitation
             CC.push(track.to_hash_to_send_to_cloud,'tracks')
