@@ -55,7 +55,7 @@ module UserApis
                   "cookies" =>     message.cookies,
                   "class" => 'message'
                   },
-                "payload" => {
+                  "payload" => {
                   "id" =>          out_id,     # Indigen integer
                   "asset" =>       "ragent",
                   "sender" =>      send_channel,               # Sender identifier (can be the same as the asset)
@@ -130,16 +130,17 @@ module UserApis
             return false
           end
         end
-      end
+
 
         # Inject a collection in the server queue (ie push a track to the server)
         # @return true on success
         # @param [CollectionClass] track the track to send
-      def inject_collection(collection)
+        def inject_collection(collection)
+          raise "Collection id #{msg.id} has already been sent into the cloud. Dropping injection."  if collection.id != nil
+
           begin
             PUNK.start('injectcollection','inject collection to cloud ...')
 
-            raise "Collection id #{msg.id} has already been sent into the cloud. Dropping injection."  if collection.id != nil
 
             # now push all elements of the collection
             collection.data.each do |el|
@@ -176,7 +177,6 @@ module UserApis
         end
 
       end
-
     end
   end
 end
