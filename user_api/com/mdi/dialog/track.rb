@@ -223,6 +223,13 @@ module UserApis
         end
 
 
+        # clear fields stored
+        # @api public
+        def clear_fields
+          self.fields_data = []
+        end
+
+
       end #Track
     end #Dialog
   end #Mdi
