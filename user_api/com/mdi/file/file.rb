@@ -1,5 +1,3 @@
-require 'net/http'
-
 module UserApis
   module Mdi
 
@@ -23,18 +21,13 @@ module UserApis
     # The {TestsHelper} module exposes some methods to create and delete files for use in your tests
     # with less constraints than the methods provided here. For static configuration files, consider
     # `user_api.mdi.storage.config`.
-    #
-    # @todo: allow the agent to store a file itself
     class FileManager
+
+      attr_reader :user_apis
 
       # @api private
       def initialize(apis)
         @user_apis = apis
-      end
-
-      # @api private
-      def user_api
-        @user_apis
       end
 
       # @api public
@@ -42,34 +35,28 @@ module UserApis
         CloudFile.new(user_api, opts)
       end
 
-      # Retrieves file contents.
-      # @param [String] namespace a namespace for the file
-      # @param [String] name the file name
-      # @return [String] the latest version of the file (binary contents), or nil if no suitable file has been found
-      # @raise [FileStorageError] if an error occured when retrieving file information
-      # @api public
-      def get_file_contents(namespace, name)
-        CC::FileStorage.get_file_contents(namespace, name)
-      end
-
       # Retrieves information about the latest version of a file
       # @param [String] namespace a namespace for the file
       # @param [String] name the file name
+      # @param [String] account the name of the account of the device which requested the file
+      # @param [String] asset asset of the device which requested the file
       # @return [FileInfo] information about the file, or nil if no suitable file has been found
       # @raise [FileStorageError] if an error occured when retrieving file information
       # @api public
-      def get_file_information(namespace, name)
-        CC::FileStorage.get_file_information(namespace, name)
+      def get_file_info(namespace, name, account, asset)
+        CC::FileStorage.get_file_information(namespace, name, account, asset)
       end
 
       # Retrieves in one call the file and its metadata.
       # @param [String] namespace a namespace for the file
       # @param [String] name the file name
+      # @param [String] account the name of the account of the device which requested the file
+      # @param [String] asset asset of the device which requested the file
       # @return [CloudFile] information about the file, or nil if no suitable file has been found
       # @raise [FileStorageError] if an error occured when retrieving file information
       # @api public
-      def get_file(namespace, name)
-        CC::FileStorage.get_file(namespace, name)
+      def get_file(namespace, name, account, asset)
+        CC::FileStorage.get_file(namespace, name, account, asset)
       end
 
     end
@@ -83,6 +70,34 @@ module UserApis
 
     # @api public
     class FileNotFoundError < FileStorageError
+    end
+
+    class Unauthorized < FileStorageError
+    end
+
+    # A role, associated to a whole account or a device, which is known to provide read access to a file.
+    class ReadAccessRole
+
+      # @return [String] the name of the role
+      attr_accessor :name
+
+      # @return [Array<String>] assets that have this role
+      attr_accessor :assets
+
+      # @return [Array<String>] accounts whose all assets have this role
+      attr_accessor :accounts
+
+      # Create a new role with associated devices and accounts
+      # @param [Hash] opts parameters hash
+      # @option opts [String] :name name of the role
+      # @option opts [Array<String>] :assets assets that have this role
+      # @option opts [Array<String>] :accounts accounts that have this role
+      def initialize(opts)
+        @name = opts[:name]
+        @assets = opts[:assets] || []
+        @accounts = opts[:accounts] || []
+      end
+
     end
 
     # Metadata about a file.
@@ -113,22 +128,30 @@ module UserApis
       # @return [String] a MIME type for this file. Note that the MIME type is not always known and default to `binary/octet-stream`
       attr_reader :content_type
 
+      # @return [Array<ReadAccessRole>] roles that are known to provide read access to this file
+      attr_accessor :roles
+
       # @param [Hash] opts a parameters hash
       # @options opts [String] :name name of the file
       # @options opts [String] :namespace namespace for the file
       # @options opts [String] :md5 a hexadecimal representation of the MD5 checksum of the file
       # @options opts [Hash] :metadata optional metadata for the file. The possible keys are :description and :version.
       # @options opts [String] :content_type MIME type of the file. Default to `binary/octet-stream`
+      # @options opts [Array<ReadAccessRole>] roles :roles that are known to provide read access to this file. Default to an empty array.
       # @api public
       def initialize(opts)
+        raise ArgumentError, "File name must not be nil" unless opts[:name]
         @name = opts[:name]
+        raise ArgumentError, "Namespace must not be nil" unless opts[:namespace]
         @namespace = opts[:namespace]
+        raise ArgumentError, "MD5 must not be nil" unless opts[:md5]
         @md5 = opts[:md5]
-        @content_type = opts[:content_type]
+        @content_type = opts[:content_type] || "binary/octet-steam"
         if opts[:metadata]
           @description = opts[:metadata][:description]
           @version = opts[:metadata][:version]
         end
+        @roles = opts[:roles] || []
       end
 
       # @api private
@@ -161,26 +184,27 @@ module UserApis
       attr_accessor :file_info
 
       # @api public
-      # @return [String] file contents (the returned string encoding should not be used to understand the file contents - treat the result as raw binary data)
+      # @return [String] file contents (the returned string encoding should not be used to understand the file contents
+      #                  treat the result as raw binary data)
       attr_accessor :contents
 
-      # @param [Hash] opts a parameter hash. Supports the same parameters as {FileInfo#new} plus a mandatory :contents key with the contents of the file.
-      #               If the optional parameter :check_md5 is set to true, the constructor will check the MD5 of the contents
+      # @param [Hash] opts a parameter hash.
+      # @option opts [FileInfo] :file_info metadata for this file
+      # @option opts [Boolean] :check_md5 if set to true, the constructor will check the MD5 of the contents.
+      # @option opts [String] :contents binary contents of the file
       # @api public
       def initialize(opts)
-        @file_info = FileInfo.new(opts)
+        @file_info = opts[:file_info]
         @contents = opts[:contents]
-        if(opts[:check_md5])
+        if opts[:check_md5]
           md5 = Digest::MD5.hexdigest(@contents)
           if md5 != @file_info.md5
-            raise Md5DigestMismatch, "Expected MD5: #{@file_info.md5}, got #{md5}"
+            raise Md5DigestMismatch.new("Expected MD5: #{@file_info.md5}, got #{md5}")
           end
         end
       end
 
     end
 
-
   end
 end
-
