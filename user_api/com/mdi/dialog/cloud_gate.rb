@@ -137,6 +137,7 @@ module UserApis
         # @param [CollectionClass] track the track to send
         def inject_collection(collection)
           raise "Collection id #{msg.id} has already been sent into the cloud. Dropping injection."  if collection.id != nil
+          raise "I don't push empty collection. Dropping injection." if collection.data.size == 0
 
           begin
             PUNK.start('injectcollection','inject collection to cloud ...')
