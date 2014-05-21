@@ -146,7 +146,7 @@ module UserApis
             # now push all elements of the collection
             collection.data.each do |el|
               if el.id != nil
-                CC.logger.info("Injection el of collection #{el.class}")
+                CC.logger.info("Injection #{el.class} of collection")
                 case el.class
                 when "PresenceClass"
                   # NYI
