@@ -141,9 +141,38 @@ module UserApis
         end
 
         # compute and set the start_at and stop_at from data stored in collection
+        # @return random
+        # @api public
         def crop_start_stop_time_from_data
-          # use recorded at (for tracks & message), time pour présence
+          # use recorded at (for tracks & message), time for presence
+          start_at = nil
+          stop_at = nil
 
+          self.data.each do |el|
+            if el.id != nil
+              mom = nil
+              CC.logger.debug("crop_start_stop_time_from_data of #{el.class}: #{el}")
+              case el.class
+              when "PresenceClass"
+                mom = el.time
+              when "MessageClass"
+                mom = el.recorded_at
+              when "TrackClass"
+                mom = el.recorded_at
+              end
+
+              raise "Couldn't find time associated with a #{el.class}" if mom == nil
+
+              start_at ||= mom
+              stop_at ||= mom
+              start_at = mom if mom < start_at
+              stop_at = mom if mom > stop_at
+
+            end
+          end
+
+          self.start_at = start_at
+          self.stop_at = stop_at
 
         end
 
