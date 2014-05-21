@@ -88,11 +88,11 @@ module UserApis
 
                 case klass
                 when 'presence'
-                  self.data <<  user_api.mdi.dialog.create_new_presence(el)
+                  self.data << user_api.mdi.dialog.create_new_presence(el)
                 when 'message'
-                  self.data <<  user_api.mdi.dialog.create_new_message(el)
+                  self.data << user_api.mdi.dialog.create_new_message(el)
                 when 'track'
-                  self.data <<  user_api.mdi.dialog.create_new_track(el)
+                  self.data << user_api.mdi.dialog.create_new_track(el)
                 end
 
               end
