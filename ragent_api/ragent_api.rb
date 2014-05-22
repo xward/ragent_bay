@@ -32,6 +32,10 @@ module RagentApi
     @track_mapping ||= TrackFieldMapping.new
   end
 
+  def self.collection_definition_mapping
+    @collection_definition ||= CollectionDefinitionMapping.new
+  end
+
   def self.user_class_subscriber
     @user_class_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
