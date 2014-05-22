@@ -41,8 +41,8 @@ module UserApis
         @tracking_fields_info ||= Storage::TrackFieldMappingClass.new(user_api)
       end
 
-      # @api_private
-      def collections_definitions
+      # Allows you to access account collection definitions
+      def collection_definitions
         @collection_definitions ||= Storage::CollectionDefinitionsMappingClass.new(user_api)
       end
 
