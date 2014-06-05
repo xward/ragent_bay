@@ -15,6 +15,7 @@ module UserApis
         # @!attribute [rw] id
         #   @api public
         #   @return [Integer] a unique message ID set by the server.
+        #   Don't touch this
 
         # @!attribute [rw] parent_id
         #   @api public
@@ -46,11 +47,11 @@ module UserApis
 
         # @!attribute [rw] recorded_at
         #   @api public
-        #   @return [String] a timestamp indicating when the message was recorded on the device
+        #   @return [Bignum] a timestamp indicating when the message was recorded on the device
 
         # @!attribute [rw] received_at
         #   @api public
-        #   @return [String] a timestamp indicating when the message was received on the server.
+        #   @return [Bignum] a timestamp indicating when the message was received on the server.
 
         # @!attribute [rw] channel
         #   @api public
@@ -79,7 +80,7 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class'=> 'message'}
             self.type = 'message'
           else
 
@@ -94,8 +95,8 @@ module UserApis
             self.sender = payload['sender']
             self.recipient = payload['recipient']
             self.type = payload['type']
-            self.recorded_at = payload['recorded_at']
-            self.received_at = payload['received_at']
+            self.recorded_at = payload['recorded_at'].to_i
+            self.received_at = payload['received_at'].to_i
             self.channel = payload['channel']
 
             if meta.is_a? Hash
@@ -105,8 +106,9 @@ module UserApis
 
             if self.type != 'message' && self.type != 'ack'
               raise "Message: wrong type of message : '#{type}'"
-              return
             end
+
+            # TODO futur: raise if self.meta.class != 'message'
 
             if self.id.blank?
               self.id = CC.indigen_next_id(self.asset)
@@ -120,7 +122,6 @@ module UserApis
         def user_api
           @user_apis
         end
-
 
         # Hash representation of a message.
         #
@@ -148,6 +149,7 @@ module UserApis
           r_hash = {}
           r_hash['meta'] = self.meta
           r_hash['meta'] = {} if r_hash['meta'] == nil
+          r_hash['meta']['class'] = 'message'
           r_hash['meta']['account'] = self.account
           r_hash['payload'] = {
             'payload' => self.content,
@@ -159,8 +161,8 @@ module UserApis
             'sender' => self.sender,
             'recipient' => self.recipient,
             'type' => self.type,
-            'recorded_at' =>  self.recorded_at,
-            'received_at' =>  self.received_at,
+            'recorded_at' =>  self.recorded_at.to_i,
+            'received_at' =>  self.received_at.to_i,
             'channel' =>  self.channel
           }
           r_hash['meta'].delete_if { |k, v| v.nil? }

@@ -9,7 +9,7 @@ module UserApis
     module Dialog
       # An event received when a device change its connection status
       # @api public
-      class PresenceClass < Struct.new(:asset, :time, :bs, :type, :reason, :account, :meta)
+      class PresenceClass < Struct.new(:id, :asset, :time, :bs, :type, :reason, :account, :meta)
 
         # ---
         # Presence hash :
@@ -23,13 +23,19 @@ module UserApis
         # "account" (account name type String).
         # +++
 
+
+        # @!attribute [rw] id
+        #   @api public
+        #   @return [Integer] a unique message ID set by the server.
+        #   Don't touch this
+
         # @!attribute [rw] asset
         #   @api public
         #   @return [String] the IMEI of the device or other similar unique identifier.
 
         # @!attribute [rw] time
         #   @api public
-        #   @return [Fixnum] a timestamp indicating when this event was received.
+        #   @return [Bignum] a timestamp indicating when this event was received.
 
         # @!attribute [rw] bs
         #   @api public
@@ -74,12 +80,13 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class' => 'presence'}
             self.type = 'connect'
           else
 
             self.meta = struct['meta']
             payload = struct['payload']
+            self.id = payload['id']
             self.asset = payload['asset']
             self.time = payload['time']
             self.bs = payload['bs']
@@ -88,6 +95,8 @@ module UserApis
             self.account = meta['account']
 
           end
+
+          # TODO futur: raise if self.meta.class != 'presence'
 
           if type != 'connect' && type != 'reconnect' && type != 'disconnect' && type != 'failed_connect'
             raise "Wrong type of presence : #{type}"
@@ -108,6 +117,7 @@ module UserApis
           r_hash = {}
           r_hash['meta'] = self.meta
           r_hash['payload'] = {
+            'id' => self.id,
             'asset' => self.asset,
             'time' => self.time,
             'bs' => self.bs,

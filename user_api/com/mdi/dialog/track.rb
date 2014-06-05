@@ -14,6 +14,7 @@ module UserApis
         # @!attribute [rw] id
         #   @api public
         #   @return [Integer] a unique message ID set by the server.
+        #   Don't touch this
 
 
         # @!attribute [rw] asset
@@ -23,19 +24,19 @@ module UserApis
 
         # @!attribute [rw] latitude
         #   @api public
-        #   @return [Integer] latitude of the asset position when the track was recorded, in degree * 10^-5
+        #   @return [Float] latitude of the asset position when the track was recorded, in degree * 10^-5
 
         # @!attribute [rw] latitude
         #   @api public
-        #   @return [Integer] longitude of the asset position when the track was recorded, in degree * 10^-5
+        #   @return [Float] longitude of the asset position when the track was recorded, in degree * 10^-5
 
         # @!attribute [rw] recorded_at
         #   @api public
-        #   @return [String] when the track was recorded by the device or the provider
+        #   @return [Bignum] when the track was recorded by the device or the provider
 
         # @!attribute [rw] received_at
         #   @api public
-        #   @return [String] when the track was received by the server
+        #   @return [Bignum] when the track was received by the server
 
         # @!attribute [rw] fields_data
         #   @api public
@@ -66,7 +67,7 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {}
+            self.meta = {'class' => 'track'}
 
           else
             self.meta = struct['meta']
@@ -78,8 +79,10 @@ module UserApis
 
             self.latitude = payload['latitude'].to_f
             self.longitude = payload['longitude'].to_f
-            self.recorded_at = payload['recorded_at']
-            self.received_at = payload['received_at']
+            self.recorded_at = payload['recorded_at'].to_i
+            self.received_at = payload['received_at'].to_i
+
+            # TODO futur: raise if self.meta.class != 'track'
 
             self.fields_data = []
             payload.each do |k, v|
@@ -127,8 +130,8 @@ module UserApis
           r_hash['payload'] = {
             'id' => self.id,
             'asset' => self.asset,
-            'recorded_at' => self.recorded_at,
-            'received_at' => self.received_at,
+            'recorded_at' => self.recorded_at.to_i,
+            'received_at' => self.received_at.to_i,
             'latitude' => self.latitude.to_f,
             'longitude' => self.longitude.to_f
           }
@@ -150,14 +153,15 @@ module UserApis
         def to_hash_to_send_to_cloud
           r_hash = {}
           r_hash['meta'] = {
-            'account' => self.account
+            'account' => self.account,
+            'class' => 'track'
           }
           r_hash['payload'] = {
             'id' => CC.indigen_next_id(self.asset),
             'sender' => 'ragent', # todo: add in model of db viewer (todo)
             'asset' => self.asset,
             'received_at' => Time.now.to_i,
-            'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at,
+            'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at.to_i,
             'latitude' => self.latitude.to_f,
             'longitude' => self.longitude.to_f
           }
@@ -165,8 +169,10 @@ module UserApis
           #add  fresh field of new data (and convert it as magic string)
           self.fields_data.each do |field|
             if field['fresh'] and field['field'] > 4999 # can't inject field from 0 to 4999, device protected
-               CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
+              CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
               r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
+            else
+              CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 50000)")
             end
           end
 
@@ -183,6 +189,15 @@ module UserApis
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
           return self.fields_data if field == nil
 
+          # verify value type
+          case field['field_type']
+          when 'integer'
+            raise "#{value} is not an integer" if "#{value}" != "#{value.to_i}"
+          when 'string'
+            # NOP
+          when 'boolean'
+            raise "#{value} is not a boolean" if ("#{value}" != 'true' and "#{value}" != 'false')
+          end
 
           raw_value = value
           # decode if Ragent. In VM mode, raw_value = value, nothing else to do
@@ -207,6 +222,13 @@ module UserApis
           field['fresh'] = true
           self.recorded_at = Time.now.to_i
           self.fields_data << field
+        end
+
+
+        # clear fields stored
+        # @api public
+        def clear_fields
+          self.fields_data = []
         end
 
 

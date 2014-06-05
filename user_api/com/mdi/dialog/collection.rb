@@ -7,13 +7,14 @@
 module UserApis
   module Mdi
     module Dialog
-      # A class that represents a standard collection. Besically it is a list of presence/message/track record with a start and an end time for a specific asset.
+      # A class that represents a standard collection. Basically it is a list of presence/message/track record with a start and an end time for a specific asset.
       # @api public
-      class CollectionClass < Struct.new(:name, :type, :meta, :account, :id, :asset, :start_at, :stop_at, :presences, :tracks, :messages)
+      class CollectionClass < Struct.new(:name, :type, :meta, :account, :id, :asset, :start_at, :stop_at, :data)
 
         # @!attribute [rw] name
         #   @api public
         #   @return [String] name of the collection
+        #   Don't touch this
 
         # @!attribute [rw] type
         #   @api public
@@ -37,24 +38,16 @@ module UserApis
 
         # @!attribute [rw] start_at
         #   @api public
-        #   @return [Integer] a timestamp indicating when the collection started
+        #   @return [Bignum] a timestamp indicating when the collection started
 
         # @!attribute [rw] stop_at
         #   @api public
-        #   @return [Integer] a timestamp indicating when the collection ended
+        #   @return [Bignum] a timestamp indicating when the collection ended
 
 
-        # @!attribute [rw] presences
+        # @!attribute [rw] data
         #   @api public
-        #   @return [Array] of presence
-
-        # @!attribute [rw] messages
-        #   @api public
-        #   @return [Array] of message
-
-        # @!attribute [rw] tracks
-        #   @api public
-        #   @return [Array] of track
+        #   @return [Array] of object (presence/message/track ...)
 
         # @api private
         def initialize(apis, struct = nil)
@@ -65,15 +58,13 @@ module UserApis
 
           if struct.blank?
             self.name = 'unknown'
-            self.meta = {}
+            self.meta = {'class' => 'collection'}
             self.account = ''
             self.id = -1
             self.asset = ''
             self.start_at = 0
             self.stop_at = 0
-            self.presences = []
-            self.messages = []
-            self.tracks = []
+            self.data = []
           else
             self.meta = struct['meta']
             payload = struct['payload']
@@ -85,24 +76,25 @@ module UserApis
             self.start_at = payload['start_at'].to_i
             self.stop_at = payload['stop_at'].to_i
 
-            self.presences = []
-            if payload['presences'].is_a? Array
-              payload['presences'].each do |el|
-                self.presences << apis.mdi.dialog.create_new_presence({'meta'=> self.meta, 'payload'=> el})
-              end
-            end
+            # TODO futur: raise if self.meta.class != 'collection'
 
-            self.messages = []
-            if payload['messages'].is_a? Array
-              payload['messages'].each do |el|
-                self.messages << apis.mdi.dialog.create_new_message({'meta'=> self.meta, 'payload'=> el})
-              end
-            end
+            self.data = []
+            if payload['data'].is_a? Array
+              payload['data'].each do |el|
 
-            self.tracks = []
-            if payload['tracks'].is_a? Array
-              payload['tracks'].each do |el|
-                self.tracks << apis.mdi.dialog.create_new_track({'meta'=> self.meta, 'payload'=> el})
+                klass = el['meta']['class']
+
+                raise "Undefined class #{el['meta']}" if klass == nil
+
+                case klass
+                when 'presence'
+                  self.data << user_api.mdi.dialog.create_new_presence(el)
+                when 'message'
+                  self.data << user_api.mdi.dialog.create_new_message(el)
+                when 'track'
+                  self.data << user_api.mdi.dialog.create_new_track(el)
+                end
+
               end
             end
 
@@ -115,34 +107,73 @@ module UserApis
         end
 
 
- # ex
- #{"meta":{"account":"unstable"},"payload":{"id":561902626124333056,"id_str":"561902626124333056","asset":"FAKE0000001635","name":"My trips","start_at":1974,"stop_at":1974,
- # "tracks":[{"id":"545648584880832729","asset":"kikoo","recorded_at":134567865,"recorded_at_ms":134567865,"received_at":5678545,"longitude":"236561.0","latitude":"4896980.0","14":"MQ=="}]}}
+         # ex
+         #{"meta":{"account":"unstable"},"payload":{"id":561902626124333056,"id_str":"561902626124333056","asset":"FAKE0000001635","name":"My trips","start_at":1974,"stop_at":1974,
+         # "tracks":[{"id":"545648584880832729","asset":"kikoo","recorded_at":134567865,"recorded_at_ms":134567865,"received_at":5678545,"longitude":"236561.0","latitude":"4896980.0","14":"MQ=="}]}}
 
         # @return [Hash] a hash representing this collection.
         # @api private
         def to_hash
           r_hash = {}
 
+          # build data
+          data = []
+          self.data.each do |el|
+            data << el.to_hash
+          end
+
           r_hash['meta'] = self.meta
           r_hash['meta'] = {} if r_hash['meta'] == nil
           r_hash['meta']['account'] = self.account
           r_hash['payload'] = {
-
             'id' => self.id,
             'asset' => self.asset,
             'name' => self.name,
-            'start_at' => self.start_at,
-            'start_at' => self.start_at,
-            'presences' => self.presences,
-            'messages' => self.messages,
-            'tracks' => self.tracks,
+            'start_at' => self.start_at.to_i,
+            'stop_at' => self.stop_at.to_i,
+            'data' => data
           }
           r_hash['meta'].delete_if { |k, v| v.nil? }
           r_hash['payload'].delete_if { |k, v| v.nil? }
 
 
           r_hash
+        end
+
+        # compute and set the start_at and stop_at from data stored in collection
+        # @return random
+        # @api public
+        def crop_start_stop_time_from_data
+          # use recorded at (for tracks & message), time for presence
+          start_at = nil
+          stop_at = nil
+
+          self.data.each do |el|
+            if el.id != nil
+              mom = nil
+              CC.logger.debug("crop_start_stop_time_from_data of #{el.class}: #{el}")
+              case el.class
+              when "PresenceClass"
+                mom = el.time
+              when "MessageClass"
+                mom = el.recorded_at
+              when "TrackClass"
+                mom = el.recorded_at
+              end
+
+              raise "Couldn't find time associated with a #{el.class}" if mom == nil
+
+              start_at ||= mom
+              stop_at ||= mom
+              start_at = mom if mom < start_at
+              stop_at = mom if mom > stop_at
+
+            end
+          end
+
+          self.start_at = start_at
+          self.stop_at = stop_at
+
         end
 
       end #Collection

@@ -25,6 +25,10 @@ module UserApis
           CC::NavServer.get_query(service_url_suffix)
         end
 
+        def post_query(service_url_suffix, body)
+          CC::NavServer.post_query(service_url_suffix, body)
+        end
+
       end
 
     end

@@ -35,7 +35,6 @@ module UserApis
         @user_redis[id] ||= Redis::Namespace.new("RR:#{user_api.agent_name}_#{id}", :redis => CC.redis)
       end
 
-
       # @api_private
       def tracking_fields_info
         @tracking_fields_info ||= Storage::TrackFieldMappingClass.new(user_api)
@@ -49,6 +48,11 @@ module UserApis
       # This is where your configuration is stored (setted in config/your_agent.yml)
       def config
         @config ||= user_api.user_class.user_config
+      end
+
+      # Gives you statics informations
+      def static_env_info
+        {'runtime_id' => RAGENT.runtime_id_code}
       end
 
       # @api_private

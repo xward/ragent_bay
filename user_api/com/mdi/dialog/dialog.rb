@@ -58,7 +58,7 @@ module UserApis
         Dialog::OrderClass.new(user_api, struct)
       end
 
-      # @api private
+      # @api public
       # Create a new collection object
       # @example
       #   new_presence = user_api.mdi.dialog.create_new_collection

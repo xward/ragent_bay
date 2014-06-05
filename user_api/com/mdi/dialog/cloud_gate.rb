@@ -27,9 +27,11 @@ module UserApis
         end
 
         # Inject a message in the server queue on a specific channel (ie push a message to the server)
-        # @param [CloudConnectServices::Message] msg the message to inject
+        # @return true on success
+        # @param [MessageClass] msg the message to inject
         # @param [String] channel channel the message will be posted to
         # @note Be wary of "infinite message loops" with this method.
+        # @note: if id is not nil (ie received from the cloud or duplicated), the injection will fail.
         # @example Injecte a new message to the cloud
         #   new_msg = user_api.mdi.dialog.create_new_message
         #   new_msg.recorded_at = Time.now.to_i
@@ -39,7 +41,9 @@ module UserApis
         #   user_api.mdi.dialog.cloud_gate.inject_message(new_msg, "com.me.services.test_messages")
         def inject_message(msg, channel, origin_channel = default_origin_channel)
           begin
-            PUNK.start('injectmsg','inject message in cloud ...')
+            PUNK.start('injectmsg','inject message to cloud ...')
+
+            raise "Message id #{msg.id} has already been sent into the cloud. Dropping injection."  if msg.id != nil
 
             out_id = 00000
 
@@ -48,9 +52,10 @@ module UserApis
               inject_hash = {
                 "meta" => {
                   "account" =>     message.account,
-                  "cookies" =>     message.cookies
+                  "cookies" =>     message.cookies,
+                  "class" => 'message'
                   },
-                "payload" => {
+                  "payload" => {
                   "id" =>          out_id,     # Indigen integer
                   "asset" =>       "ragent",
                   "sender" =>      send_channel,               # Sender identifier (can be the same as the asset)
@@ -76,6 +81,7 @@ module UserApis
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_sent'] += 1
+            return true
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on inject message")
             user_api.mdi.tools.print_ruby_exception(e)
@@ -83,11 +89,13 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
           end
         end
 
         # Inject a track in the server queue (ie push a track to the server)
-        # @param [CloudConnectServices::Track] track the track to send
+        # @return true on success
+        # @param [TrackClass] track the track to send
         # @example Injecte a new track to the cloud
         #   new_track = user_api.mdi.dialog.create_new_track
         #   new_track.recorded_at = Time.now.to_i
@@ -98,7 +106,12 @@ module UserApis
         #   new_track.set_field("MDI_CC_LEGAL_SPEED", "50")
         #   user_api.mdi.dialog.cloud_gate.inject_track(new_track)
         def inject_track(track)
+          raise "Track id #{track.id} has already been sent into the cloud. Dropping injection."  if track.id != nil
+          raise "I don't push empty track. Dropping injection." if track.fields_data.size == 0
+
           begin
+            PUNK.start('injecttrack','inject track to cloud ...')
+
 
             # todo: put some limitation
             CC.push(track.to_hash_to_send_to_cloud,'tracks')
@@ -106,6 +119,7 @@ module UserApis
             # success !
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
+            return true
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on inject track")
             user_api.mdi.tools.print_ruby_exception(e)
@@ -113,10 +127,57 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
           end
         end
-      end
 
+
+        # Inject a collection in the server queue (ie push a track to the server)
+        # @return true on success
+        # @param [CollectionClass] track the track to send
+        def inject_collection(collection)
+          raise "Collection id #{msg.id} has already been sent into the cloud. Dropping injection."  if collection.id != nil
+          raise "I don't push empty collection. Dropping injection." if collection.data.size == 0
+
+          begin
+            PUNK.start('injectcollection','inject collection to cloud ...')
+
+
+            # now push all elements of the collection
+            collection.data.each do |el|
+              if el.id != nil
+                CC.logger.info("Injection #{el.class} of collection")
+                case el.class
+                when "PresenceClass"
+                  # NYI
+                when "MessageClass"
+                  user_api.mdi.dialog.cloud_gate.inject_message(el, el.channel) # channel is good ? no idea !
+                when "TrackClass"
+                  user_api.mdi.dialog.cloud_gate.inject_track(el)
+                end
+              end
+            end
+
+            # todo: put some limitation
+            CC.push(collection.to_hash,'collection')
+
+
+            # success !
+
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
+            return true
+          rescue Exception => e
+            user_api.mdi.tools.log.error("Error on inject collection")
+            user_api.mdi.tools.print_ruby_exception(e)
+            PUNK.end('injecttrack','ko','out',"SERVER <- SERVER COLLECTION")
+            # stats:
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
+          end
+        end
+
+      end
     end
   end
 end

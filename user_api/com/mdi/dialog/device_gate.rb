@@ -25,6 +25,7 @@ module UserApis
         end
 
         # Push a message to the device.
+        # @return true on success
         # @param asset [Fixnum] the asset the message will be sent to
         # @param account [String] account name to use
         # @param content [String] content of the message.
@@ -57,6 +58,7 @@ module UserApis
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['push_sent_to_device'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_sent'] += 1
+            return true
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on push")
             user_api.mdi.tools.print_ruby_exception(e)
@@ -64,10 +66,12 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_push'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
           end
         end
 
         # Reply to a device message. The device has a different behaviour is the message is a reply to another one.
+        # @return true on success
         # @param msg [CloudConnectServices::Message] message to reply to
         # @param content [Object] content of the message
         # @param cookies [String] optional cookies, reseverd for Protogen (see the Protogen guide). You should not need to use this parameter in your agent code.
@@ -89,6 +93,7 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['reply_sent_to_device'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_sent'] += 1
+            return true
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on reply")
             user_api.mdi.tools.print_ruby_exception(e)
@@ -96,6 +101,7 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_reply'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
           end
         end
 

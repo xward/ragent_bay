@@ -56,6 +56,20 @@ module RagentApi
     @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
+  # A subscriber for an arbitrary queue.
+  # @param [String] queue the queue name.
+  # @return [UserApis::Mdi::Tools::SubscriberClass] a (lazily instantiated) subscriber for the given queue. Will never be nil.
+  def self.user_class_other_subscribers(queue)
+    @user_class_other_subscribers ||= {}
+    @user_class_other_subscribers[queue] ||= self.api.mdi.tools.create_new_subscriber
+  end
+
+  # @return [Hash{String => UserApis::Mdi::Tools::SubscriberClass}] an array of all the subscribers for queues
+  #         other than the default ones (tracks, messages, presences, collections...)
+  #         Keys are queue names, values are subscribers for each queue.
+  def self.all_other_subscribers
+    @user_class_other_subscribers
+  end
 
   def self.agents_project_src_path
     @agents_project_src_path ||= begin
@@ -86,7 +100,8 @@ module RagentApi
         'subscribe_presence',
         'subscribe_message',
         'subscribe_track',
-        'subscribe_collection'
+        'subscribe_collection',
+        'subscribe_other'
       ]
     end
   end
@@ -126,6 +141,21 @@ module RagentApi
         if user_agent_class.internal_config['subscribe_collection']
           RAGENT.user_class_collection_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to collections")
+        end
+        if user_agent_class.internal_config['subscribe_other']
+          if user_agent_class.internal_config['subscribe_other']['broadcast']
+            user_agent_class.internal_config['subscribe_other']['broadcast'].each do |queue|
+              queue_with_id = "#{queue}_#{RAGENT.runtime_id_code}"
+              RAGENT.user_class_other_subscribers(queue_with_id).subscribe(user_agent_class)
+              RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (broadcast): #{queue_with_id}")
+            end
+          end
+          if user_agent_class.internal_config['subscribe_other']['shared']
+            user_agent_class.internal_config['subscribe_other']['shared'].each do |queue|
+              RAGENT.user_class_other_subscribers(queue).subscribe(user_agent_class)
+              RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (shared): #{queue}")
+            end
+          end
         end
 
       end
