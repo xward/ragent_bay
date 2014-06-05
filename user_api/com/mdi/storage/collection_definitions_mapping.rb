@@ -29,7 +29,7 @@ module UserApis
           definitions = self.get_all()
 
           definitions.each do |definition|
-            if (definition.assets == [] || definition.assets.include? imei) && definition.collects.include? type
+            if (definition.assets == [] || definition.assets.include?(imei)) && definition.collects.include?(type)
               asset_definitions << definition
             end
           end
