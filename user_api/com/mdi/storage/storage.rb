@@ -34,6 +34,14 @@ module UserApis
         @user_redis[id] ||= Redis::Namespace.new("RR:#{user_api.agent_name}_#{id}", :redis => CC.redis)
       end
 
+
+      # This is your distributed and replicated solid data base, based with mongodb. All data stored in it will be shared between all instances of you agent running into the cloud.
+      # @note: don't put too much data in it, or it will cost you a lot of money :)
+      # @see http://api.mongodb.org/ruby/current/ for more details about available commands.
+      def mongodb
+        CC.mongo
+      end
+
       # @api_private
       def tracking_fields_info
         @tracking_fields_info ||= Storage::TrackFieldMappingClass.new(user_api)
