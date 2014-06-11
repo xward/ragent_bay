@@ -201,7 +201,7 @@ module UserApis
                 CC.logger.info("Injection #{el.class} of collection")
                 case el.class
                 when "PresenceClass"
-                  # NYI
+                  user_api.mdi.dialog.cloud_gate.inject_presence(el)
                 when "MessageClass"
                   user_api.mdi.dialog.cloud_gate.inject_message(el, el.channel) # channel is good ? no idea !
                 when "TrackClass"
