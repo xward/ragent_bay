@@ -152,11 +152,11 @@ module UserApis
               mom = nil
               CC.logger.debug("crop_start_stop_time_from_data of #{el.class}: #{el}")
               case el.class
-              when "PresenceClass"
+              when "UserApis::Mdi::Dialog::PresenceClass"
                 mom = el.time
-              when "MessageClass"
+              when "UserApis::Mdi::Dialog::MessageClass"
                 mom = el.recorded_at
-              when "TrackClass"
+              when "UserApis::Mdi::Dialog::TrackClass"
                 mom = el.recorded_at
               end
 
