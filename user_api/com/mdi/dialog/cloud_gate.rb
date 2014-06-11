@@ -164,7 +164,7 @@ module UserApis
 
 
             # success !
-            PUNK.end('injectcollection','ok','out',"SERVER <- SERVER MSG[#{crop_ref(out_id,4)}]")
+            PUNK.end('injectcollection','ok','out',"SERVER <- SERVER COLLECTION")
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
             return true
