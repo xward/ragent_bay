@@ -200,11 +200,11 @@ module UserApis
               if el.id != nil
                 CC.logger.info("Injection #{el.class} of collection")
                 case el.class
-                when "PresenceClass"
+                when "UserApis::Mdi::Dialog::PresenceClass"
                   user_api.mdi.dialog.cloud_gate.inject_presence(el)
-                when "MessageClass"
+                when "UserApis::Mdi::Dialog::MessageClass"
                   user_api.mdi.dialog.cloud_gate.inject_message(el, el.channel) # channel is good ? no idea !
-                when "TrackClass"
+                when "UserApis::Mdi::Dialog::TrackClass"
                   user_api.mdi.dialog.cloud_gate.inject_track(el)
                 end
               end
