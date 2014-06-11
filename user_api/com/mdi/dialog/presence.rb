@@ -27,7 +27,7 @@ module UserApis
         # @!attribute [rw] id
         #   @api public
         #   @return [Integer] a unique message ID set by the server.
-        #   Don't touch this
+        #   Don't touch this !
 
         # @!attribute [rw] asset
         #   @api public
