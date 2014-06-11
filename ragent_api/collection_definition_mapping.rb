@@ -20,7 +20,7 @@ module RagentApi
 
     def self.fetch_map(account)
 
-      @mapping_collection_definitions_number ||= { 'tests' =>  self.fetch_default_map }
+      @mapping_collection_definitions_number ||= { 'default' =>  self.fetch_default_map }
 
       if !(@mapping_collection_definitions_number.has_key?(account))
         CC.logger.info("Collection definitions fetch_map #{account}")
