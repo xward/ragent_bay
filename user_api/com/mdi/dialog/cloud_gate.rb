@@ -26,6 +26,57 @@ module UserApis
           @user_apis
         end
 
+        # Inject a presence in the server queue (ie push a presence to the server)
+        # @return true on success
+        # @param [PresenceClass] the presence to send
+        # @example: NYI
+        def inject_presence(presence)
+          begin
+
+            raise "Track id #{presence.id} has already been sent into the cloud. Dropping injection."  if presence.id != nil
+
+            PUNK.start('injectpresence','inject presence to cloud ...')
+            out_id = CC.indigen_next_id(presence.asset)
+
+            inject_hash = {
+              "meta" => {
+                "account" =>     presence.account,
+                "class" => 'presence'
+                },
+                "payload" => {
+                "id" =>     out_id,     # Indigen integer
+                "asset" =>  "ragent",
+                "type" =>   "presence",
+                'time' =>   presence.time,
+                'bs' => presence.bs,
+                'reason' => presence.reason
+              }
+            }
+
+            inject_hash['meta'].delete_if { |k, v| v.nil? }
+            inject_hash['payload'].delete_if { |k, v| v.nil? }
+
+
+            # todo: put some limitation
+            CC.push(inject_hash,'presences')
+
+            # success !
+            PUNK.end('injectpresence','ok','out',"SERVER <- SERVER PRESENCE")
+
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
+            return true
+          rescue Exception => e
+            user_api.mdi.tools.log.error("Error on inject presence")
+            user_api.mdi.tools.print_ruby_exception(e)
+            PUNK.end('injectpresence','ko','out',"SERVER <- SERVER PRESENCE")
+            # stats:
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
+          end
+        end
+
+
         # Inject a message in the server queue on a specific channel (ie push a message to the server)
         # @return true on success
         # @param [MessageClass] msg the message to inject
@@ -124,7 +175,7 @@ module UserApis
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on inject track")
             user_api.mdi.tools.print_ruby_exception(e)
-            PUNK.end('injecttrack','ko','out',"SERVER <- SERVER MSG")
+            PUNK.end('injecttrack','ko','out',"SERVER <- SERVER TRACK")
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
