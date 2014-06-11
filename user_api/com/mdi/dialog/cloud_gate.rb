@@ -117,6 +117,7 @@ module UserApis
             CC.push(track.to_hash_to_send_to_cloud,'tracks')
 
             # success !
+            PUNK.end('injecttrack','ok','out',"SERVER <- SERVER TRACK")
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
             return true
@@ -163,13 +164,14 @@ module UserApis
 
 
             # success !
+            PUNK.end('injectcollection','ok','out',"SERVER <- SERVER MSG[#{crop_ref(out_id,4)}]")
 
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
             return true
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on inject collection")
             user_api.mdi.tools.print_ruby_exception(e)
-            PUNK.end('injecttrack','ko','out',"SERVER <- SERVER COLLECTION")
+            PUNK.end('injectcollection','ko','out',"SERVER <- SERVER COLLECTION")
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
