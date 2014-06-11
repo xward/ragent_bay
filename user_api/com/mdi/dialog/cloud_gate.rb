@@ -199,7 +199,7 @@ module UserApis
             collection.data.each do |el|
               if el.id != nil
                 CC.logger.info("Injection #{el.class} of collection")
-                case el.class
+                case "#{el.class}"
                 when "UserApis::Mdi::Dialog::PresenceClass"
                   user_api.mdi.dialog.cloud_gate.inject_presence(el)
                 when "UserApis::Mdi::Dialog::MessageClass"
