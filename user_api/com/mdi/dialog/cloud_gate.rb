@@ -33,7 +33,7 @@ module UserApis
         def inject_presence(presence)
           begin
 
-            raise "Track id #{presence.id} has already been sent into the cloud. Dropping injection."  if presence.id != nil
+            raise "Presence id #{presence.id} has already been sent into the cloud. Dropping injection."  if presence.id != nil
 
             PUNK.start('injectpresence','inject presence to cloud ...')
             out_id = CC.indigen_next_id(presence.asset)
@@ -197,7 +197,7 @@ module UserApis
 
             # now push all elements of the collection
             collection.data.each do |el|
-              if el.id != nil
+              if el.id == nil
                 CC.logger.info("Injection #{el.class} of collection")
                 case "#{el.class}"
                 when "UserApis::Mdi::Dialog::PresenceClass"
