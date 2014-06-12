@@ -59,7 +59,7 @@ module UserApis
             self.name = 'unknown'
             self.meta = {'class' => 'collection'}
             self.account = ''
-            self.id = -1
+            self.id = nil
             self.asset = ''
             self.start_at = 0
             self.stop_at = 0
