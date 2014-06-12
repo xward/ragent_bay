@@ -50,10 +50,13 @@ module RagentIncomingMessage
           'agent_name' => user_agent_class.agent_name
         }
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
-        set_current_user_api(apis)
 
         # create Presence object
         presence = apis.mdi.dialog.create_new_presence(params)
+
+        # set user api
+        apis.initial_event_content = presence.clone
+        set_current_user_api(apis)
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_presence(presence)
@@ -179,6 +182,7 @@ module RagentIncomingMessage
 
           # set associated api as current sdk_api
           apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
+          apis.initial_event_content = ragent_msg.clone
           set_current_user_api(apis)
 
           # Say it
@@ -235,12 +239,15 @@ module RagentIncomingMessage
           'agent_name' => user_agent_class.agent_name
         }
 
-        # set associated api as current sdk_api
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
-        set_current_user_api(apis)
 
         # create Track object
         track = apis.mdi.dialog.create_new_track(params)
+
+        # set associated api as current sdk_api
+        apis.initial_event_content = track.clone
+        set_current_user_api(apis)
+
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_track(track)
@@ -287,12 +294,15 @@ module RagentIncomingMessage
         'env' => 'order',
         'agent_name' => assigned_agent.agent_name
       }
-      # set associated api as current sdk_api
       apis = USER_API_FACTORY.gen_user_api(assigned_agent, env)
-      set_current_user_api(apis)
 
       # create Order object
       order = apis.mdi.dialog.create_new_order(params)
+
+      # set associated api as current sdk_api
+      apis.initial_event_content = order.clone
+      set_current_user_api(apis)
+
 
       # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
       assigned_agent.handle_order(order)
@@ -347,12 +357,14 @@ module RagentIncomingMessage
           'agent_name' => user_agent_class.agent_name
         }
 
-        # set associated api as current sdk_api
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
-        set_current_user_api(apis)
 
-        # create Track object
+        # create collecion object
         collection = apis.mdi.dialog.create_new_collection(params)
+
+        # set associated api as current sdk_api
+        apis.initial_event_content = collection.clone
+        set_current_user_api(apis)
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_collection(collection)

@@ -80,8 +80,12 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {'class'=> 'message'}
+            self.meta = {
+              'class'=> 'message',
+              'account' => apis.initial_event_content.account
+            }
             self.type = 'message'
+            self.account = apis.initial_event_content.account
           else
 
             self.meta = struct['meta']

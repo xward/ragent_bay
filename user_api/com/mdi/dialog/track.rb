@@ -67,8 +67,11 @@ module UserApis
           @user_apis = apis
 
           if struct.blank?
-            self.meta = {'class' => 'track'}
-
+            self.meta = {
+              'class' => 'track',
+              'account' => apis.initial_event_content.account
+            }
+            self.account = apis.initial_event_content.account
           else
             self.meta = struct['meta']
             payload = struct['payload']

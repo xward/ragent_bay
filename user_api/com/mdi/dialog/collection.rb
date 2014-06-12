@@ -57,8 +57,11 @@ module UserApis
 
           if struct.blank?
             self.name = 'unknown'
-            self.meta = {'class' => 'collection'}
-            self.account = ''
+            self.meta = {
+              'class' => 'collection',
+              'account' => apis.initial_event_content.account
+            }
+            self.account = apis.initial_event_content.account
             self.id = nil
             self.asset = ''
             self.start_at = 0

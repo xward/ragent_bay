@@ -5,7 +5,7 @@
 
 require_relative 'com/user_api_included'
 
-class UserApiClass
+class UserApiClass < Struct.new(:initial_event_content)
 
   def initialize(user_class, env, md5env)
     @USER_CLASS = user_class
