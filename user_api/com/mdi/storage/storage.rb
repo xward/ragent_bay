@@ -38,8 +38,9 @@ module UserApis
       # This is your distributed and replicated solid data base, based with mongodb. All data stored in it will be shared between all instances of you agent running into the cloud.
       # @note: don't put too much data in it, or it will cost you a lot of money :)
       # @see http://api.mongodb.org/ruby/current/ for more details about available commands.
+      # @return a Mongo::DB
       def mongodb
-        CC.mongo
+        CC.mongo.db("#{user_api.agent_name}")
       end
 
       # @api_private
