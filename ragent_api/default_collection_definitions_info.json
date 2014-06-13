@@ -1,0 +1,41 @@
+[
+  {
+    "name":"Trips unstable",
+    "type":"tracks",
+    "collect":["track",""],
+    "start_conditions":
+    {
+      "DIO_IGNITION":true
+    },
+    "stop_conditions":
+    {
+      "DIO_IGNITION":false
+    },
+    "assets":
+    [
+
+    ]
+  },
+  {
+    "name":"Test Interval",
+    "type":"interval"
+    ,"collect":
+    [
+      "track",
+      "message",
+      "presence"
+    ],
+    "start_conditions":
+    {
+      "value":""
+    },
+    "stop_conditions":
+    {
+      "value":1
+    },
+    "assets":
+    [
+
+    ]
+  }
+]

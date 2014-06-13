@@ -5,6 +5,7 @@
 
 require_relative 'incoming_messages_handler'
 require_relative 'tracking_field_mapping'
+require_relative 'collection_definition_mapping'
 require_relative 'user_agent_class'
 require_relative 'sdk_stats'
 require_relative 'rufus'
@@ -29,6 +30,10 @@ module RagentApi
 
   def self.track_mapping
     @track_mapping ||= TrackFieldMapping.new
+  end
+
+  def self.collection_definition_mapping
+    @collection_definition ||= CollectionDefinitionMapping.new
   end
 
   def self.user_class_subscriber
