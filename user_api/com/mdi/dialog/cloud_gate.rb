@@ -114,7 +114,7 @@ module UserApis
                   "payload" => {
                   "id" =>          out_id,     # Indigen integer
                   "asset" =>       "ragent",
-                  "sender" =>      send_channel,               # Sender identifier (can be the same as the asset)
+                  "sender" =>      origin_channel,               # Sender identifier (can be the same as the asset)
                   "recipient" =>   "@@server@@",               # Recipient identifier (can be the same as the asset)
                   "type" =>        "message",
                   "received_at" => Time.now.to_i,               # timestamp integer in seconds
