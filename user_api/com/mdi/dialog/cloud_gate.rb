@@ -26,6 +26,10 @@ module UserApis
           @user_apis
         end
 
+        def default_origin_channel
+          @default_origin_channel
+        end
+
         # Inject a presence in the server queue (ie push a presence to the server)
         # @return true on success
         # @param [PresenceClass] the presence to send
