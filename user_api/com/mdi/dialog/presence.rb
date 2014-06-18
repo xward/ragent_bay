@@ -79,13 +79,15 @@ module UserApis
         def initialize(apis, struct = nil)
           @user_apis = apis
 
+          account = apis.initial_event_content == nil ? nil : apis.initial_event_content.account
+
           if struct.blank?
             self.meta = {
               'class' => 'presence',
-              'account' => apis.initial_event_content.account
+              'account' => account
             }
             self.type = 'connect'
-            self.account = apis.initial_event_content.account
+            self.account = account
           else
 
             self.meta = struct['meta']

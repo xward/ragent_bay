@@ -52,6 +52,7 @@ module UserApis
         def initialize(apis, struct = nil)
 
           @user_apis = apis
+          account = apis.initial_event_content == nil ? nil : apis.initial_event_content.account
 
           self.type = 'collection'
 
@@ -59,9 +60,9 @@ module UserApis
             self.name = 'unknown'
             self.meta = {
               'class' => 'collection',
-              'account' => apis.initial_event_content.account
+              'account' => account
             }
-            self.account = apis.initial_event_content.account
+            self.account = account
             self.id = nil
             self.asset = ''
             self.start_at = 0
