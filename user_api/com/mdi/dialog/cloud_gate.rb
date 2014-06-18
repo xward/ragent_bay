@@ -30,6 +30,7 @@ module UserApis
           @default_origin_channel
         end
 
+
         # Inject a presence in the server queue (ie push a presence to the server)
         # @return true on success
         # @param [PresenceClass] the presence to send
@@ -102,7 +103,7 @@ module UserApis
 
             out_id = 00000
 
-            user_api.mdi.dialog.protogen.protogen_encode(msg).each do |message|
+            user_api.mdi.dialog.tools.protogen_encode(msg).each do |message|
               out_id = CC.indigen_next_id(message.asset)
               inject_hash = {
                 "meta" => {
