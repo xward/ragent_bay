@@ -142,40 +142,16 @@ module UserApis
           r_hash
         end
 
-        # compute and set the start_at and stop_at from data stored in collection
-        # @return random
+        # Compute, set and return the `start_at` and `stop_at` timestamps from the data stored in this collection.
+        # @return [Array] first element is the new `start_at`, last element the new `stop_at`
         # @api public
         def crop_start_stop_time_from_data
-          # use recorded at (for tracks & message), time for presence
-          start_at = nil
-          stop_at = nil
-
-          self.data.each do |el|
-            if el.id != nil
-              mom = nil
-              CC.logger.debug("crop_start_stop_time_from_data of #{el.class}: #{el}")
-              case "#{el.class}"
-              when "UserApis::Mdi::Dialog::PresenceClass"
-                mom = el.time
-              when "UserApis::Mdi::Dialog::MessageClass"
-                mom = el.recorded_at
-              when "UserApis::Mdi::Dialog::TrackClass"
-                mom = el.recorded_at
-              end
-
-              raise "Couldn't find time associated with a #{el.class}" if mom == nil
-
-              start_at ||= mom
-              stop_at ||= mom
-              start_at = mom if mom < start_at
-              stop_at = mom if mom > stop_at
-
-            end
-          end
-
-          self.start_at = start_at
-          self.stop_at = stop_at
-
+          allowed_classes = [UserApis::Mdi::Dialog::PresenceClass, UserApis::Mdi::Dialog::MessageClass, UserApis::Mdi::Dialog::TrackClass]
+          self.start_at, self.stop_at =
+             self.data.reject { |el| el.id.nil? }
+                      .tap { |el| raise "Can not find the time associated with a #{el.class}" unless allowed_classes.include?(el.class) }
+                      .map { |el| el.is_a?(PresenceClass) ? el.time : el.recorded_at }
+                      .minmax
         end
 
       end #Collection
