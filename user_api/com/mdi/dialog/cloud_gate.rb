@@ -103,7 +103,7 @@ module UserApis
 
             out_id = 00000
 
-            user_api.mdi.tools.protogen_encode(msg).each do |message|
+            user_api.mdi.tools.protogen.protogen_encode(msg).each do |message|
               out_id = CC.indigen_next_id(message.asset)
               inject_hash = {
                 "meta" => {
