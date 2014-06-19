@@ -41,7 +41,7 @@ module UserApis
       # @see http://api.mongodb.org/ruby/current/ for more details about available commands.
       # @return a Mongo::DB
       def mongodb
-        CC.mongo.db("#{user_api.agent_name}")
+        CC.mongoClient.db("#{user_api.agent_name}")
       end
 
       # @api_private
