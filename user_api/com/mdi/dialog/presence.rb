@@ -79,7 +79,12 @@ module UserApis
         def initialize(apis, struct = nil)
           @user_apis = apis
 
-          account = apis.initial_event_content == nil ? nil : apis.initial_event_content.account
+          # usable account ?
+          account = nil
+          begin
+            account = apis.initial_event_content.account
+          rescue Exception => e # Silent !
+          end
 
           if struct.blank?
             self.meta = {

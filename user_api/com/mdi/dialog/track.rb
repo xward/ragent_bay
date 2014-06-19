@@ -66,7 +66,13 @@ module UserApis
         def initialize(apis, struct = nil)
           @user_apis = apis
 
-          account = apis.initial_event_content == nil ? nil : apis.initial_event_content.account
+          # usable account ?
+          account = nil
+          begin
+            account = apis.initial_event_content.account
+          rescue Exception => e # Silent !
+          end
+
 
           if struct.blank?
             self.meta = {
@@ -195,7 +201,10 @@ module UserApis
         #   new_track.set_field("MDI_CC_LEGAL_SPEED", "50")
         def set_field(name, value)
           field = user_api.mdi.storage.tracking_fields_info.get_by_name(name, self.account)
-          return self.fields_data if field == nil
+          if field == nil
+            RAGENT.api.mdi.tools.log.warn("set_field: Field #{name} not found in local configuration, abort")
+            return self.fields_data
+          end
 
           # verify value type
           case field['field_type']
