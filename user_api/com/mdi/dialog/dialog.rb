@@ -37,7 +37,7 @@ module UserApis
       # @api public
       # Create a new message object
       # @example
-      #   new_presence = user_api.mdi.dialog.create_new_message
+      #   new_message = user_api.mdi.dialog.create_new_message
       def create_new_message(struct = nil)
         Dialog::MessageClass.new(user_api, struct)
       end
@@ -45,7 +45,7 @@ module UserApis
       # @api public
       # Create a new track object
       # @example
-      #   new_presence = user_api.mdi.dialog.create_new_track
+      #   new_track = user_api.mdi.dialog.create_new_track
       def create_new_track(struct = nil)
         Dialog::TrackClass.new(user_api, struct)
       end
@@ -53,7 +53,7 @@ module UserApis
       # @api public
       # Create a new order object
       # @example
-      #   new_presence = user_api.mdi.dialog.create_new_order
+      #   new_order = user_api.mdi.dialog.create_new_order
       def create_new_order(struct = nil)
         Dialog::OrderClass.new(user_api, struct)
       end
@@ -61,7 +61,7 @@ module UserApis
       # @api public
       # Create a new collection object
       # @example
-      #   new_presence = user_api.mdi.dialog.create_new_collection
+      #   new_collection = user_api.mdi.dialog.create_new_collection
       def create_new_collection(struct = nil)
         Dialog::CollectionClass.new(user_api, struct)
       end
