@@ -39,6 +39,8 @@ module UserApis
       # This is your distributed and replicated solid data base, based with mongodb. All data stored in it will be shared between all instances of you agent running into the cloud.
       # @note: don't put too much data in it, or it will cost you a lot of money :)
       # @see http://api.mongodb.org/ruby/current/ for more details about available commands.
+      # If you willing to use mongo into your vm, you NEED ton install it first (advanced user only) with # http://docs.mongodb.org/manual/tutorial/install-mongodb-on-debian/
+      # vagrant ssh will help you to log into you virtual cloud
       # @return a Mongo::DB
       def mongodb
         CC.mongoClient.db("#{user_api.agent_name}")
