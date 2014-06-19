@@ -173,12 +173,14 @@ module UserApis
           }
 
           #add  fresh field of new data (and convert it as magic string)
-          self.fields_data.each do |field|
-            if field['fresh'] and field['field'] > 4999 # can't inject field from 0 to 4999, device protected
-              CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
-              r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
-            else
-              CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 50000)")
+          if self.fields_data.is_a? Array # in cas on nil or whatever
+            self.fields_data.each do |field|
+              if field['fresh'] and field['field'] > 4999 # can't inject field from 0 to 4999, device protected
+                CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
+                r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
+              else
+                CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 50000)")
+              end
             end
           end
 
