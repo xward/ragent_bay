@@ -13,6 +13,7 @@ module UserApis
 
         def initialize(apis)
           @user_apis = apis
+          @all_definitions = []
         end
 
         def user_api
