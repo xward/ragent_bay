@@ -74,6 +74,7 @@ module UserApis
               'account' => account
             }
             self.account = account
+            self.fields_data = []
           else
             self.meta = struct['meta']
             payload = struct['payload']
