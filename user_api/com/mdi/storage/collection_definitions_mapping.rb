@@ -13,6 +13,7 @@ module UserApis
 
         def initialize(apis)
           @user_apis = apis
+          @all_definitions = {}
         end
 
         def user_api
@@ -20,13 +21,14 @@ module UserApis
         end
 
         # return a collection definition structs array
-        def get_all()
-          @all_definitions ||= RagentApi::CollectionDefinitionMapping.get_all(user_api.account)
+        def get_all(account = nil)
+          account ||= user_api.account
+          @all_definitions[account] ||= RagentApi::CollectionDefinitionMapping.get_all(account)
         end
 
-        def get_for_asset_with_type(imei, type)
+        def get_for_asset_of_type(imei, type)
           asset_definitions = []
-          definitions = self.get_all()
+          definitions = self.get_all
 
           definitions.each do |definition|
             if (definition['assets'] == [] || definition['assets'].include?(imei)) && definition['collect'].include?(type)
