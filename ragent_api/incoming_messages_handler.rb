@@ -90,8 +90,7 @@ module RagentIncomingMessage
     end
 
     # drop if unmanaged
-    return unless RAGENT.supported_message_channels.include? channel
-
+    return unless RAGENT.supported_message_channels.include? channel || RAGENT.supported_message_channels.include? 'ALL_CHANNELS'
 
     PUNK.start('new')
     RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incomming message:\n#{params}")
@@ -171,7 +170,7 @@ module RagentIncomingMessage
     RAGENT.user_class_message_subscriber.get_subscribers.each do |user_agent_class|
       next if user_agent_class.internal_config['subscribe_message'] == false
 
-      if user_agent_class.internal_config['dynamic_channel_str'].include? channel
+      if user_agent_class.internal_config['dynamic_channel_str'].include? channel || user_agent_class.internal_config['dynamic_channel_str'].include? 'ALL_CHANNELS'
 
         begin
           PUNK.start('damned')
