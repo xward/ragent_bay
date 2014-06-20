@@ -145,9 +145,14 @@ module UserApis
           r_hash['meta'].delete_if { |k, v| v.nil? }
           r_hash['payload'].delete_if { |k, v| v.nil? }
 
-
           r_hash
         end
+
+        def to_hash_to_send_to_cloud
+          self.id = CC.indigen_next_id(self.asset)
+          self.to_hash
+        end
+
 
         # compute and set the start_at and stop_at from data stored in collection
         # @return random

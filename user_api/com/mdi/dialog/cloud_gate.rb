@@ -216,7 +216,7 @@ module UserApis
             end
 
             # todo: put some limitation
-            CC.push(collection.to_hash,'collections')
+            CC.push(collection.to_hash_to_send_to_cloud,'collections')
 
 
             # success !
