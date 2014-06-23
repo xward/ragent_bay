@@ -14,11 +14,11 @@ module RagentApi
       @default_track_field_info ||= begin
         if RAGENT.running_env_name == 'sdk-vm'
           CC.logger.info("fetch_default_map fetched from cloud configuration")
-          YAML::load(JSON.parse(File.read('/home/vagrant/ruby-agents-sdk/cloud_configuration/default_tracks_field_info.json')))
+          JSON.parse(File.read('/home/vagrant/ruby-agents-sdk/cloud_configuration/default_tracks_field_info.json'))
         else
           path = File.expand_path("..", __FILE__)
           CC.logger.info("fetch_default_map fetched")
-          YAML::load(File.read("#{path}/default_tracks_field_info.json"))
+          JSON.parse(File.read("#{path}/default_tracks_field_info.json"))
         end
       end
     end
