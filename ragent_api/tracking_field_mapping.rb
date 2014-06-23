@@ -69,7 +69,7 @@ module RagentApi
       end
       self.fetch_map(account).each do |field|
         if "#{field['field']}" == "#{int_id}"
-          return field
+          return field.clone
         end
       end
       if !no_error
@@ -83,7 +83,7 @@ module RagentApi
       end
       fetch_map(account).each do |field|
         if "#{field['name']}" == "#{str_name}"
-          return field
+          return field.clone
         end
       end
       if !no_error
