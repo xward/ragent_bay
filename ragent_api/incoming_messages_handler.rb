@@ -170,7 +170,7 @@ module RagentIncomingMessage
     RAGENT.user_class_message_subscriber.get_subscribers.each do |user_agent_class|
       next if user_agent_class.internal_config['subscribe_message'] == false
 
-      if user_agent_class.internal_config['dynamic_channel_str'].include? channel || user_agent_class.internal_config['dynamic_channel_str'].include? 'ALL_CHANNELS'
+      if user_agent_class.internal_config['dynamic_channel_str'].include? channel || user_agent_class.internal_config['dynamic_channel_str'].include?('ALL_CHANNELS')
 
         begin
           PUNK.start('damned')
