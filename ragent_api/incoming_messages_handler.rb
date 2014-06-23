@@ -90,7 +90,7 @@ module RagentIncomingMessage
     end
 
     # drop if unmanaged
-    return unless RAGENT.supported_message_channels.include? channel || RAGENT.supported_message_channels.include? 'ALL_CHANNELS'
+    return unless RAGENT.supported_message_channels.include? channel || RAGENT.supported_message_channels.include?('ALL_CHANNELS')
 
     PUNK.start('new')
     RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incomming message:\n#{params}")
