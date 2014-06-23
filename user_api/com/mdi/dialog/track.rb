@@ -51,7 +51,7 @@ module UserApis
         #                                               "raw_value": 42,
         #                                               "value":42
         #                                           } `
-        #                                           
+        #
         #   @note You should not use the `raw_value` of the field as it differs between the SDK VM and the real cloud.
 
         # @!attribute [rw] account
@@ -151,7 +151,7 @@ module UserApis
             #add field of new data (and convert it as magic string)
             self.fields_data.each do |field|
               CC.logger.debug("to_hash: Adding field '#{field['field']}' with val= #{field['value']}")
-              r_hash['payload'][field['field']] = "#{field['value']}"
+              r_hash['payload'][field['field'].to_s] = "#{field['value']}"
             end
           end
 
@@ -253,5 +253,3 @@ module UserApis
     end #Dialog
   end #Mdi
 end #UserApis
-
-
