@@ -151,7 +151,7 @@ module UserApis
             #add field of new data (and convert it as magic string)
             self.fields_data.each do |field|
               CC.logger.debug("to_hash: Adding field '#{field['field']}' with val= #{field['value']}")
-              r_hash['payload'][field['field'].to_s] = "#{field['value']}"
+              r_hash['payload'][field['field'].to_s] = "#{field['raw_value']}"
             end
           end
 
