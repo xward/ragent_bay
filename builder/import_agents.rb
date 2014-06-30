@@ -165,6 +165,7 @@ File.open("#{here_path}/config/schedule.rb", 'w') { |file| file.write(whenever_c
 
 # call whenever
 Bundler.with_clean_env do
+  puts "Whenever call: 'cd #{here_path};bundle exec whenever > #{agents_generated_path}/whenever_cron'"
   `cd #{here_path};bundle exec whenever > #{agents_generated_path}/whenever_cron`
 end
 

@@ -269,6 +269,7 @@ module RagentApi
 
       final_map.delete_if { |k, v| v.empty? }
       puts "get_agents_cron_tasks (clean) gives:\n#{final_map.to_json}"
+      RAGENT.api.mdi.tools.log.info("Rufus get_agents_cron_tasks (clean) gives:\n#{final_map.to_json}")
       final_map
     end
   end
