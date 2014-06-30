@@ -12,7 +12,7 @@ module Rufus
 
   def self.run
 
-    p "Rufus start"
+    RAGENT.api.mdi.tools.log.info("Rufus start")
 
     scheduler = Rufus::Scheduler.new
 
@@ -20,12 +20,15 @@ module Rufus
 
     crons.each do |k, v|
       p "Rufus init agent #{k}"
+      RAGENT.api.mdi.tools.log.info("Rufus init agent #{k}")
 
       v.each do |cron_s|
         cron = JSON.parse(cron_s)
+        RAGENT.api.mdi.tools.log.info("Rufus Init #{cron.class} #{cron} #{cron['cron_schedule']} #{cron['order'].class} #{cron['order']}")
         puts "Init #{cron.class} #{cron} #{cron['cron_schedule']}"
         puts "#{cron['order'].class} #{cron['order']}"
         scheduler.cron cron['cron_schedule'] do
+          RAGENT.api.mdi.tools.log.info("Rufus calling order #{cron['order']}")
           RIM.handle_order(JSON.parse(cron['order']))
         end
       end

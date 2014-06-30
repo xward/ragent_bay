@@ -274,6 +274,7 @@ module RagentApi
   end
 
   def self.scheduled_tasks_start
+    RAGENT.api.mdi.tools.log.info("RAGENT start scheduled_tasks_start")
     Rufus.run
   end
 
