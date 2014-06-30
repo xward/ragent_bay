@@ -56,7 +56,7 @@ module UserApis
           # usable account ?
           account = nil
           begin
-            account = apis.initial_event_content.account
+            account = apis.account
           rescue Exception => e # Silent !
           end
 
