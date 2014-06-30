@@ -164,7 +164,7 @@ FileUtils.mkdir_p("#{here_path}/config")
 File.open("#{here_path}/config/schedule.rb", 'w') { |file| file.write(whenever_content) }
 
 # call whenever
-Bundler.with_clean_env do
+Bundler.with_clean_env do # known issue : it will use your global ruby version (if using rbenv)
   puts `cd #{here_path};bundle exec ruby -v`
   puts "Whenever call: 'cd #{here_path};bundle exec whenever > #{agents_generated_path}/whenever_cron'"
   `cd #{here_path};bundle exec whenever > #{agents_generated_path}/whenever_cron`
