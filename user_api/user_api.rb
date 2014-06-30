@@ -31,6 +31,10 @@ class UserApiClass < Struct.new(:initial_event_content)
     @ACCOUNT ||= user_environment['account']
   end
 
+  def account=(account)
+    @ACCOUNT = account
+  end
+
   def agent_name
     @AGENT_NAME ||= user_environment['agent_name']
   end
