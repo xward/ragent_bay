@@ -89,8 +89,8 @@ module UserApis
             self.asset = payload['asset']
             self.account = self.meta['account']
 
-            self.latitude = payload['latitude'].to_f
-            self.longitude = payload['longitude'].to_f
+            self.latitude = payload['latitude'] == nil ? nil : payload['latitude'].to_f
+            self.longitude = payload['longitude'] == nil ? nil : payload['longitude'].to_f
             self.recorded_at = payload['recorded_at'].to_i
             self.received_at = payload['received_at'].to_i
 
@@ -144,8 +144,8 @@ module UserApis
             'asset' => self.asset,
             'recorded_at' => self.recorded_at.to_i,
             'received_at' => self.received_at.to_i,
-            'latitude' => self.latitude.to_f,
-            'longitude' => self.longitude.to_f
+            'latitude' => self.latitude == nil ? nil : self.latitude.to_f,
+            'longitude' => self.longitude == nil ? nil : self.longitude.to_f
           }
           if !without_fields
             #add field of new data (and convert it as magic string)
@@ -174,8 +174,8 @@ module UserApis
             'asset' => self.asset,
             'received_at' => Time.now.to_i,
             'recorded_at' => self.recorded_at == nil ? Time.now.to_i : self.recorded_at.to_i,
-            'latitude' => self.latitude.to_f,
-            'longitude' => self.longitude.to_f
+            'latitude' => self.latitude == nil ? nil : self.latitude.to_f,
+            'longitude' => self.longitude == nil ? nil : self.longitude.to_f
           }
 
           #add  fresh field of new data (and convert it as magic string)
