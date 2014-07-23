@@ -63,6 +63,7 @@ module UserApis
 
 
             # todo: put some limitation
+            user_api.mdi.tools.log.info("Pushing presence #{inject_hash}")
             CC.push(inject_hash,'presences')
 
             # success !
@@ -129,6 +130,7 @@ module UserApis
               inject_hash['payload'].delete_if { |k, v| v.nil? }
 
               # todo: put some limitation
+              user_api.mdi.tools.log.info("Pushing message #{inject_hash}")
               CC.push(inject_hash,'messages')
             end
 
@@ -170,6 +172,7 @@ module UserApis
 
 
             # todo: put some limitation
+            user_api.mdi.tools.log.info("Pushing track #{track.to_hash_to_send_to_cloud}")
             CC.push(track.to_hash_to_send_to_cloud,'tracks')
 
             # success !
@@ -216,6 +219,7 @@ module UserApis
             end
 
             # todo: put some limitation
+            user_api.mdi.tools.log.info("Pushing collection #{collection.to_hash_to_send_to_cloud}")
             CC.push(collection.to_hash_to_send_to_cloud,'collections')
 
 
