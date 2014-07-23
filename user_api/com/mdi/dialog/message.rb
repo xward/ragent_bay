@@ -96,6 +96,7 @@ module UserApis
           else
 
             self.meta = struct['meta']
+            self.meta['class'] = 'message'
             payload = struct['payload']
 
             self.content = payload['payload']

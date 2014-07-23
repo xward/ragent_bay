@@ -83,6 +83,7 @@ module UserApis
             self.fields_data = []
           else
             self.meta = struct['meta']
+            self.meta['class'] = 'track'
             payload = struct['payload']
 
             self.id = payload['id']

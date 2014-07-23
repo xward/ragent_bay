@@ -76,6 +76,7 @@ module UserApis
             self.data = []
           else
             self.meta = struct['meta']
+            self.meta['class'] = 'collection'
             payload = struct['payload']
 
             self.name = payload['name']
