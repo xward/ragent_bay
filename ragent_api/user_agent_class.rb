@@ -119,7 +119,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error presence :\n#{presence.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' presence event that brought to this crash :\n#{presence.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][0] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("presence_#{agent_name}", "#{e}")
@@ -180,9 +180,8 @@ class UserAgentClass
         PUNK.end('msgAgent','ok','in',"AGENT:#{agent_name}TNEGA <- MSG[#{crop_ref(msg.id,4)}] #{msg_type}")
 
       rescue Exception => e
-
         RAGENT.api.mdi.tools.print_ruby_exception(e)
-        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
+        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' message event that brought to this crash :\n#{msg.inspect}")
         SDK_STATS.stats['server']['internal_error'] += 1
         SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
         RUBY_AGENT_STATS.report_an_error("message_internal_#{agent_name}", "#{e}")
@@ -210,7 +209,7 @@ class UserAgentClass
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.log.error('Server: /msg error on agent #{agent_name} while handle_msg')
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' message event that brought to this crash :\n#{msg.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][1] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("message_#{agent_name}", "#{e}")
@@ -244,7 +243,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error track :\n#{track.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' track event that brought to this crash :\n#{track.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][2] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("track_#{agent_name}", "#{e}")
@@ -277,7 +276,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error order :\n#{order.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' order event that brought to this crash :\n#{order.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][3] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("order_#{agent_name}", "#{e}")
@@ -310,7 +309,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error collection :\n#{collection.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' collection event that brought to this crash :\n#{collection.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][4] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("collection_#{agent_name}", "#{e}")
@@ -340,7 +339,7 @@ class UserAgentClass
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
-      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error on queue #{queue} :\n#{params.inspect}")
+      RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}'  queue #{queue} event that brought to this crash :\n#{params.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][4] += 1
       SDK_STATS.stats['agents'][agent_name]['total_error'] += 1
       RUBY_AGENT_STATS.report_an_error("queue_#{queue}_#{agent_name}", "#{e}")
