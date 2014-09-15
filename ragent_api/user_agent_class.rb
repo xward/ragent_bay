@@ -207,7 +207,7 @@ class UserAgentClass
       PUNK.end('handle','ok','process',"AGENT:#{agent_name}TNEGA callback MSG[#{crop_ref(msg.id,4)}] in #{(delta_t * 1000).round}ms")
     rescue => e
       delta_t = Time.now - start_t
-      RAGENT.api.mdi.tools.log.error('Server: /msg error on agent #{agent_name} while handle_msg')
+      RAGENT.api.mdi.tools.log.error("Server: /msg error on agent #{agent_name} while handle_msg")
       RAGENT.api.mdi.tools.print_ruby_exception(e)
       RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' message event that brought to this crash :\n#{msg.inspect}")
       SDK_STATS.stats['agents'][agent_name]['err_while_process'][1] += 1
