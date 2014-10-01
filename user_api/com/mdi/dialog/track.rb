@@ -188,7 +188,7 @@ module UserApis
                 r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
                 a_field = true
               else
-                CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 50000)")
+                CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 5000)")
               end
             end
           end
