@@ -12,7 +12,8 @@ module Rufus
 
   def self.run
 
-    RAGENT.api.mdi.tools.log.info("Rufus start")
+    RAGENT.api.mdi.tools.log.info("Rufus run start")
+    CC.logger.info("in rufus run")
 
     scheduler = Rufus::Scheduler.new
 
@@ -36,6 +37,7 @@ module Rufus
     end
 
 
+    return 'started'
 
     # now wait and work
     #scheduler.join
