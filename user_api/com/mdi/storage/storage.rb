@@ -5,6 +5,7 @@
 
 require_relative 'tracking_field_mapping'
 require_relative 'collection_definitions_mapping'
+require_relative 'stats_definitions_mapping'
 
 module UserApis
   module Mdi
@@ -54,6 +55,11 @@ module UserApis
       # Allows you to access account collection definitions
       def collection_definitions
         @collection_definitions ||= Storage::CollectionDefinitionsMappingClass.new(user_api)
+      end
+
+      # Allows you to access account stats definitions
+      def stats_definitions
+        @stats_definitions ||= Storage::StatsDefinitionsMappingClass.new(user_api)
       end
 
       # This is where your configuration is stored (setted in config/your_agent.yml)
