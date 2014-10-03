@@ -26,7 +26,7 @@ module UserApis
         #   @api public
         #   @return [Float] latitude of the asset position when the track was recorded, in degree * 10^-5
 
-        # @!attribute [rw] latitude
+        # @!attribute [rw] longitude
         #   @api public
         #   @return [Float] longitude of the asset position when the track was recorded, in degree * 10^-5
 
