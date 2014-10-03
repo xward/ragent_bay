@@ -1,0 +1,30 @@
+[
+  {
+    "name":"GPS speed rolling mean",
+    "type":"rolling_mean",
+    "time_frame":"hourly",
+    "field_id":8,
+    "field_type":"integer",
+    "new_field":808,
+    "all_assets":false,
+    "assets":
+    [
+
+    ],
+    "params":""
+  },
+  {
+    "name":"ODO partial km daily sum",
+    "type":"sum",
+    "time_frame":"daily",
+    "field_id":23,
+    "field_type":"string",
+    "new_field":923,
+    "all_assets":true,
+    "assets":
+    [
+
+    ],
+    "params":""
+  }
+]
