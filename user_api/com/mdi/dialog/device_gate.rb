@@ -71,12 +71,12 @@ module UserApis
         end
 
         # Reply to a device message. The device has a different behaviour is the message is a reply to another one.
-        # @return true on success
+        # @return the replied message on success, nil instead
         # @param msg [CloudConnectServices::Message] message to reply to
         # @param content [Object] content of the message
         # @param cookies [String] optional cookies, reseverd for Protogen (see the Protogen guide). You should not need to use this parameter in your agent code.
         # @example
-        #     user_api.mdi.dialog.device_gate.reply(msg, msg.content)
+        #     replied_msg = user_api.mdi.dialog.device_gate.reply(msg, msg.content)
         def reply(of_msg, content, cookies = nil)
           begin
             PUNK.start('reply','replying msg ...')
@@ -93,7 +93,7 @@ module UserApis
             # stats:
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['reply_sent_to_device'] += 1
             SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_sent'] += 1
-            return true
+            return response
           rescue Exception => e
             user_api.mdi.tools.log.error("Error on reply")
             user_api.mdi.tools.print_ruby_exception(e)
