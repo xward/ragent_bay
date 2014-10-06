@@ -108,9 +108,7 @@ module UserApis
 
           end
 
-          # TODO futur: raise if self.meta.class != 'presence'
-
-          if type != 'connect' && type != 'reconnect' && type != 'disconnect' && type != 'failed_connect'
+          if !['declare_asset','connect','reconnect','disconnect','failed_connect'].include?(type)
             raise "Wrong type of presence : #{type}"
           end
 
