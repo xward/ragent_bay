@@ -246,6 +246,21 @@ module UserApis
           self.fields_data << field
         end
 
+        # get the value of a field in this track
+        # @api public
+        # @param [field] field name or id
+        # @example get the value of track MDI_CC_LEGAL_SPEED
+        #   new_track.value_of_field("MDI_CC_LEGAL_SPEED", "50")
+        def value_of_field(field)
+          case field.class.to_s
+          when 'String'
+            user_api.mdi.storage.tracking_fields_info.get_by_name(field, self.account)
+          when 'Fixnum'
+            user_api.mdi.storage.tracking_fields_info.get_by_id(field, self.account)
+          else
+            raise "#{field} is neither an integer nor a string"
+          end
+        end
 
         # clear fields stored
         # @api public
