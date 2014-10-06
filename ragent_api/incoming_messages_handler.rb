@@ -155,7 +155,7 @@ module RagentIncomingMessage
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse message :\n#{params}")
         RUBY_AGENT_STATS.report_an_error("ragent track parse fail", "#{e}")
-        RAGENT.api.mdi.tools.log.info("Agent '#{agent_name}' error message :\n#{msg.inspect}")
+        RAGENT.api.mdi.tools.log.info("error on message :\n#{msg.inspect}")
         SDK_STATS.stats['server']['err_parse'][1] += 1
         SDK_STATS.stats['server']['internal_error'] += 1
         return
