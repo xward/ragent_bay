@@ -19,6 +19,10 @@ def merge_gem_file(master_gem_file, gemfiles_contents)
       if gem_name != nil && !(is_gem_exist(master, gem_name))
         master << line
       end
+
+      if line[0, 7] == 'source '
+        master << line
+      end
     end
   end
   master.join("")
