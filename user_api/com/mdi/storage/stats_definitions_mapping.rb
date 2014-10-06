@@ -20,12 +20,12 @@ module UserApis
           @all_definitions[account] ||= RagentApi::StatsDefinitionMapping.get_all(account)
         end
 
-        def get_for_asset_of_type(imei, field_id)
+        def get_for_asset_of_type(imei, field_ids)
           asset_definitions = []
           definitions = self.get_all
 
           definitions.each do |definition|
-            if (definition['all_assets'] || definition['assets'].include?(imei)) && definition['field_id'].include?(field_id)
+            if (definition['all_assets'] || definition['assets'].include?(imei)) && field_ids.include?(definition['field_id'])
               asset_definitions << definition
             end
           end
