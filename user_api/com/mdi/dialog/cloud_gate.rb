@@ -219,9 +219,7 @@ module UserApis
             end
 
             # todo: put some limitation
-            user_api.mdi.tools.log.info("Pushing collection #{collection.to_hash_to_send_to_cloud}")
             CC.push(collection.to_hash_to_send_to_cloud,'collections')
-
 
             # success !
             PUNK.end('injectcollection','ok','out',"SERVER <- SERVER COLLECTION")
