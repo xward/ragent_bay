@@ -116,7 +116,7 @@ module UserApis
 
               # filter it if needed
               w_fields = apis.user_class.internal_config['track_whitelist_fields']
-              next if w_fields != 'ALL_TRACKS' and !w_fields.include?(w_fields['name'])
+              next if w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
 
 
               field['raw_value'] = v
