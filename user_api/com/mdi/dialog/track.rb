@@ -137,6 +137,9 @@ module UserApis
               end
               #idea: metric for pos, speed
 
+
+              #todo: push to rq if  apis.user_class.internal_config['track_keep_last_known_values_mode'] > 0
+
               self.fields_data << field
             end
 
@@ -263,19 +266,32 @@ module UserApis
 
         # get the value of a field in this track
         # @api public
-        # @param [field] field name or id
+        # @param [field_name_or_id] field name or id
+        # @param [also_fetch_in_last_known_if_available] [OPTIONAL] you can set it to true if you want to fetch last known value of this field
         # @example get the value of track MDI_CC_LEGAL_SPEED
-        #   new_track.value_of_field("MDI_CC_LEGAL_SPEED", "50")
-        def value_of_field(field)
+        #   speed = track.field('MDI_CC_LEGAL_SPEED')['value']
+        def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
           case field.class.to_s
+            name = ''
           when 'String'
-            user_api.mdi.storage.tracking_fields_info.get_by_name(field, self.account)
+            name = field_name_or_id
           when 'Fixnum'
-            user_api.mdi.storage.tracking_fields_info.get_by_id(field, self.account)
+            name = user_api.mdi.storage.tracking_fields_info.get_by_id(field_name_or_id, self.account)['name']
           else
-            raise "#{field} is neither an integer nor a string"
+            raise "#{field_name_or_id} is neither an integer nor a string"
           end
+          field = self.fields_data.select {|e| e['name'] == name }
+          if field == nil
+            if also_fetch_in_last_knwon_if_available
+              RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values ...")
+
+            else
+              RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found")
+            end
+          end
+          field
         end
+
 
         # clear fields stored
         # @api public
