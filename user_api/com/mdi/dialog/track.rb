@@ -49,7 +49,9 @@ module UserApis
         #                                               "size": 1,
         #                                               "ack": 1,
         #                                               "raw_value": 42,
-        #                                               "value":42
+        #                                               "value":42,
+        #                                               "fresh":false,
+        #                                               "recorded_at", 687416315
         #                                           } `
         #
         #   @note You should not use the `raw_value` of the field as it differs between the SDK VM and the real cloud.
@@ -120,6 +122,7 @@ module UserApis
               field['raw_value'] = v
               field['value'] = v
               field['fresh'] = false
+              field['recorded_at'] = self.recorded_at
 
               # decode if Ragent. In VM mode, raw_value = value, nothing else to do
               # Note that the raw_value is thus different between VM mode and Ragent.
@@ -136,9 +139,6 @@ module UserApis
                 end
               end
               #idea: metric for pos, speed
-
-
-              #todo: push to rq if  apis.user_class.internal_config['track_keep_last_known_values_mode'] > 0
 
               self.fields_data << field
             end
@@ -268,8 +268,22 @@ module UserApis
         # @api public
         # @param [field_name_or_id] field name or id
         # @param [also_fetch_in_last_known_if_available] [OPTIONAL] you can set it to true if you want to fetch last known value of this field
+        # @return a field
+        #                                           A field look like this: `
+        #                                           {
+        #                                               "name": "GPRMC_VALID",
+        #                                               "field": 3,
+        #                                               "field_type": "int",
+        #                                               "size": 1,
+        #                                               "ack": 1,
+        #                                               "raw_value": 42,
+        #                                               "value":42,
+        #                                               "fresh":false
+        #                                               "recorded_at", 687416315
+        #                                           } `
         # @example get the value of track MDI_CC_LEGAL_SPEED
-        #   speed = track.field('MDI_CC_LEGAL_SPEED')['value']
+        #   field = track.field('MDI_CC_LEGAL_SPEED')
+        #   speed = field['value']
         def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
           name = ''
           case field.class.to_s
@@ -280,11 +294,20 @@ module UserApis
           else
             raise "#{field_name_or_id} is neither an integer nor a string"
           end
+
+          # filter it if needed (to be sure)
+          w_fields = user_api.user_class.internal_config['track_whitelist_fields']
+          raise "field; you want to use #{name} but you can't use it" if w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
+
+
           field = self.fields_data.select {|e| e['name'] == name }
           if field == nil
             if also_fetch_in_last_knwon_if_available
-              RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values ...")
+              RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values in DB storage ...")
 
+              # fetch in mongo
+              coll = user_api.mdi.storage.mongodb['last_value_of_track_fields']
+              coll.find("asset" => self.asset, 'name' => name).first
             else
               RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found")
             end
@@ -299,6 +322,26 @@ module UserApis
           self.fields_data = []
         end
 
+        # save all fields to mongo for last values features
+        # @api private
+        def save_fields_to_mongo
+          # note: not sure if this is the best method
+
+          # get last_value_of_track_fields collection
+          coll = user_api.mdi.storage.mongodb['last_value_of_track_fields']
+
+          self.fields_data.each do |field|
+            # search if exist
+            p_field = coll.find('asset' => field['asset'], 'name' => field['name']).first
+
+            # if not create it, else update it
+            if p_field == nil
+              coll.insert(field)
+            else
+              coll.update({ 'asset' => field['asset'], 'name' => field['name'] }, field) if field['recorded_at'] > p_field['recorded_at']
+            end
+          end
+        end
 
       end #Track
     end #Dialog

@@ -243,6 +243,11 @@ module RagentIncomingMessage
         # create Track object
         track = apis.mdi.dialog.create_new_track(params)
 
+        # store fields values to db if needed
+        if apis.user_class.internal_config['track_keep_last_known_values_mode'] == 1
+          track.save_fields_to_mongo
+        end
+
         # set associated api as current sdk_api
         apis.initial_event_content = track.clone
         set_current_user_api(apis)
