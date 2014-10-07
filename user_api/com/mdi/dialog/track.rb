@@ -271,8 +271,8 @@ module UserApis
         # @example get the value of track MDI_CC_LEGAL_SPEED
         #   speed = track.field('MDI_CC_LEGAL_SPEED')['value']
         def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
+          name = ''
           case field.class.to_s
-            name = ''
           when 'String'
             name = field_name_or_id
           when 'Fixnum'
