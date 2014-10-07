@@ -101,12 +101,17 @@ module RagentApi
   def self.what_is_internal_config
     @what_is_internal_config ||= begin
       [
-        'dynamic_channel_str',
         'subscribe_presence',
         'subscribe_message',
+        'dynamic_channel_str',
+        'message_whitelist_channels',
         'subscribe_track',
+        'track_whitelist_fields',
+        'track_keep_last_known_values_mode',
+        'track_remove_position',
+        'track_remove_time',
         'subscribe_collection',
-        'subscribe_other'
+        'subscribe_cloud_event'
       ]
     end
   end

@@ -90,18 +90,33 @@ module UserApis
             self.asset = payload['asset']
             self.account = self.meta['account']
 
-            self.latitude = payload['latitude'] == nil ? nil : payload['latitude'].to_f
-            self.longitude = payload['longitude'] == nil ? nil : payload['longitude'].to_f
-            self.recorded_at = payload['recorded_at'].to_i
-            self.received_at = payload['received_at'].to_i
+            if apis.user_class.internal_config['track_remove_position']
+              self.latitude = nil
+              self.longitude = nil
+            else
+              self.latitude = payload['latitude'] == nil ? nil : payload['latitude'].to_f
+              self.longitude = payload['longitude'] == nil ? nil : payload['longitude'].to_f
+            end
 
-            # TODO futur: raise if self.meta.class != 'track'
+            if apis.user_class.internal_config['track_remove_time']
+              self.recorded_at = nil
+              self.received_at = nil
+            else
+              self.recorded_at = payload['recorded_at'].to_i
+              self.received_at = payload['received_at'].to_i
+            end
 
             self.fields_data = []
             payload.each do |k, v|
               field = apis.mdi.storage.tracking_fields_info.get_by_id(k, true)
               next if field == nil
               RAGENT.api.mdi.tools.log.debug("init track with track gives #{k} #{v} #{field}")
+
+              # filter it if needed
+              w_fields = apis.user_class.internal_config['track_whitelist_fields']
+              next if w_fields != 'ALL_TRACKS' and !w_fields.include?(w_fields['name'])
+
+
               field['raw_value'] = v
               field['value'] = v
               field['fresh'] = false

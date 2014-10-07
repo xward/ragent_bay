@@ -36,7 +36,7 @@ class UserAgentClass
 
   def managed_message_channels
     @managed_message_channels ||= begin
-      channels = self.internal_config['dynamic_channel_str']
+      channels = self.internal_config['message_whitelist_channels']
       CC.logger.info(channels)
       if channels.is_a? String
         channels = [channels]
@@ -58,6 +58,11 @@ class UserAgentClass
           tmp_config[k] = v
         end
       end
+      # in case of renaming of var in configuration file, please implement reroots here:
+      if tmp_config['dynamic_channel_str'] != nil and tmp_config['message_whitelist_channels'] == nil
+        tmp_config['message_whitelist_channels'] = tmp_config['dynamic_channel_str']
+      end
+
       tmp_config
     end
   end
