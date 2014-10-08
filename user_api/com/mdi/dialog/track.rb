@@ -304,7 +304,7 @@ module UserApis
 
           field = self.fields_data.select{|e| e['name'] == name }.first
           if field == nil
-            if also_fetch_in_last_knwon_if_available
+            if also_fetch_in_last_known_if_available
               RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values in DB storage ...")
 
               # fetch in mongo
