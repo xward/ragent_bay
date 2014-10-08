@@ -3,13 +3,13 @@
     "name":"GPS speed rolling mean",
     "type":"rolling_mean",
     "time_frame":"hourly",
-    "field_id":8,
+    "field_name":"GPS_SPEED",
     "field_type":"integer",
-    "new_field":808,
+    "new_field":"GPS_SPEED_ROLLING_MEAN",
     "all_assets":false,
     "assets":
     [
-
+      "1234"
     ],
     "params":""
   },
@@ -17,9 +17,9 @@
     "name":"ODO partial km daily sum",
     "type":"sum",
     "time_frame":"daily",
-    "field_id":23,
+    "field_name":"ODO_PARTIAL_KM",
     "field_type":"string",
-    "new_field":923,
+    "new_field":"ODO_PARTIAL_KM_SUM",
     "all_assets":true,
     "assets":
     [
