@@ -116,8 +116,10 @@ module UserApis
 
               # filter it if needed
               w_fields = apis.user_class.internal_config['track_whitelist_fields']
-              next if w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
-
+              if w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
+                RAGENT.api.mdi.tools.log.warn("track init: dropping field #{field['name']}")
+                next
+              end
 
               field['raw_value'] = v
               field['value'] = v
