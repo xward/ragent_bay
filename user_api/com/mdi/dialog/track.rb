@@ -288,7 +288,7 @@ module UserApis
         #   speed = field['value']
         def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
           name = ''
-          case field.class.to_s
+          case field_name_or_id.class.to_s
           when 'String'
             name = field_name_or_id
           when 'Fixnum'
