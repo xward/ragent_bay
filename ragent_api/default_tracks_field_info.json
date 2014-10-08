@@ -789,5 +789,19 @@
         "field_type": "string",
         "size": null,
         "ack": null
+    },
+    {
+        "name": "GPS_SPEED_ROLLING_MEAN",
+        "field": 5020,
+        "field_type": "integer",
+        "size": 4,
+        "ack": 1
+    },
+    {
+        "name": "ODO_PARTIAL_KM_SUM",
+        "field": 5021,
+        "field_type": "string",
+        "size": 64,
+        "ack": 1
     }
 ]
