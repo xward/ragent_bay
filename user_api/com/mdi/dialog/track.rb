@@ -302,7 +302,7 @@ module UserApis
           raise "field; you want to use #{name} but you can't use it" if w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
 
 
-          field = self.fields_data.select {|e| e['name'] == name }
+          field = self.fields_data.select{|e| e['name'] == name }.first
           if field == nil
             if also_fetch_in_last_knwon_if_available
               RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values in DB storage ...")
