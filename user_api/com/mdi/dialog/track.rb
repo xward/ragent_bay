@@ -116,7 +116,7 @@ module UserApis
 
               # filter it if needed
               w_fields = apis.user_class.internal_config['track_whitelist_fields']
-              if w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
+              if w_fields != nil and w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
                 RAGENT.api.mdi.tools.log.warn("track init: dropping field #{field['name']}")
                 next
               end
@@ -299,7 +299,7 @@ module UserApis
 
           # filter it if needed (to be sure)
           w_fields = user_api.user_class.internal_config['track_whitelist_fields']
-          raise "field; you want to use #{name} but you can't use it" if w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
+          raise "field; you want to use #{name} but you can't use it" if w_fields != nil and  w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
 
 
           field = self.fields_data.select{|e| e['name'] == name }.first
