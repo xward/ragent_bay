@@ -4,6 +4,13 @@
 #########################################################
 
 
+# {"asset"=>"354676050177152", "created_at"=>nil, "namespace"=>"ASSET_CAMPAIGN::STATUS",
+#   "payload"=>"lol",
+#   "received_at"=>"\xCET-W\xD6", "sender"=>"DEVICE_MANAGER", "updated_at"=>nil, "id"=>628951424566296793}, meta: {"account"=>"ciinte"}
+
+
+
+
 module UserApis
   module Mdi
     module Dialog
