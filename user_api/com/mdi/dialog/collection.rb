@@ -66,7 +66,8 @@ module UserApis
             self.name = 'unknown'
             self.meta = {
               'class' => 'collection',
-              'account' => account
+              'account' => account,
+              'event_route' => []
             }
             self.account = account
             self.id = nil
@@ -76,8 +77,9 @@ module UserApis
             self.data = []
           else
             self.meta = struct['meta']
+            self.meta = {} if !(self.meta.is_a? Hash)
             self.meta['class'] = 'collection'
-            payload = struct['payload']
+            self.meta['event_route'] ||= []
 
             self.name = payload['name']
             self.account = self.meta['account']

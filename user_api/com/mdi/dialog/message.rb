@@ -89,16 +89,17 @@ module UserApis
           if struct.blank?
             self.meta = {
               'class'=> 'message',
-              'account' => account
+              'account' => account,
+              'event_route' => []
             }
             self.type = 'message'
             self.account = account
           else
-
             self.meta = struct['meta']
+            self.meta = {} if !(self.meta.is_a? Hash)
             self.meta['class'] = 'message'
+            self.meta['event_route'] ||= []
             payload = struct['payload']
-
             self.content = payload['payload']
             self.id = payload['id']
             self.parent_id = payload['parent_id']
@@ -111,10 +112,8 @@ module UserApis
             self.received_at = payload['received_at'].to_i
             self.channel = payload['channel']
 
-            if meta.is_a? Hash
-              self.account = meta['account']
-              self.cookies = meta['protogen_cookies']
-            end
+            self.account = meta['account']
+            self.cookies = meta['protogen_cookies']
 
             if self.type != 'message' && self.type != 'ack'
               raise "Message: wrong type of message : '#{type}'"

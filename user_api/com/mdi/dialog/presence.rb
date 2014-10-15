@@ -89,14 +89,17 @@ module UserApis
           if struct.blank?
             self.meta = {
               'class' => 'presence',
-              'account' => account
+              'account' => account,
+              'event_route' => []
             }
             self.type = 'connect'
             self.account = account
           else
-
             self.meta = struct['meta']
+            self.meta = {} if !(self.meta.is_a? Hash)
             self.meta['class'] = 'presence'
+            self.meta['event_route'] ||= []
+
             payload = struct['payload']
             self.id = payload['id']
             self.asset = payload['asset']

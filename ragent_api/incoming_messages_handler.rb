@@ -58,6 +58,15 @@ module RagentIncomingMessage
         apis.initial_event_content = presence.clone
         set_current_user_api(apis)
 
+        # check route loop
+        looped = presence.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
+        if looped != nil
+          PUNK.start('loopdrop')
+          RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming presence #{presence.id}")
+          PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming presence #{presence.id}")
+          return
+        end
+
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_presence(presence)
 
@@ -184,6 +193,16 @@ module RagentIncomingMessage
           apis.initial_event_content = ragent_msg.clone
           set_current_user_api(apis)
 
+
+          # check route loop
+          looped = ragent_msg.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
+          if looped != nil
+            PUNK.start('loopdrop')
+            RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming message #{ragent_msg.id}")
+            PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming message #{message.id}")
+            return
+          end
+
           # Say it
           RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
@@ -253,6 +272,15 @@ module RagentIncomingMessage
         set_current_user_api(apis)
 
 
+        # check route loop
+        looped = track.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
+        if looped != nil
+          PUNK.start('loopdrop')
+          RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming track #{track.id}")
+          PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming track #{track.id}")
+          return
+        end
+
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_track(track)
 
@@ -307,6 +335,7 @@ module RagentIncomingMessage
       apis.initial_event_content = order.clone
       set_current_user_api(apis)
 
+      # No need to check route loop (i guess)
 
       # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
       assigned_agent.handle_order(order)
@@ -369,6 +398,15 @@ module RagentIncomingMessage
         # set associated api as current sdk_api
         apis.initial_event_content = collection.clone
         set_current_user_api(apis)
+
+        # check route loop
+        looped = collection.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
+        if looped != nil
+          PUNK.start('loopdrop')
+          RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming collection #{collection.id}")
+          PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming collection #{collection.id}")
+          return
+        end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_collection(collection)

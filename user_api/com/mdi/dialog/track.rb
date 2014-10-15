@@ -79,13 +79,17 @@ module UserApis
           if struct.blank?
             self.meta = {
               'class' => 'track',
-              'account' => account
+              'account' => account,
+              'event_route' => []
             }
             self.account = account
             self.fields_data = []
           else
             self.meta = struct['meta']
+            self.meta = {} if !(self.meta.is_a? Hash)
             self.meta['class'] = 'track'
+            self.meta['event_route'] ||= []
+
             payload = struct['payload']
 
             self.id = payload['id']
@@ -145,7 +149,6 @@ module UserApis
               self.fields_data << field
             end
 
-
           end
 
         end
@@ -187,7 +190,8 @@ module UserApis
           r_hash = {}
           r_hash['meta'] = {
             'account' => self.account,
-            'class' => 'track'
+            'class' => 'track',
+            'event_route' => self.meta['event_route']
           }
           r_hash['payload'] = {
             'id' => CC.indigen_next_id(self.asset),

@@ -41,12 +41,26 @@ module UserApis
             raise "Presence id #{presence.id} has already been sent into the cloud. Dropping injection."  if presence.id != nil
 
             PUNK.start('injectpresence','inject presence to cloud ...')
+
+            # append self to route
+            origin_meta = user_api.initial_event_content.meta
+            path = origin_meta['event_route'] if origin_meta != nil
+            path ||= []
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+            presence.meta['event_route'] = path
+
+
             out_id = CC.indigen_next_id(presence.asset)
 
             inject_hash = {
               "meta" => {
                 "account" =>     presence.account,
-                "class" => 'presence'
+                "class" => 'presence',
+                'event_route' => presence.meta['event_route']
                 },
                 "payload" => {
                 "id" =>     out_id,     # Indigen integer
@@ -58,6 +72,7 @@ module UserApis
               }
             }
 
+            # clean up
             inject_hash['meta'].delete_if { |k, v| v.nil? }
             inject_hash['payload'].delete_if { |k, v| v.nil? }
 
@@ -105,12 +120,26 @@ module UserApis
             out_id = 00000
 
             user_api.mdi.tools.protogen.protogen_encode(msg).each do |message|
+
+              # append self to route
+              origin_meta = user_api.initial_event_content.meta
+              path = origin_meta['event_route'] if origin_meta != nil
+              path ||= []
+              path << {
+                'name'=> user_api.user_class.agent_name,
+                'node_type' => 'ragent',
+                'date' => Time.now.to_i
+              }
+              message.meta['event_route'] = path
+
+
               out_id = CC.indigen_next_id(message.asset)
               inject_hash = {
                 "meta" => {
                   "account" =>     message.account,
                   "cookies" =>     message.cookies,
-                  "class" => 'message'
+                  "class" => 'message',
+                  'event_route' => message.meta['event_route']
                   },
                   "payload" => {
                   "id" =>          out_id,     # Indigen integer
@@ -126,6 +155,7 @@ module UserApis
                 }
               }
 
+              # clean up
               inject_hash['meta'].delete_if { |k, v| v.nil? }
               inject_hash['payload'].delete_if { |k, v| v.nil? }
 
@@ -170,6 +200,17 @@ module UserApis
           begin
             PUNK.start('injecttrack','inject track to cloud ...')
 
+            # append self to route
+            origin_meta = user_api.initial_event_content.meta
+            path = origin_meta['event_route'] if origin_meta != nil
+            path ||= []
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+            track.meta['event_route'] = path
+
 
             # todo: put some limitation
             user_api.mdi.tools.log.info("Pushing track #{track.to_hash_to_send_to_cloud}")
@@ -201,6 +242,17 @@ module UserApis
 
           begin
             PUNK.start('injectcollection','inject collection to cloud ...')
+
+            # append self to route
+            origin_meta = user_api.initial_event_content.meta
+            path = origin_meta['event_route'] if origin_meta != nil
+            path ||= []
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+            collection.meta['event_route'] = path
 
 
             # now push all elements of the collection
