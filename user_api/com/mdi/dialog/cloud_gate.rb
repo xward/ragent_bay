@@ -33,7 +33,7 @@ module UserApis
 
         # Inject a presence in the server queue (ie push a presence to the server)
         # @return true on success
-        # @param [PresenceClass] the presence to send
+        # @param [PresenceClass] presence to inject
         # @example: NYI
         def inject_presence(presence)
           begin
@@ -100,7 +100,7 @@ module UserApis
 
         # Inject a message in the server queue on a specific channel (ie push a message to the server)
         # @return true on success
-        # @param [MessageClass] msg the message to inject
+        # @param [MessageClass] message to inject
         # @param [String] channel channel the message will be posted to
         # @note Be wary of "infinite message loops" with this method.
         # @note: if id is not nil (ie received from the cloud or duplicated), the injection will fail.
@@ -183,7 +183,7 @@ module UserApis
 
         # Inject a track in the server queue (ie push a track to the server)
         # @return true on success
-        # @param [TrackClass] track the track to send
+        # @param [TrackClass] track to inject
         # @example Injecte a new track to the cloud
         #   new_track = user_api.mdi.dialog.create_new_track
         #   new_track.recorded_at = Time.now.to_i
@@ -235,7 +235,7 @@ module UserApis
 
         # Inject a collection in the server queue (ie push a track to the server)
         # @return true on success
-        # @param [CollectionClass] track the track to send
+        # @param [CollectionClass] the collection to inject
         def inject_collection(collection)
           raise "Collection has already been sent into the cloud. Dropping injection."  if collection.id != nil
           raise "I don't push empty collection. Dropping injection." if collection.data.size == 0
@@ -288,6 +288,47 @@ module UserApis
             return false
           end
         end
+
+        # Inject a poke in the server queue (ie push a track to the server)
+        # @return true on success
+        # @param [PokeClass] poke to inject
+        def inject_poke(poke)
+          raise "Poke has already been sent into the cloud. Dropping injection."  if poke.id != nil
+
+          begin
+            PUNK.start('injectpoke','inject poke to cloud ...')
+
+            # append self to route
+            origin_meta = user_api.initial_event_content.meta
+            path = origin_meta['event_route'] if origin_meta != nil
+            path ||= []
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+            poke.meta['event_route'] = path
+
+
+            # todo: put some limitation
+            CC.push(poke.to_hash_to_send_to_cloud,'pokes')
+
+            # success !
+            PUNK.end('injectpoke','ok','out',"SERVER <- SERVER POKE")
+
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['inject_to_cloud'] += 1
+            return true
+          rescue Exception => e
+            user_api.mdi.tools.log.error("Error on inject poke")
+            user_api.mdi.tools.print_ruby_exception(e)
+            PUNK.end('injectpoke','ko','out',"SERVER <- SERVER POKE")
+            # stats:
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['err_on_inject'] += 1
+            SDK_STATS.stats['agents'][user_api.user_class.agent_name]['total_error'] += 1
+            return false
+          end
+        end
+
 
       end
     end

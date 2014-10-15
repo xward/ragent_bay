@@ -61,6 +61,7 @@ module RagentApi
     @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
+
   # A subscriber for an arbitrary queue.
   # @param [String] queue the queue name.
   # @return [UserApis::Mdi::Tools::SubscriberClass] a (lazily instantiated) subscriber for the given queue. Will never be nil.
@@ -75,6 +76,11 @@ module RagentApi
   def self.all_other_subscribers
     @user_class_other_subscribers
   end
+
+  def self.user_class_poke_subscriber
+    @user_class_poke_subscriber ||= self.api.mdi.tools.create_new_subscriber
+  end
+
 
   def self.agents_project_src_path
     @agents_project_src_path ||= begin
@@ -111,7 +117,10 @@ module RagentApi
         'track_remove_position',
         'track_remove_time',
         'subscribe_collection',
-        'subscribe_cloud_event'
+        'subscribe_cloud_event',
+        'message_injection_whitelist_channels',
+        'track_injection_whitelist_fields',
+        'subscribe_poke'
       ]
     end
   end
@@ -166,6 +175,10 @@ module RagentApi
               RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (shared): #{queue}")
             end
           end
+        end
+        if user_agent_class.internal_config['subscribe_poke']
+          RAGENT.user_class_poke_subscriber.subscribe(user_agent_class)
+          RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to pokes")
         end
 
       end

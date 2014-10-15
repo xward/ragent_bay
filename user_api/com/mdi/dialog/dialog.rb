@@ -8,6 +8,7 @@ require_relative 'message'
 require_relative 'track'
 require_relative 'order'
 require_relative 'collection'
+require_relative 'poke'
 require_relative 'cloud_gate'
 require_relative 'device_gate'
 
@@ -64,6 +65,14 @@ module UserApis
       #   new_collection = user_api.mdi.dialog.create_new_collection
       def create_new_collection(struct = nil)
         Dialog::CollectionClass.new(user_api, struct)
+      end
+
+      # @api public
+      # Create a new poke object
+      # @example
+      #   new_poke= user_api.mdi.dialog.create_new_poke
+      def create_new_poke(struct = nil)
+        Dialog::PokeClass.new(user_api, struct)
       end
 
       # @api public

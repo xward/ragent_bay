@@ -360,8 +360,6 @@ module RagentIncomingMessage
 
   end # handle_order
 
-
-  # futur !
   def self.handle_collection(params)
     #RAGENT.api.mdi.tools.log.info("new collection #{params}")
 
@@ -392,7 +390,7 @@ module RagentIncomingMessage
 
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
-        # create collecion object
+        # create collection object
         collection = apis.mdi.dialog.create_new_collection(params)
 
         # set associated api as current sdk_api
@@ -425,6 +423,71 @@ module RagentIncomingMessage
     end # each user_agent_class
 
   end # handle_collection
+
+  def self.handle_poke(params)
+
+    # valid input
+    if valid_params(params)
+      account = params['meta']['account']
+    else
+      return
+    end
+
+    PUNK.start('new')
+    RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incomming poke:\n#{params}")
+    PUNK.end('new','ok','in',"SERVER <- POKE : receive new poke")
+    SDK_STATS.stats['server']['received'][6] += 1
+
+
+    # forward to each agent
+    RAGENT.user_class_poke_subscriber.get_subscribers.each do |user_agent_class|
+
+      next if user_agent_class.internal_config['subscribe_poke'] == false
+
+      begin
+        PUNK.start('damned')
+        env = {
+          'account' => account,
+          'agent_name' => user_agent_class.agent_name
+        }
+
+        apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
+
+        # create poke object
+        poke = apis.mdi.dialog.create_new_poke(params)
+
+        # set associated api as current sdk_api
+        apis.initial_event_content = poke.clone
+        set_current_user_api(apis)
+
+        # check route loop
+        looped = poke.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
+        if looped != nil
+          PUNK.start('loopdrop')
+          RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming poke #{poke.id}")
+          PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming poke #{poke.id}")
+          return
+        end
+
+        # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
+        user_agent_class.handle_poke(poke)
+      rescue Exception => e
+        RAGENT.api.mdi.tools.print_ruby_exception(e)
+        RAGENT.api.mdi.tools.log.info("Ragent error parse poke :\n#{params}")
+        RUBY_AGENT_STATS.report_an_error("ragent poke parse fail", "#{e}")
+        SDK_STATS.stats['server']['err_parse'][6] += 1
+        SDK_STATS.stats['server']['internal_error'] += 1
+        PUNK.end('damned','ko','in',"SERVER <- poke : parse params fail")
+      ensure
+        PUNK.drop('damned')
+        release_current_user_api
+      end
+
+    end # each user_agent_class
+
+  end # handle_poke
+
+
 
   # Message handler for an agent which has subscribed to an arbitrary queue
   def self.handle_other_queue(params, queue_name)

@@ -17,10 +17,10 @@ module SDK_STATS
         'total_error' => 0,
         'internal_error' => 0,
         'total_sent' => 0,
-        'received' => [0] * 6,
-        'pulled_from_queue' => [0] * 5,
-        'ack_sent_to_device' => [0] * 5,
-        'err_parse' => [0] * 6,
+        'received' => [0] * 7,
+        'pulled_from_queue' => [0] * 6,
+        'ack_sent_to_device' => [0] * 6,
+        'err_parse' => [0] * 7,
         'err_dyn_channel' => [0] * 5,
         'err_while_send_ack' => [0] * 5,
         'in_queue' => 0,
@@ -36,16 +36,16 @@ module SDK_STATS
         'total_received' => 0,
         'total_error' => 0,
         'total_sent' => 0,
-        'received' => [0] * 5,
-        'err_while_process' => [0] * 5,
+        'received' => [0] * 6,
+        'err_while_process' => [0] * 6,
         'reply_sent_to_device' => 0,
         'err_on_reply' => 0,
         'push_sent_to_device' => 0,
         'err_on_push' => 0,
         'inject_to_cloud' => 0,
         'err_on_inject' => 0,
-        'upstream_data' => [0] * 5,
-        'downstream_data' => [0] * 5
+        'upstream_data' => [0] * 6,
+        'downstream_data' => [0] * 6
       }
     end
   end
