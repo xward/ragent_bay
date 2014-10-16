@@ -281,6 +281,12 @@ module RagentIncomingMessage
           return
         end
 
+        # In case of field data is empty, a user might want just use the position, but if the event_route is not empty, this mean that it already received it, so we drop it
+        if track.fields_data.size == 0 and track.meta['event_route'].is_a? Array and track.meta['event_route'].size > 1
+          RAGENT.api.mdi.tools.log.warn("Raw track part already received. Dropping incoming track #{track.id}")
+          return
+        end
+
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_track(track)
 
