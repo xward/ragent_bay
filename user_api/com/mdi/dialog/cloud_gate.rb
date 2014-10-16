@@ -213,8 +213,9 @@ module UserApis
 
 
             # todo: put some limitation
-            user_api.mdi.tools.log.info("Pushing track #{track.to_hash_to_send_to_cloud}")
-            CC.push(track.to_hash_to_send_to_cloud,'tracks')
+            sent = track.to_hash_to_send_to_cloud
+            user_api.mdi.tools.log.info("Pushing track #{sent}")
+            CC.push(sent,'tracks')
 
             # success !
             PUNK.end('injecttrack','ok','out',"SERVER <- SERVER TRACK")
