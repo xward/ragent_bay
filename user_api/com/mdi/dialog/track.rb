@@ -268,6 +268,7 @@ module UserApis
           field['fresh'] = true
           self.recorded_at = Time.now.to_i
           self.fields_data << field
+          self.id = nil # invalid track because some field has changed
         end
 
         # get the value of a field in this track
