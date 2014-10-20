@@ -258,6 +258,8 @@ module RagentApi
 
       cron_content = File.read("#{RAGENT.agents_generated_src_path}/whenever_cron")
 
+      RAGENT.api.mdi.tools.log.info("whenever cron content : \n#{cron_content}")
+
       # let's parse the cron_content to find cron commands for each running agent
       cron_content.each_line do |line|
         #puts "get_agents_cron_tasks line: #{line}"
