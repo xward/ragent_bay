@@ -121,10 +121,6 @@ module UserApis
 
             # TODO futur: raise if self.meta.class != 'message'
 
-            if self.id.blank?
-              self.id = CC.indigen_next_id(self.asset)
-            end
-
           end
 
         end
