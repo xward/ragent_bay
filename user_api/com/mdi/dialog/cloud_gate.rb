@@ -30,6 +30,21 @@ module UserApis
           @default_origin_channel
         end
 
+        # @api private
+        def gen_event_route_with_self
+            path = []
+            # some initial event might not have any meta field (like orders)
+            begin
+              path = user_api.initial_event_content.meta['event_route']
+            rescue Exception => e
+            end
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+            path
+        end
 
         # Inject a presence in the server queue (ie push a presence to the server)
         # @return true on success
@@ -43,16 +58,7 @@ module UserApis
             PUNK.start('injectpresence','inject presence to cloud ...')
 
             # append self to route
-            origin_meta = user_api.initial_event_content.meta
-            path = origin_meta['event_route'] if origin_meta != nil
-            path ||= []
-            path << {
-              'name'=> user_api.user_class.agent_name,
-              'node_type' => 'ragent',
-              'date' => Time.now.to_i
-            }
-            presence.meta['event_route'] = path
-
+            presence.meta['event_route'] = gen_event_route_with_self
 
             out_id = CC.indigen_next_id(presence.asset)
 
@@ -122,15 +128,7 @@ module UserApis
             user_api.mdi.tools.protogen.protogen_encode(msg).each do |message|
 
               # append self to route
-              origin_meta = user_api.initial_event_content.meta
-              path = origin_meta['event_route'] if origin_meta != nil
-              path ||= []
-              path << {
-                'name'=> user_api.user_class.agent_name,
-                'node_type' => 'ragent',
-                'date' => Time.now.to_i
-              }
-              message.meta['event_route'] = path
+              message.meta['event_route'] = gen_event_route_with_self
 
 
               out_id = CC.indigen_next_id(message.asset)
@@ -201,16 +199,7 @@ module UserApis
             PUNK.start('injecttrack','inject track to cloud ...')
 
             # append self to route
-            origin_meta = user_api.initial_event_content.meta
-            path = origin_meta['event_route'] if origin_meta != nil
-            path ||= []
-            path << {
-              'name'=> user_api.user_class.agent_name,
-              'node_type' => 'ragent',
-              'date' => Time.now.to_i
-            }
-            track.meta['event_route'] = path
-
+            track.meta['event_route'] = gen_event_route_with_self
 
             # todo: put some limitation
             sent = track.to_hash_to_send_to_cloud
@@ -245,16 +234,7 @@ module UserApis
             PUNK.start('injectcollection','inject collection to cloud ...')
 
             # append self to route
-            origin_meta = user_api.initial_event_content.meta
-            path = origin_meta['event_route'] if origin_meta != nil
-            path ||= []
-            path << {
-              'name'=> user_api.user_class.agent_name,
-              'node_type' => 'ragent',
-              'date' => Time.now.to_i
-            }
-            collection.meta['event_route'] = path
-
+            collection.meta['event_route'] = gen_event_route_with_self
 
             # now push all elements of the collection
             collection.data.each do |el|
@@ -300,16 +280,7 @@ module UserApis
             PUNK.start('injectpoke','inject poke to cloud ...')
 
             # append self to route
-            origin_meta = user_api.initial_event_content.meta
-            path = origin_meta['event_route'] if origin_meta != nil
-            path ||= []
-            path << {
-              'name'=> user_api.user_class.agent_name,
-              'node_type' => 'ragent',
-              'date' => Time.now.to_i
-            }
-            poke.meta['event_route'] = path
-
+            poke.meta['event_route'] = gen_event_route_with_self
 
             # todo: put some limitation
             CC.push(poke.to_hash_to_send_to_cloud,'pokes')
