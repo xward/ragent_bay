@@ -68,7 +68,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_presence(presence)
+        user_agent_class.handle_presence(presence.clone)
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -207,7 +207,7 @@ module RagentIncomingMessage
           RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
           # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-          user_agent_class.handle_message(ragent_msg)
+          user_agent_class.handle_message(ragent_msg.clone)
 
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -288,7 +288,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_track(track)
+        user_agent_class.handle_track(track.clone)
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -344,7 +344,7 @@ module RagentIncomingMessage
       # No need to check route loop (i guess)
 
       # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-      assigned_agent.handle_order(order)
+      assigned_agent.handle_order(order.clone)
 
     rescue AgentNotFound => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -413,7 +413,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_collection(collection)
+        user_agent_class.handle_collection(collection.clone)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse collection :\n#{params}")
@@ -476,7 +476,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_poke(poke)
+        user_agent_class.handle_poke(poke.clone)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse poke :\n#{params}")
