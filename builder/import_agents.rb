@@ -141,7 +141,8 @@ reset_folder(agents_generated_path)
 ### copy new ###
 agents_root_path.each do |path|
   p "copy #{path} to #{agents_src_path} ..."
-  FileUtils.cp_r(path, agents_src_path)
+  # FileUtils.cp_r(path, agents_src_path)
+  `rsync -r --exclude=.git #{agents_src_path}/ #{path}`
   p "copied '#{path}'"
 end
 
