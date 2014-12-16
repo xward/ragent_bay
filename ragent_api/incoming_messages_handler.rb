@@ -64,7 +64,7 @@ module RagentIncomingMessage
           PUNK.start('loopdrop')
           RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming presence #{presence.id}")
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming presence #{presence.id}")
-          return
+          next
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
@@ -200,7 +200,7 @@ module RagentIncomingMessage
             PUNK.start('loopdrop')
             RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming message #{ragent_msg.id}")
             PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming message #{message.id}")
-            return
+            next
           end
 
           # Say it
@@ -278,13 +278,15 @@ module RagentIncomingMessage
           PUNK.start('loopdrop')
           RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming track #{track.id}")
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming track #{track.id}")
-          return
+          next
         end
 
         # In case of field data is empty, a user might want just use the position, but if the event_route is not empty, this mean that it already received it, so we drop it
         if track.fields_data.size == 0 and track.meta['event_route'].is_a? Array and track.meta['event_route'].size > 1
+          PUNK.start('emptyDrop')
           RAGENT.api.mdi.tools.log.warn("Raw track part already received. Dropping incoming track #{track.id}")
-          return
+          PUNK.end('emptyDrop','warn','notif', "Enhanced track without fields. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming track #{track.id}")
+          next
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
@@ -409,7 +411,7 @@ module RagentIncomingMessage
           PUNK.start('loopdrop')
           RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming collection #{collection.id}")
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming collection #{collection.id}")
-          return
+          next
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
@@ -472,7 +474,7 @@ module RagentIncomingMessage
           PUNK.start('loopdrop')
           RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming poke #{poke.id}")
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming poke #{poke.id}")
-          return
+          next
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
