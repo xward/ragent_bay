@@ -23,6 +23,11 @@ module RagentIncomingMessage
     true
   end
 
+  # "As others have pointed out, clone will do it. Be aware that clone of a hash makes a shallow copy."
+  def self.deep_copy(o)
+    Marshal.load(Marshal.dump(o))
+  end
+
 
   def self.handle_presence(params)
 
@@ -52,10 +57,10 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Presence object
-        presence = apis.mdi.dialog.create_new_presence(params)
+        presence = apis.mdi.dialog.create_new_presence(RIM.deep_copy(params))
 
         # set user api
-        apis.initial_event_content = presence.clone
+        apis.initial_event_content = RIM.deep_copy(presence)
         set_current_user_api(apis)
 
         # check route loop
@@ -68,7 +73,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_presence(presence.clone)
+        user_agent_class.handle_presence(RIM.deep_copy(presence))
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -110,7 +115,7 @@ module RagentIncomingMessage
       PUNK.start('ackmsgvm')
       # create Message object
       begin
-        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
+        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(RIM.deep_copy(params))
         if ragent_msg.channel == 0
           RAGENT.api.mdi.tools.log.warn("The message is on channel 0, we drop it !")
           PUNK.drop('new')
@@ -159,7 +164,7 @@ module RagentIncomingMessage
     else
       # create Message object
       begin
-        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
+        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(RIM.deep_copy(params))
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse message :\n#{params}")
@@ -190,7 +195,7 @@ module RagentIncomingMessage
 
           # set associated api as current sdk_api
           apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
-          apis.initial_event_content = ragent_msg.clone
+          apis.initial_event_content = RIM.deep_copy(ragent_msg)
           set_current_user_api(apis)
 
 
@@ -207,7 +212,7 @@ module RagentIncomingMessage
           RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
           # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-          user_agent_class.handle_message(ragent_msg.clone)
+          user_agent_class.handle_message(RIM.deep_copy(ragent_msg))
 
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -244,7 +249,6 @@ module RagentIncomingMessage
     PUNK.end('new','ok','in',"SERVER <- TRACK : receive new track")
     SDK_STATS.stats['server']['received'][2] += 1
 
-
     # forward to each agent
     RAGENT.user_class_track_subscriber.get_subscribers.each do |user_agent_class|
 
@@ -260,7 +264,7 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Track object
-        track = apis.mdi.dialog.create_new_track(params)
+        track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
 
         # store fields values to db if needed
         if apis.user_class.internal_config['track_keep_last_known_values_mode'] == 1
@@ -268,9 +272,8 @@ module RagentIncomingMessage
         end
 
         # set associated api as current sdk_api
-        apis.initial_event_content = track.clone
+        apis.initial_event_content = RIM.deep_copy(track)
         set_current_user_api(apis)
-
 
         # check route loop
         looped = track.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
@@ -290,7 +293,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_track(track.clone)
+        user_agent_class.handle_track(RIM.deep_copy(track))
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -327,7 +330,6 @@ module RagentIncomingMessage
     SDK_STATS.stats['server']['received'][3] += 1
     PUNK.end('new','ok','in',"SERVER <- ORDER for agent '#{assigned_agent.agent_name}'")
 
-
     begin
       PUNK.start('damned')
       env = {
@@ -337,10 +339,10 @@ module RagentIncomingMessage
       apis = USER_API_FACTORY.gen_user_api(assigned_agent, env)
 
       # create Order object
-      order = apis.mdi.dialog.create_new_order(params)
+      order = apis.mdi.dialog.create_new_order(RIM.deep_copy(params))
 
       # set associated api as current sdk_api
-      apis.initial_event_content = order.clone
+      apis.initial_event_content = RIM.deep_copy(order)
       set_current_user_api(apis)
 
       # No need to check route loop (i guess)
@@ -399,10 +401,10 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create collection object
-        collection = apis.mdi.dialog.create_new_collection(params)
+        collection = apis.mdi.dialog.create_new_collection(RIM.deep_copy(params))
 
         # set associated api as current sdk_api
-        apis.initial_event_content = collection.clone
+        apis.initial_event_content = RIM.deep_copy(collection)
         set_current_user_api(apis)
 
         # check route loop
@@ -415,7 +417,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_collection(collection.clone)
+        user_agent_class.handle_collection(RIM.deep_copy(collection))
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse collection :\n#{params}")
