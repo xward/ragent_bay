@@ -16,12 +16,14 @@ class UserAgentClass
     require_relative "#{root_path}/initial"
 
     # fetch module name in initial.rb (defensif)
-    lines = File.read("#{root_path}/initial.rb")
+    lines = File.readlines("#{root_path}/initial.rb")
     module_name = ""
 
     lines.each do |l|
       module_name = l.strip.split(' ')[1] if l.include?("module Initial_agent_")
     end
+
+    raise "Module agent name not found" if module_name = ""
 
     self.singleton_class.send(:include, Object.const_get(module_name))
   end
