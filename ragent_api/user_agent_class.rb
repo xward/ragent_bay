@@ -23,7 +23,7 @@ class UserAgentClass
       module_name = l.strip.split(' ')[1] if l.include?("module Initial_agent_")
     end
 
-    raise "Module agent name not found" if module_name = ""
+    raise "Module agent name not found" if module_name == ""
 
     self.singleton_class.send(:include, Object.const_get(module_name))
   end
