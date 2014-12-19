@@ -166,10 +166,6 @@ class UserAgentClass
         SDK_STATS.stats['agents'][agent_name]['received'][1] += 1
         SDK_STATS.stats['agents'][agent_name]['total_received'] += 1
 
-        if RAGENT.running_env_name == 'sdk-vm' # decode content as base64 for fake communication (vm mode)
-          msg.content = Base64.decode64(msg.content)
-        end
-
         is_protogen = false
         if is_agent_has_protogen
           begin
