@@ -57,10 +57,14 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Presence object
-        presence = apis.mdi.dialog.create_new_presence(RIM.deep_copy(params))
+        if user_class_subscriber.size == 1
+          presence = apis.mdi.dialog.create_new_presence(params)
+        else
+          presence = apis.mdi.dialog.create_new_presence(RIM.deep_copy(params))
+        end
 
         # set user api
-        apis.initial_event_content = RIM.deep_copy(presence)
+        apis.initial_event_content = presence.clone
         set_current_user_api(apis)
 
         # check route loop
@@ -73,7 +77,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_presence(RIM.deep_copy(presence))
+        user_agent_class.handle_presence(presence)
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -164,7 +168,11 @@ module RagentIncomingMessage
     else
       # create Message object
       begin
-        ragent_msg = RAGENT.api.mdi.dialog.create_new_message(RIM.deep_copy(params))
+        if user_class_subscriber.size == 1
+          ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
+        else
+          ragent_msg = RAGENT.api.mdi.dialog.create_new_message(RIM.deep_copy(params))
+        end
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse message :\n#{params}")
@@ -195,7 +203,7 @@ module RagentIncomingMessage
 
           # set associated api as current sdk_api
           apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
-          apis.initial_event_content = RIM.deep_copy(ragent_msg)
+          apis.initial_event_content = ragent_msg.clone
           set_current_user_api(apis)
 
 
@@ -212,7 +220,7 @@ module RagentIncomingMessage
           RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
 
           # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-          user_agent_class.handle_message(RIM.deep_copy(ragent_msg))
+          user_agent_class.handle_message(ragent_msg)
 
         rescue Exception => e
           RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -264,7 +272,11 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Track object
-        track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
+        if user_class_subscriber.size == 1
+          track = apis.mdi.dialog.create_new_track((params)
+        else
+          track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
+        end
 
         # store fields values to db if needed
         if apis.user_class.internal_config['track_keep_last_known_values_mode'] == 1
@@ -272,7 +284,7 @@ module RagentIncomingMessage
         end
 
         # set associated api as current sdk_api
-        apis.initial_event_content = RIM.deep_copy(track)
+        apis.initial_event_content = track.clone
         set_current_user_api(apis)
 
         # check route loop
@@ -293,7 +305,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_track(RIM.deep_copy(track))
+        user_agent_class.handle_track(track)
 
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -339,16 +351,16 @@ module RagentIncomingMessage
       apis = USER_API_FACTORY.gen_user_api(assigned_agent, env)
 
       # create Order object
-      order = apis.mdi.dialog.create_new_order(RIM.deep_copy(params))
+      order = apis.mdi.dialog.create_new_order(params)
 
       # set associated api as current sdk_api
-      apis.initial_event_content = RIM.deep_copy(order)
+      apis.initial_event_content = order.clone
       set_current_user_api(apis)
 
       # No need to check route loop (i guess)
 
       # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-      assigned_agent.handle_order(order.clone)
+      assigned_agent.handle_order(order)
 
     rescue AgentNotFound => e
       RAGENT.api.mdi.tools.print_ruby_exception(e)
@@ -401,10 +413,15 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create collection object
-        collection = apis.mdi.dialog.create_new_collection(RIM.deep_copy(params))
+        if user_class_subscriber.size == 1
+          collection = apis.mdi.dialog.create_new_collection(params)
+        else
+          collection = apis.mdi.dialog.create_new_collection(RIM.deep_copy(params))
+        end
+
 
         # set associated api as current sdk_api
-        apis.initial_event_content = RIM.deep_copy(collection)
+        apis.initial_event_content = collection.clone
         set_current_user_api(apis)
 
         # check route loop
@@ -417,7 +434,7 @@ module RagentIncomingMessage
         end
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
-        user_agent_class.handle_collection(RIM.deep_copy(collection))
+        user_agent_class.handle_collection(collection)
       rescue Exception => e
         RAGENT.api.mdi.tools.print_ruby_exception(e)
         RAGENT.api.mdi.tools.log.info("Ragent error parse collection :\n#{params}")
