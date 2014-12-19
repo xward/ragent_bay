@@ -57,7 +57,7 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Presence object
-        if user_class_subscriber.size == 1
+        if RAGENT.user_class_subscriber.size == 1
           presence = apis.mdi.dialog.create_new_presence(params)
         else
           presence = apis.mdi.dialog.create_new_presence(RIM.deep_copy(params))
@@ -168,7 +168,7 @@ module RagentIncomingMessage
     else
       # create Message object
       begin
-        if user_class_subscriber.size == 1
+        if RAGENT.user_class_subscriber.size == 1
           ragent_msg = RAGENT.api.mdi.dialog.create_new_message(params)
         else
           ragent_msg = RAGENT.api.mdi.dialog.create_new_message(RIM.deep_copy(params))
@@ -272,7 +272,7 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create Track object
-        if user_class_subscriber.size == 1
+        if RAGENT.user_class_subscriber.size == 1
           track = apis.mdi.dialog.create_new_track(params)
         else
           track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
@@ -413,7 +413,7 @@ module RagentIncomingMessage
         apis = USER_API_FACTORY.gen_user_api(user_agent_class, env)
 
         # create collection object
-        if user_class_subscriber.size == 1
+        if RAGENT.user_class_subscriber.size == 1
           collection = apis.mdi.dialog.create_new_collection(params)
         else
           collection = apis.mdi.dialog.create_new_collection(RIM.deep_copy(params))
