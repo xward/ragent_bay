@@ -273,7 +273,7 @@ module RagentIncomingMessage
 
         # create Track object
         if user_class_subscriber.size == 1
-          track = apis.mdi.dialog.create_new_track((params)
+          track = apis.mdi.dialog.create_new_track(params)
         else
           track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
         end
