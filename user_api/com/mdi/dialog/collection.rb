@@ -81,6 +81,8 @@ module UserApis
             self.meta['class'] = 'collection'
             self.meta['event_route'] ||= []
 
+            payload = struct['payload']
+
             self.name = payload['name']
             self.account = self.meta['account']
             self.id = payload['id']
