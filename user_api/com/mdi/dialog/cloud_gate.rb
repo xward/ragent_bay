@@ -70,7 +70,7 @@ module UserApis
                 },
                 "payload" => {
                 "id" =>     out_id,     # Indigen integer
-                "asset" =>  "ragent",
+                "asset" =>  presence.asset,
                 "type" =>   "presence",
                 'time' =>   presence.time,
                 'bs' => presence.bs,
@@ -141,7 +141,7 @@ module UserApis
                   },
                   "payload" => {
                   "id" =>          out_id,     # Indigen integer
-                  "asset" =>       "ragent",
+                  "asset" =>       message.asset,
                   "sender" =>      origin_channel,               # Sender identifier (can be the same as the asset)
                   "recipient" =>   "@@server@@",               # Recipient identifier (can be the same as the asset)
                   "type" =>        "message",
