@@ -26,5 +26,33 @@
 
     ],
     "params":""
+  },
+  {
+    "name":"DIO IGNITION switch",
+    "type":"switch",
+    "time_frame":"daily",
+    "field_name":"DIO_IGNITION",
+    "field_type":"boolean",
+    "new_field":"DIO_IGNITION_TOGGLES",
+    "all_assets":true,
+    "assets":
+    [
+
+    ],
+    "params":""
+  },
+  {
+    "name":"Multiply BATT by 2 and add 0.63",
+    "type":"math",
+    "time_frame":"",
+    "field_name":"BATT",
+    "field_type":"integer",
+    "new_field":"BATT2",
+    "all_assets":true,
+    "assets":
+    [
+
+    ],
+    "params":"+,*,2,self,0.63"
   }
 ]
