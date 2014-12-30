@@ -74,7 +74,7 @@ class UserAgentClass
         tmp_config['message_whitelist_channels'] = tmp_config['dynamic_channel_str']
       end
       if !(tmp_config['collection_name_whitelist'].kind_of?(Array))
-        tmp_config['collection_name_whitelist'] = []
+        tmp_config['collection_name_whitelist'] = ['ALL_COLLECTIONS']
       end
       tmp_config
     end
