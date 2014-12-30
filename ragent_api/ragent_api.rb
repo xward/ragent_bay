@@ -120,7 +120,8 @@ module RagentApi
         'subscribe_cloud_event',
         'message_injection_whitelist_channels',
         'track_injection_whitelist_fields',
-        'subscribe_poke'
+        'subscribe_poke',
+        'collection_name_whitelist'
       ]
     end
   end

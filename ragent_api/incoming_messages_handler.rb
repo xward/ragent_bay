@@ -388,6 +388,7 @@ module RagentIncomingMessage
     # valid input
     if valid_params(params)
       account = params['meta']['account']
+      name = params['payload']['name']
     else
       return
     end
@@ -402,6 +403,7 @@ module RagentIncomingMessage
     RAGENT.user_class_collection_subscriber.get_subscribers.each do |user_agent_class|
 
       next if user_agent_class.internal_config['subscribe_collection'] == false
+      next unless user_agent_class.internal_config['collection_name_whitelist'].include? name || user_agent_class.internal_config['collection_name_whitelist'].include?('ALL_COLLECTIONS')
 
       begin
         PUNK.start('damned')

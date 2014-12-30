@@ -73,6 +73,9 @@ class UserAgentClass
       if tmp_config['dynamic_channel_str'] != nil and tmp_config['message_whitelist_channels'] == nil
         tmp_config['message_whitelist_channels'] = tmp_config['dynamic_channel_str']
       end
+      if !(tmp_config['collection_name_whitelist'].kind_of?(Array))
+        tmp_config['collection_name_whitelist'] = []
+      end
       tmp_config
     end
   end
