@@ -2,7 +2,7 @@ module RagentApi
   module StatsDefinitionMapping
 
     def self.invalid_map
-      @mapping_stats_definition_number = nil
+      @mapping_stats_definitions_number = nil
     end
 
     def self.fetch_default_map
@@ -10,6 +10,16 @@ module RagentApi
         path = File.expand_path("..", __FILE__)
         CC.logger.info("fetch_default_map fetched")
         JSON.parse(File.read("#{path}/default_stats_definitions_info.json"))
+      end
+    end
+
+    def self.alter_definition(name, account, val)
+      return if @mapping_stats_definitions_number == nil
+      return if @mapping_stats_definitions_number[account] == nil # no need to update absent account
+      definition = RagentApi::StatsDefinitionMapping.get_by_name(name, account, true)
+      @mapping_stats_definitions_number[account].delete(definition)
+      if val != nil
+        @mapping_stats_definitions_number[account] << val
       end
     end
 
@@ -50,6 +60,20 @@ module RagentApi
         account = 'default'
       end
       return self.fetch_map(account)
+    end
+
+    def self.get_by_name(str_name, account, no_error = false)
+      if RAGENT.running_env_name == 'sdk-vm'
+        account = 'default'
+      end
+      fetch_map(account).each do |definition|
+        if "#{definition['name']}" == "#{str_name}"
+          return definition.clone
+        end
+      end
+      if !no_error
+        raise "Stats definition '#{str_name}' not found for account '#{account}'."
+      end
     end
 
   end
