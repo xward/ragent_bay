@@ -803,5 +803,12 @@
         "field_type": "string",
         "size": 64,
         "ack": 1
+    },
+    {
+        "name": "BATT2",
+        "field": 5022,
+        "field_type": "string",
+        "size": 64,
+        "ack": 1
     }
 ]
