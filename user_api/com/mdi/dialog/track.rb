@@ -191,8 +191,7 @@ module UserApis
           r_hash['meta'] = {
             'account' => self.account,
             'class' => 'track',
-            'event_route' => self.meta['event_route'],
-            'isMemberOfCollection' => self.meta['isMemberOfCollection']
+            'event_route' => self.meta['event_route']
           }
           r_hash['payload'] = {
             'id' => CC.indigen_next_id(self.asset),

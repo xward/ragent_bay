@@ -141,8 +141,7 @@ module UserApis
                   "account" =>     message.account,
                   "cookies" =>     message.cookies,
                   "class" => 'message',
-                  'event_route' => message.meta['event_route'],
-                  'isMemberOfCollection' => self.meta['isMemberOfCollection']
+                  'event_route' => message.meta['event_route']
                   },
                   "payload" => {
                   "id" =>          out_id,     # Indigen integer
@@ -244,7 +243,6 @@ module UserApis
             # now push all elements of the collection
             collection.data.each do |el|
               if el.id == nil
-                el.meta['isMemberOfCollection'] = true
                 CC.logger.info("Injection #{el.class} of collection")
                 case "#{el.class}"
                 when "UserApis::Mdi::Dialog::PresenceClass"
