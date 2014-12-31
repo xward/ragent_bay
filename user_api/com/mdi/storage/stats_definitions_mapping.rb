@@ -7,7 +7,7 @@ module UserApis
 
         def initialize(apis)
           @user_apis = apis
-          @all_definitions = {}
+          @all_stat_definitions = {}
         end
 
         def user_api
@@ -17,7 +17,7 @@ module UserApis
         # return a stats definition structs array
         def get_all(account = nil)
           account ||= user_api.account
-          @all_definitions[account] ||= RagentApi::StatsDefinitionMapping.get_all(account)
+          @all_stat_definitions[account] ||= RagentApi::StatsDefinitionMapping.get_all(account)
         end
 
         def get_for_asset_of_type(imei, field_names)
