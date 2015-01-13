@@ -96,7 +96,10 @@ module UserApis
             self.asset = payload['asset']
             self.account = self.meta['account']
 
-            if apis.user_class.internal_config['track_remove_position']
+
+            io_rule = apis.user_class.internal_config_io_fetch_first('track')
+
+            if io_rule['track_hide_location']
               self.latitude = nil
               self.longitude = nil
             else
@@ -104,7 +107,7 @@ module UserApis
               self.longitude = payload['longitude'] == nil ? nil : payload['longitude'].to_f
             end
 
-            if apis.user_class.internal_config['track_remove_time']
+            if io_rule['track_hide_time']
               self.recorded_at = nil
               self.received_at = nil
             else
@@ -119,7 +122,7 @@ module UserApis
               RAGENT.api.mdi.tools.log.debug("init track with track gives #{k} #{v} #{field}")
 
               # filter it if needed
-              w_fields = apis.user_class.internal_config['track_whitelist_fields']
+              w_fields = io_rule['allowed_track_fields']
               if w_fields != nil and w_fields != 'ALL_TRACKS' and !w_fields.include?(field['name'])
                 RAGENT.api.mdi.tools.log.warn("track init: dropping field #{field['name']}")
                 next
@@ -275,7 +278,6 @@ module UserApis
         # get the value of a field in this track
         # @api public
         # @param [field_name_or_id] field name or id
-        # @param [also_fetch_in_last_known_if_available] [OPTIONAL] you can set it to true if you want to fetch last known value of this field
         # @return a field
         #                                           A field look like this: `
         #                                           {
@@ -292,7 +294,7 @@ module UserApis
         # @example get the value of track MDI_CC_LEGAL_SPEED
         #   field = track.field('MDI_CC_LEGAL_SPEED')
         #   speed = field['value']
-        def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
+        def field(field_name_or_id, also_fetch_in_last_known_if_available = false) # keeping also_fetch_in_last_known_if_available for retrocompatiblity, to be removed if all ok
           name = ''
           case field_name_or_id.class.to_s
           when 'String'
@@ -304,22 +306,12 @@ module UserApis
           end
 
           # filter it if needed (to be sure)
-          w_fields = user_api.user_class.internal_config['track_whitelist_fields']
-          raise "field; you want to use #{name} but you can't use it" if w_fields != nil and  w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
-
+          io_rule = apis.user_class.internal_config_io_fetch_first('track')
+          w_fields = io_rule['allowed_track_fields']
+          raise "field: you want to use #{name} but It is not in your whitelist." if w_fields != nil and  w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
 
           field = self.fields_data.select{|e| e['name'] == name }.first
-          if field == nil
-            if also_fetch_in_last_known_if_available
-              RAGENT.api.mdi.tools.log.info("field: Field #{field_name_or_id} not found, looking in last values in DB storage ...")
-
-              # fetch in mongo
-              coll = user_api.mdi.storage.mongodb['last_value_of_track_fields']
-              coll.find("asset" => self.asset, 'name' => name).first
-            else
-              RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found")
-            end
-          end
+          RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found") if field == nil
           field
         end
 

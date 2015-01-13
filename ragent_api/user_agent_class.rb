@@ -47,55 +47,57 @@ class UserAgentClass
 
   def managed_message_channels
     @managed_message_channels ||= begin
-      channels = self.internal_config['message_whitelist_channels']
+      io_rule = self.internal_config_io_fetch_first('message')
+      channels = io_rule['allowed_message_channels'] unless io_rule == nil
       CC.logger.info(channels)
       if channels.is_a? String
         channels = [channels]
       end
-      if (channels == nil) || (channels.length == 0)
-        raise "No channel defined for agent '#{agent_name}'"
-      end
+      channels = [] if channels == nil
       channels
     end
   end
 
+  def queue_subscribed?(q_type)
+    (internal_config_io_fetch_first(q_type) != nil)
+  end
 
-  def internal_config
-    @internal_config ||= begin
-      config = self.file_config
-      tmp_config = {}
-      config.each do |k, v|
-        if RAGENT.what_is_internal_config.include? "#{k}"
-          tmp_config[k] = v
-        end
+  def internal_config_io_fetch_first(q_type)
+    cfg = file_internal_config_io
+    return nil if cfg == nil or cfg['input_filters'] == nil or !(cfg['input_filters'].is_a? Array)
+
+    cfg['input_filters'].each do |e|
+      next unless e.is_a? Hash
+      return e if e['type'] == q_type
+    end
+    nil
+  end
+
+  def file_internal_config_io
+    @file_config ||= begin
+      config_file_path = "#{root_path}/config/internal/io.yml"
+      if File.exist?(config_file_path)
+        ret = YAML::load(File.open(config_file_path))
+      else
+        user_api.mdi.tools.log.error("NO CONFIG FILE FOUND in #{config_file_path}")
+        raise "No config file found for agent '#{agent_name}'"
       end
-      # in case of renaming of var in configuration file, please implement reroots here:
-      if tmp_config['dynamic_channel_str'] != nil and tmp_config['message_whitelist_channels'] == nil
-        tmp_config['message_whitelist_channels'] = tmp_config['dynamic_channel_str']
+      if ret == nil
+        raise "No io configuration file for agent '#{agent_name}'"
       end
-      if !(tmp_config['collection_name_whitelist'].kind_of?(Array))
-        tmp_config['collection_name_whitelist'] = ['ALL_COLLECTIONS']
-      end
-      tmp_config
+      CC.logger.info("agent io config of #{config_file_path} : #{ret}")
+      ret
+    rescue Exception => e
+      user_api.mdi.tools.log.error("ERROR while loading io configuration")
+      user_api.mdi.tools.print_ruby_exception(e)
+      nil
     end
   end
+
 
   def user_config
-    @user_config ||= begin
-      config = self.file_config
-      tmp_config = {}
-      config.each do |k, v|
-        if !(RAGENT.what_is_internal_config.include? "#{k}")
-          tmp_config[k] = v
-        end
-      end
-      tmp_config
-    end
-  end
-
-  def file_config
     @file_config ||= begin
-      config_file_path = "#{root_path}/config/#{agent_name}.yml"
+      config_file_path = "#{root_path}/config/config.yml"
       if File.exist?(config_file_path)
         if RAGENT.running_env_name == 'ragent'
           ret = YAML::load(File.open(config_file_path))['production']
@@ -110,7 +112,7 @@ class UserAgentClass
       if ret == nil
         raise "No configuration defined in this environement for agent '#{agent_name}'"
       end
-      user_api.mdi.tools.log.debug("agent config : #{ret}")
+      CC.logger.info("agent config of #{config_file_path} : #{ret}")
       ret
     rescue Exception => e
       user_api.mdi.tools.log.error("ERROR while loading configuration")

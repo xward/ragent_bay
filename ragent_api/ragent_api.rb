@@ -104,28 +104,6 @@ module RagentApi
     @runtime_id_code ||= SecureRandom.hex(3)
   end
 
-  def self.what_is_internal_config
-    @what_is_internal_config ||= begin
-      [
-        'subscribe_presence',
-        'subscribe_message',
-        'dynamic_channel_str',
-        'message_whitelist_channels',
-        'subscribe_track',
-        'track_whitelist_fields',
-        'track_keep_last_known_values_mode',
-        'track_remove_position',
-        'track_remove_time',
-        'subscribe_collection',
-        'subscribe_cloud_event',
-        'message_injection_whitelist_channels',
-        'track_injection_whitelist_fields',
-        'subscribe_poke',
-        'collection_name_whitelist'
-      ]
-    end
-  end
-
   def self.get_dirs(path)
     Dir.entries(path).select {|entry| File.directory? File.join(path,entry) and !(entry =='.' || entry == '..') }
   end
@@ -141,43 +119,45 @@ module RagentApi
 
         # create agent
         user_agent_class = UserAgentClass.new(dir)
-        RAGENT.api.mdi.tools.log.info("Creating agent '#{user_agent_class.agent_name}' with:\n . protogen=#{user_agent_class.is_agent_has_protogen}\n . root_path=\"#{user_agent_class.root_path}\"\n . dyn_channels=#{user_agent_class.managed_message_channels}")
-        RAGENT.api.mdi.tools.log.info("internal config = #{user_agent_class.internal_config}")
+        RAGENT.api.mdi.tools.log.info("Creating agent from dir #{dir} '#{user_agent_class.agent_name}' with:\n . protogen=#{user_agent_class.is_agent_has_protogen}\n . root_path=\"#{user_agent_class.root_path}\"\n . dyn_channels=#{user_agent_class.managed_message_channels}")
+        RAGENT.api.mdi.tools.log.info("io config = #{user_agent_class.file_internal_config_io}")
 
         RAGENT.user_class_subscriber.subscribe(user_agent_class)
 
-        if user_agent_class.internal_config['subscribe_presence']
+        if user_agent_class.queue_subscribed?('presence')
           RAGENT.user_class_presence_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to presences")
         end
-        if user_agent_class.internal_config['subscribe_message']
+        if user_agent_class.queue_subscribed?('message')
           RAGENT.user_class_message_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to messages")
         end
-        if user_agent_class.internal_config['subscribe_track']
+        if user_agent_class.queue_subscribed?('track')
           RAGENT.user_class_track_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks")
         end
-        if user_agent_class.internal_config['subscribe_collection']
+        if user_agent_class.queue_subscribed?('collection')
           RAGENT.user_class_collection_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to collections")
         end
-        if user_agent_class.internal_config['subscribe_other']
-          if user_agent_class.internal_config['subscribe_other']['broadcast']
-            user_agent_class.internal_config['subscribe_other']['broadcast'].each do |queue|
-              queue_with_id = "#{queue}_#{RAGENT.runtime_id_code}"
-              RAGENT.user_class_other_subscribers(queue_with_id).subscribe(user_agent_class)
-              RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (broadcast): #{queue_with_id}")
-            end
-          end
-          if user_agent_class.internal_config['subscribe_other']['shared']
-            user_agent_class.internal_config['subscribe_other']['shared'].each do |queue|
-              RAGENT.user_class_other_subscribers(queue).subscribe(user_agent_class)
-              RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (shared): #{queue}")
-            end
-          end
-        end
-        if user_agent_class.internal_config['subscribe_poke']
+
+        # if user_agent_class.internal_config['subscribe_other']
+        #   if user_agent_class.internal_config['subscribe_other']['broadcast']
+        #     user_agent_class.internal_config['subscribe_other']['broadcast'].each do |queue|
+        #       queue_with_id = "#{queue}_#{RAGENT.runtime_id_code}"
+        #       RAGENT.user_class_other_subscribers(queue_with_id).subscribe(user_agent_class)
+        #       RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (broadcast): #{queue_with_id}")
+        #     end
+        #   end
+        #   if user_agent_class.internal_config['subscribe_other']['shared']
+        #     user_agent_class.internal_config['subscribe_other']['shared'].each do |queue|
+        #       RAGENT.user_class_other_subscribers(queue).subscribe(user_agent_class)
+        #       RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribes to other queue (shared): #{queue}")
+        #     end
+        #   end
+        # end
+
+        if user_agent_class.queue_subscribed?('poke')
           RAGENT.user_class_poke_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to pokes")
         end

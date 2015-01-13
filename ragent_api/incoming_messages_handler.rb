@@ -43,9 +43,12 @@ module RagentIncomingMessage
     PUNK.end('new','ok','in',"SERVER <- PRESENCE : receive new presence")
     SDK_STATS.stats['server']['received'][0] += 1
 
+
+
     # forward to each agent
     RAGENT.user_class_presence_subscriber.get_subscribers.each do |user_agent_class|
-      next if user_agent_class.internal_config['subscribe_presence'] == false
+      io_rule = user_agent_class.internal_config_io_fetch_first('presence')
+      next if io_rule == nil
 
       begin
         PUNK.start('damned')
@@ -190,9 +193,11 @@ module RagentIncomingMessage
 
     # forward to each agent
     RAGENT.user_class_message_subscriber.get_subscribers.each do |user_agent_class|
-      next if user_agent_class.internal_config['subscribe_message'] == false
+      io_rule = user_agent_class.internal_config_io_fetch_first('message')
+      next if io_rule == nil
 
-      if user_agent_class.internal_config['message_whitelist_channels'].include? channel || user_agent_class.internal_config['message_whitelist_channels'].include?('ALL_CHANNELS')
+
+      if io_rule['allowed_message_channels'].include? channel || io_rule['allowed_message_channels'].include?('ALL_CHANNELS')
 
         begin
           PUNK.start('damned')
@@ -259,8 +264,8 @@ module RagentIncomingMessage
 
     # forward to each agent
     RAGENT.user_class_track_subscriber.get_subscribers.each do |user_agent_class|
-
-      next if user_agent_class.internal_config['subscribe_track'] == false
+      io_rule = user_agent_class.internal_config_io_fetch_first('track')
+      next if io_rule == nil
 
       begin
         PUNK.start('damned')
@@ -276,11 +281,6 @@ module RagentIncomingMessage
           track = apis.mdi.dialog.create_new_track(params)
         else
           track = apis.mdi.dialog.create_new_track(RIM.deep_copy(params))
-        end
-
-        # store fields values to db if needed
-        if apis.user_class.internal_config['track_keep_last_known_values_mode'] == 1
-          track.save_fields_to_mongo
         end
 
         # set associated api as current sdk_api
@@ -401,9 +401,9 @@ module RagentIncomingMessage
 
     # forward to each agent
     RAGENT.user_class_collection_subscriber.get_subscribers.each do |user_agent_class|
-
-      next if user_agent_class.internal_config['subscribe_collection'] == false
-      next unless ((user_agent_class.internal_config['collection_name_whitelist'].include? name) or (user_agent_class.internal_config['collection_name_whitelist'].include?('ALL_COLLECTIONS')))
+      io_rule = user_agent_class.internal_config_io_fetch_first('collection')
+      next if io_rule == nil
+      next unless ((io_rule['allowed_collection_definition_names'].include? name) or (io_rule['allowed_collection_definition_names'].include?('ALL_COLLECTIONS')))
 
       begin
         PUNK.start('damned')
@@ -470,8 +470,8 @@ module RagentIncomingMessage
 
     # forward to each agent
     RAGENT.user_class_poke_subscriber.get_subscribers.each do |user_agent_class|
-
-      next if user_agent_class.internal_config['subscribe_poke'] == false
+      io_rule = user_agent_class.internal_config_io_fetch_first('poke')
+      next if io_rule == nil
 
       begin
         PUNK.start('damned')
