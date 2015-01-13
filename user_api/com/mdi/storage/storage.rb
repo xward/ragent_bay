@@ -24,7 +24,7 @@ module UserApis
       end
 
       # This is your redis cache.
-      # @note Rememeber that it can be deleted at anymoment, and you don't share this cache with other instance of your agent in the cloud.
+      # @note Rememeber that it can be deleted at any moment, and you do share this cache with other instance of your agent in the cloud.
       # @param [String] you can specify a namespace to use different redis object.
       # @example
       #   user_api.mdi.storage.redis['last operation'] = Time.now

@@ -33,7 +33,7 @@ module UserApis
 
         # @api private
         def gen_event_route_with_self
-            # some initial event might not have any meta field (like orders)
+            # some initial event might not have any meta field (like orders) initial_event_content nil??
             if @event_route_id != user_api.initial_event_content.id
               @event_route_path = []
               begin
