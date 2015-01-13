@@ -212,6 +212,7 @@ module UserApis
                 CC.logger.debug("to_hash_to_send_to_cloud: Adding field '#{field['field']}' with val= #{field['value']}")
                 r_hash['payload']["#{field['field']}"] = "#{field['raw_value']}"
                 a_field = true
+                r_hash['meta']['include_fresh_track_field'] = true
               else
                 CC.logger.warn("to_hash_to_send_to_cloud: dropping field #{field}. (index < 5000)")
               end

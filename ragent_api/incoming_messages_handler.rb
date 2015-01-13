@@ -287,9 +287,11 @@ module RagentIncomingMessage
         apis.initial_event_content = track.clone
         set_current_user_api(apis)
 
+        RAGENT.api.mdi.tools.log.debug("track has fresh values: #{track.meta['include_fresh_track_field']}")
+
         # check route loop
         looped = track.meta['event_route'].select {|route| route["name"] == user_agent_class.agent_name }.first
-        if looped != nil
+        if looped != nil and !(track.meta['include_fresh_track_field'])
           PUNK.start('loopdrop')
           RAGENT.api.mdi.tools.log.warn("Loop detected. Dropping incoming track #{track.id}")
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming track #{track.id}")
