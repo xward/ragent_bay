@@ -57,6 +57,10 @@ module RagentApi
     @user_class_track_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
 
+    def self.user_class_track_cached_subscriber
+    @user_class_track_cached_subscriber ||= self.api.mdi.tools.create_new_subscriber
+  end
+
   def self.user_class_collection_subscriber
     @user_class_collection_subscriber ||= self.api.mdi.tools.create_new_subscriber
   end
@@ -132,10 +136,18 @@ module RagentApi
           RAGENT.user_class_message_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to messages")
         end
-        if user_agent_class.queue_subscribed?('track')
-          RAGENT.user_class_track_subscriber.subscribe(user_agent_class)
-          RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks")
+
+        io_track_rule = user_agent_class.internal_config_io_fetch_first('track')
+        if io_track_rule != nil
+          if io_track_rule['track_fields_cached']
+            RAGENT.user_class_track_cached_subscriber.subscribe(user_agent_class)
+            RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks_cached_field")
+          else
+            RAGENT.user_class_track_subscriber.subscribe(user_agent_class)
+            RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to tracks")
+          end
         end
+
         if user_agent_class.queue_subscribed?('collection')
           RAGENT.user_class_collection_subscriber.subscribe(user_agent_class)
           RAGENT.api.mdi.tools.log.info("  Agent '#{user_agent_class.agent_name}' subscribe to collections")

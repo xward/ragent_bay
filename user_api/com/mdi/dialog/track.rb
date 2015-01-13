@@ -152,6 +152,8 @@ module UserApis
               self.fields_data << field
             end
 
+
+
           end
 
         end
@@ -228,6 +230,7 @@ module UserApis
           r_hash
         end
 
+
         # set_field alter the value of a field
         # @api public
         # @example change the value of track MDI_CC_LEGAL_SPEED to "50"
@@ -278,6 +281,7 @@ module UserApis
         # get the value of a field in this track
         # @api public
         # @param [field_name_or_id] field name or id
+        # @param [also_fetch_in_last_known_if_available] true/false
         # @return a field
         #                                           A field look like this: `
         #                                           {
@@ -294,7 +298,7 @@ module UserApis
         # @example get the value of track MDI_CC_LEGAL_SPEED
         #   field = track.field('MDI_CC_LEGAL_SPEED')
         #   speed = field['value']
-        def field(field_name_or_id, also_fetch_in_last_known_if_available = false) # keeping also_fetch_in_last_known_if_available for retrocompatiblity, to be removed if all ok
+        def field(field_name_or_id, also_fetch_in_last_known_if_available = false)
           name = ''
           case field_name_or_id.class.to_s
           when 'String'
@@ -312,11 +316,46 @@ module UserApis
 
           field = self.fields_data.select{|e| e['name'] == name }.first
           RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found") if field == nil
+
+
+          if field == nil and also_fetch_in_last_known_if_available and self.meta['fields_cached'] != nil
+            cache = self.meta['fields_cached']
+
+            # map["#{field['name']}|recorded_at"] = field['recorded_at']
+            # map["#{field['name']}|raw_value"] = field['raw_value']
+            if cache["#{name}|recorded_at"] != nil
+
+              field = apis.mdi.storage.tracking_fields_info.get_by_name(name, true)
+              if field != nil
+                field['raw_value'] = cache["#{name}|raw_value"]
+                field['value'] = cache["#{name}|raw_value"]
+                field['fresh'] = false
+                field['recorded_at'] = cache["#{name}|recorded_at"]
+
+                # decode if Ragent. In VM mode, raw_value = value, nothing else to do
+                # Note that the raw_value is thus different between VM mode and Ragent.
+                if RAGENT.running_env_name == 'ragent'
+                  # basic decode
+                  case field['field_type']
+                  when 'integer'
+                    # reverse: b64_value =  Base64.strict_encode64([demo].pack("N").unpack("cccc").pack('c*'))
+                    field['value'] = field['value'].to_s.unpack('B*').first.to_i(2)
+                  when 'string'
+                    field['value'] = field['value'].to_s
+                  when 'boolean'
+                    field['value'] = field['value'].to_s == "\x01" ? true : false
+                  end # case type for decode
+                end # in ragent mode
+                RAGENT.api.mdi.tools.log.debug("Found field from cached :#{field}")
+              end # field conf exists
+            end # field exits
+          end # field is nil fetch into olds
+
           field
         end
 
 
-        # clear fields stored
+        # flush fields stored
         # @api public
         def clear_fields
           self.fields_data = []
