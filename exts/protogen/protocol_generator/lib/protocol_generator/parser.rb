@@ -36,6 +36,7 @@ module ProtocolGenerator
         set :java, :mdi_jar_path, hash_config['mdi_framework_jar']
         set :java, :keep_jar, hash_config['keep_java_jar']
         set :java, :keep_source, hash_config['keep_java_source']
+        set :java, :keep_source_path, hash_config['keep_java_source_path']
         set :global, :plugins, hash_config['plugins']
         set :global, :pg_version, hash_config['pg_version']
         set :java, :max_message_size, hash_config['device_message_size_limit']
@@ -316,19 +317,19 @@ module ProtocolGenerator
           use_protobuf = true
         end
         if /msgpack/.match(plugin_name)
-          puts "Will use protobuf because of plugin #{plugin_name}"
+          puts "Will use msgpack because of plugin #{plugin_name}"
           use_msgpack = true
         end
       end
       if use_protobuf && use_msgpack
         Error::PluginError.new('Conflict: two plugins found using msgpack and protobuf. You can use only one or the other.')
       elsif use_protobuf
-        validation_errors = JSON::Validator.fully_validate(Schema::PROTOBUF_CONF, configuration, :validate_schema => true)
+        validation_errors = JSON::Validator.fully_validate(Schema::PROTOBUF_CONF, hash_config, :validate_schema => true)
         if validation_errors.size > 0
           raise Error::ConfigurationFileError.new("The configuration file do not follow the correct Protobuf schema: #{PROTOBUF_CONF.inspect}")
         end
       elsif use_msgpack
-        validation_errors = JSON::Validator.fully_validate(Schema::MSGPACK_CONF, configuration, :validate_schema => true)
+        validation_errors = JSON::Validator.fully_validate(Schema::MSGPACK_CONF, hash_config, :validate_schema => true)
         if validation_errors.size > 0
           raise Error::ConfigurationFileError.new("The configuration file do not follow the correct msgpack schema: #{PROTOBUF_CONF.inspect}. Errors: #{validation_errors.inspect}.")
         end

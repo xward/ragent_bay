@@ -51,6 +51,7 @@ module ProtocolGenerator
           puts "Running #{gen_name} plugin"
           GENERATORS[gen_name].run(protocol)
           @@done << gen_name
+          puts "Done running #{gen_name} plugin"
         end
       end
 
