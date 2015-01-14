@@ -312,7 +312,7 @@ module UserApis
           # filter it if needed (to be sure)
           io_rule = apis.user_class.internal_config_io_fetch_first('track')
           w_fields = io_rule['allowed_track_fields']
-          raise "field: you want to use #{name} but It is not in your whitelist." if w_fields != nil and  w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
+          raise "field: you want to use field #{name} but It is not in your whitelist." if w_fields != nil and  w_fields != 'ALL_TRACKS' and !w_fields.include?(name)
 
           field = self.fields_data.select{|e| e['name'] == name }.first
           RAGENT.api.mdi.tools.log.warn("field: Field #{field_name_or_id} not found") if field == nil
