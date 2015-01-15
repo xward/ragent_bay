@@ -71,9 +71,7 @@ module RagentApi
 
     # return a field struct
     def self.get_by_id(int_id, account, no_error = false)
-      if RAGENT.running_env_name == 'sdk-vm'
-        account = 'default'
-      end
+      account = 'default' if RAGENT.running_env_name == 'sdk-vm'
       self.fetch_map(account).each do |field|
         if "#{field['field']}" == "#{int_id}"
           return field.clone
@@ -85,10 +83,8 @@ module RagentApi
     end
 
     def self.get_by_name(str_name, account, no_error = false)
-      if RAGENT.running_env_name == 'sdk-vm'
-        account = 'default'
-      end
-      fetch_map(account).each do |field|
+      account = 'default' if RAGENT.running_env_name == 'sdk-vm'
+      self.fetch_map(account).each do |field|
         if "#{field['name']}" == "#{str_name}"
           return field.clone
         end

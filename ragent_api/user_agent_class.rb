@@ -255,7 +255,7 @@ class UserAgentClass
       new_track_from_device(track)
       delta_t = Time.now - start_t
       RUBY_AGENT_STATS.report_a_last_activity("track_#{agent_name}", "asset: #{track.asset}")
-      PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK with #{track.fields_data.length} new fields in #{(delta_t * 1000).round}ms")
+      PUNK.end('trackAgent','ok','process',"AGENT:#{agent_name}TNEGA callback TRACK in #{(delta_t * 1000).round}ms")
     rescue Exception => e
       delta_t = Time.now - start_t
       RAGENT.api.mdi.tools.print_ruby_exception(e)
