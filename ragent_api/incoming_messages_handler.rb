@@ -79,6 +79,11 @@ module RagentIncomingMessage
           next
         end
 
+        PUNK.start('new')
+        RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming presence:\n#{presence.inspect}")
+        PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- PRESENCE [#{presence.type}]")
+
+
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_presence(presence)
 
@@ -221,8 +226,9 @@ module RagentIncomingMessage
             next
           end
 
-          # Say it
-          RAGENT.api.mdi.tools.log.info("Server: new message (id=#{ragent_msg.id}) of asset '#{ragent_msg.asset}' on channel '#{ragent_msg.channel}' proccessing by '#{user_agent_class.agent_name}' with env '#{apis.user_environment_md5}'.")
+          PUNK.start('new')
+          RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming message:\n#{ragent_msg.inspect}")
+          PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- MESSAGE [#{ragent_msg.channel}]")
 
           # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
           user_agent_class.handle_message(ragent_msg)
@@ -259,7 +265,7 @@ module RagentIncomingMessage
 
     PUNK.start('new')
     RAGENT.api.mdi.tools.log.debug("\n\n\n\nServer: new incomming track:\n#{params}")
-    PUNK.end('new','ok','in',"SERVER <- TRACK : receive new track")
+    PUNK.end('new', 'ok', 'in', "SERVER <- TRACK : receive new track")
     SDK_STATS.stats['server']['received'][2] += 1
 
     # forward to each agent
@@ -303,6 +309,14 @@ module RagentIncomingMessage
           PUNK.end('emptyDrop','warn','notif', "Enhanced track without fields. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming track #{track.id}")
           next
         end
+
+        PUNK.start('new')
+        # injected cache (vm mode)
+        track = TrackCache.inject_cache(track) if RAGENT.running_env_name == 'sdk-vm' and io_rule['track_fields_cached'] != nil and io_rule['track_fields_cached'] == true
+        RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming track:\n#{track.inspect}")
+        str_field_cached = " (#{track.meta['fields_cached'].size / 2})" if track.meta['fields_cached'].is_a? Hash
+        PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- TRACK [#{track.fields_data.size} fields#{str_field_cached}]")
+
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_track(track)
@@ -358,6 +372,10 @@ module RagentIncomingMessage
       set_current_user_api(apis)
 
       # No need to check route loop (i guess)
+
+      PUNK.start('new')
+      RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming order:#{order.inspect}")
+      PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- ORDER [#{order.code}]")
 
       # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
       assigned_agent.handle_order(order)
@@ -435,6 +453,10 @@ module RagentIncomingMessage
           next
         end
 
+        PUNK.start('new')
+        RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming collection:\n#{collection.inspect}")
+        PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- COLLECTION [#{collection.name}]")
+
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_collection(collection)
       rescue Exception => e
@@ -497,6 +519,11 @@ module RagentIncomingMessage
           PUNK.end('loopdrop','warn','notif',"Loop detected. AGENT:#{user_agent_class.agent_name}TNEGA drop incoming poke #{poke.id}")
           next
         end
+
+
+        PUNK.start('new')
+        RAGENT.api.mdi.tools.log.debug("#{user_agent_class.agent_name}: new incomming poke:\n#{poke.inspect}")
+        PUNK.end('new','ok','in',"AGENT:#{user_agent_class.agent_name}TNEGA <- POKE")
 
         # process it, should never fail, but if its happen we will have a wrong error on parse fail but no deadlock
         user_agent_class.handle_poke(poke.clone)
