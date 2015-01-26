@@ -33,21 +33,21 @@ module UserApis
 
         # @api private
         def gen_event_route_with_self
-            # some initial event might not have any meta field (like orders)
-            if @event_route_id != user_api.initial_event_content.id
-              @event_route_path = []
-              begin
-                path = user_api.initial_event_content.meta['event_route']
-              rescue Exception => e
-              end
-              @event_route_path << {
-                'name'=> user_api.user_class.agent_name,
-                'node_type' => 'ragent',
-                'date' => Time.now.to_i
-              }
-              @event_route_id = user_api.initial_event_content.id
-            end
-            @event_route_path
+          path = []
+          begin
+            path = user_api.initial_event_content.meta['event_route']
+          rescue Exception => e
+          end
+          rs = path.select {|r| r['name'] ==  user_api.user_class.agent_name }
+
+          if rs.size == 0
+            path << {
+              'name'=> user_api.user_class.agent_name,
+              'node_type' => 'ragent',
+              'date' => Time.now.to_i
+            }
+          end
+          path
         end
 
         # Inject a presence in the server queue (ie push a presence to the server)
