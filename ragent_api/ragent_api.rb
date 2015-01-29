@@ -311,7 +311,8 @@ module RagentApi
       map['additional_info'] = additional_info
 
       # put agents's config
-      map['agents_config'] = {}
+      map['file_internal_config_io'] = {}
+      map['user_config'] = {}
       RAGENT.user_class_subscriber.get_subscribers.each do |user_class|
         map['file_internal_config_io'][user_class.agent_name] = user_class.file_internal_config_io
         map['user_config'][user_class.agent_name] = user_class.user_config
