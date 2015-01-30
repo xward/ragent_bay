@@ -73,7 +73,14 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
               end
             end
             # if we reach this point, the return type of the callback is not one of the possible next shots: error
-            raise SequenceError.new("Protogen: The callback for sequence #{@id} shot #{shot_id} did not return the expected message type: expected one of #{next_shots.map{ |next_shot_id| @shots[next_shot_id].message_type }.inspect}, got #{result.class}. Aborting sequence.")
+            error_msg = ProtogenMessages::ServerError.new
+            error_msg.info = "Callback returned invalid message type (see server logs)"
+            error_msg.protogen_meta_data['protogen_sequence_id'] = @id
+            error_msg.protogen_meta_data['protogen_shot_id'] = shot_id
+            error_msg.protogen_meta_data['protogen_version_string'] = current_message.content.protogen_meta_data['protogen_version_string']
+            CC.logger.error("Invalid message type. Answering to the device with an error message and aborting sequence.")
+            ExternalApi.reply(current_message, error_msg)
+            raise SequenceError.new("Protogen: The callback for sequence #{@id} shot #{shot_id} did not return the expected message type: expected one of #{next_shots.map{ |next_shot_id| @shots[next_shot_id].message_type }.inspect}, got #{result.class}. Aborting sequence and sending an error message to the device.")
           else
             CC.logger.info("Protogen: sequence #{@id} complete")
           end

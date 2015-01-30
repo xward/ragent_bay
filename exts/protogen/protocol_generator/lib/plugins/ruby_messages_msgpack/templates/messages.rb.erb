@@ -66,11 +66,6 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
 
           <% msg.fields.each do |field| %>
           def <%= field.name %>=(new_value)
-          <%- if field.array? -%>
-                raise TypeError.new("The attribute '<%= field.name %>' of a '<%= msg.name %>' must be an array of <%= field.type.name %> (the provided parameter does not respond to 'each')") unless new_value.respond_to?(:each) <% unless field.required %>|| new_value.nil?<%- end %>
-            new_value.each do |item ; new_value| # confusing, but it helps making the code that generates code cleaner
-            new_value = item
-            <%- end -%>
             <%- case field.type
               when Models::BasicType
                 if field.type.name == "bool" -%>
@@ -95,7 +90,6 @@ module Protogen_<%= protocol_set.config.get(:ruby, :agent_name) %>
                 raise "Unknown type of field: #{field.type.name}"
               end -%>
             <%- if field.array? -%>
-            end
             @<%= field.name -%> = new_value
             <%- end -%>
           end

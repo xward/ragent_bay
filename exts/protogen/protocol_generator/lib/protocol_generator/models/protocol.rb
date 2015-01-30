@@ -29,7 +29,7 @@ module ProtocolGenerator
 
       # Allowed names are Java-style package names with only lowercase letters (numbers and underscores are also accepted)
       def package=(new_package)
-        if new_package.match(/^([a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)*)$/)
+        if new_package.match(/^([a-z_][a-z0-9_]*(\.[a-z_][a-zA-Z0-9_]*)*)$/)
           @package = new_package
         else
           raise ArgumentError.new("Only Java-style package names that use lowercase letters are allowed (you can also use underscores and numbers but it is discouraged). Example of a valid package name: com.mycompany.example")
